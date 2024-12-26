@@ -2,7 +2,8 @@ import { FC } from 'react'
 import { EventWithProgress } from '../hooks/useInstallRelease'
 import styled from 'styled-components'
 import { Button, Toolbar } from '@ynput/ayon-react-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledProgress = styled.div`
   display: flex;
   flex-direction: column;
@@ -70,8 +71,9 @@ export const ReleaseInstallerProgress: FC<ReleaseInstallerProgressProps> = ({
 }
 
 const getInstallMessage = (event?: EventWithProgress): string => {
-  if (!event) return 'Installing release...'
-  return 'Installing: ' + event.label + '...'
+  const {t} = useTranslation()
+  if (!event) return t("Installing release...")
+  return `${t("Installing")}: ` + event.label + '...'
 }
 
 // take all the events and calculate the total progress based on progress field

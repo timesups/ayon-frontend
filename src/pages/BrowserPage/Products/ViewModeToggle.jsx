@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Button } from '@ynput/ayon-react-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ViewModeToggle = ({ onChange, value, grouped, setGrouped, disabled }) => {
+  const {t} = useTranslation()
   const handleNormalClick = (id) => {
     setGrouped(false)
     onChange(id)
@@ -20,21 +22,21 @@ const ViewModeToggle = ({ onChange, value, grouped, setGrouped, disabled }) => {
       id: 'list',
       icon: 'format_list_bulleted',
       onClick: () => handleNormalClick('list'),
-      ['data-tooltip']: 'List View',
+      ['data-tooltip']: t("List View"),
       disabled: disabled.includes('list'),
     },
     {
       id: 'grid',
       icon: 'grid_view',
       onClick: () => handleNormalClick('grid'),
-      ['data-tooltip']: 'Card View',
+      ['data-tooltip']: t("Card View"),
       disabled: disabled.includes('grid'),
     },
     {
       id: 'layers',
       icon: 'layers',
       onClick: () => handleGroupClick(),
-      ['data-tooltip']: 'Grouped View',
+      ['data-tooltip']: t("Grouped View"),
       disabled: disabled.includes('layers'),
     },
   ]

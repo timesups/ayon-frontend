@@ -3,7 +3,9 @@ import { useSelector } from 'react-redux'
 import { useMemo, useEffect } from 'react'
 import { useListBundlesQuery } from '@queries/bundles/getBundles'
 import styled from 'styled-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
+import { t } from 'i18next'
 const BundleDropdownItem = styled.div`
   display: flex;
   flex-direction: row;
@@ -28,8 +30,8 @@ const DevModeSelector = ({ variant, setVariant, disabled, style }) => {
 
   const bundleList = useMemo(() => {
     return [
-      { label: 'Production', name: 'production' },
-      { label: 'Staging', name: 'staging' },
+      { label: t("Production"), name: 'production' },
+      { label: t("Staging"), name: 'staging' },
       ...(bundles || []).filter((b) => !b?.isArchived && b?.isDev),
     ]
   }, [bundles])
@@ -139,13 +141,13 @@ const VariantSelector = ({ variant, setVariant, disabled = false, style }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: 6 }}>
       <Button
-        label="Production"
+        label={t("Production")}
         onClick={() => setVariant('production')}
         style={variant === 'production' ? styleHlProd : {}}
         disabled={disabled}
       />
       <Button
-        label="Staging"
+        label={t("Staging")}
         onClick={() => setVariant('staging')}
         style={variant === 'staging' ? styleHlStag : {}}
         disabled={disabled}

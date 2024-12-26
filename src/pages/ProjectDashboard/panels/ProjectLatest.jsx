@@ -4,8 +4,10 @@ import DashboardPanelWrapper from './DashboardPanelWrapper'
 import ProjectLatestRow from './ProjectLatestRow'
 import { useGetProjectQuery } from '@queries/project/getProject'
 import { useURIContext } from '@context/uriContext'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ProjectLatest = ({ projectName }) => {
+  const {t} = useTranslation()
   // project
   const { isLoading, isFetching } = useGetProjectQuery({ projectName }, { skip: !projectName })
   // {Approved: {name: "Approved", state: "done"}, ...}}
@@ -26,7 +28,7 @@ const ProjectLatest = ({ projectName }) => {
 
   const rows = [
     {
-      title: 'Latest',
+      title: t("Latest"),
       entities: ['folder', 'product', 'version', 'task'],
       args: {
         sortBy: 'updatedAt',
@@ -36,7 +38,7 @@ const ProjectLatest = ({ projectName }) => {
         data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).splice(0, 4),
     },
     {
-      title: 'Recently Approved',
+      title: t("Recently Approved"),
       entities: ['folder', 'product', 'version', 'task'],
       args: {
         sortBy: 'updatedAt',
@@ -47,7 +49,7 @@ const ProjectLatest = ({ projectName }) => {
         data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).splice(0, 4),
     },
     {
-      title: 'Urgent',
+      title: t("Urgent"),
       entities: ['folder', 'product', 'version', 'task'],
       args: {
         sortBy: 'attrib.endDate',
@@ -58,7 +60,7 @@ const ProjectLatest = ({ projectName }) => {
         data.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt)).splice(0, 4),
     },
     {
-      title: 'New Versions',
+      title: t("New Versions"),
       entities: ['version'],
       args: {
         sortBy: 'createdAt',
@@ -97,7 +99,7 @@ const ProjectLatest = ({ projectName }) => {
 
   return (
     <DashboardPanelWrapper
-      title="Activity"
+      title={t("Activity")}
       icon={{
         link: '/events',
         icon: 'history',

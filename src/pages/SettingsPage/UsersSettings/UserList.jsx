@@ -11,6 +11,8 @@ import useCreateContext from '@hooks/useCreateContext'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 import { accessGroupsSortFunction } from '@helpers/user'
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 
 const StyledProfileRow = styled.div`
   display: flex;
@@ -57,6 +59,7 @@ const UserList = ({
   onSelectUsers,
   isSelfSelected,
 }) => {
+  const {t} = useTranslation()
   // Selection
   const selection = useMemo(() => {
     return userList.filter((user) => selectedUsers.includes(user.name))
@@ -82,19 +85,19 @@ const UserList = ({
   const ctxMenuItems = (newSelectedUsers) => {
     return [
       {
-        label: 'Set username',
+        label: t("Set username"),
         disabled: selection.length !== 1,
         command: () => setShowRenameUser(true),
         icon: 'edit',
       },
       {
-        label: 'Set password',
+        label: t("Set password"),
         disabled: selection.length !== 1,
         command: () => setShowSetPassword(true),
         icon: 'key',
       },
       {
-        label: 'Delete selected',
+        label: t("Delete selected"),
         disabled: !selection.length || isSelfSelected,
         command: () => setShowDeleteUser(newSelectedUsers),
         icon: 'delete',
@@ -131,16 +134,16 @@ const UserList = ({
         >
           <Column
             field="name"
-            header="Username"
+            header={t("Username")}
             sortable
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
             resizeable
           />
-          <Column field="attrib.fullName" header="Full name" sortable resizeable />
-          <Column field="attrib.email" header="Email" sortable />
+          <Column field="attrib.fullName" header={t("Full name")}sortable resizeable />
+          <Column field="attrib.email" header={t("Email")} sortable />
           <Column
             field={'accessGroupList'}
-            header="Project access"
+            header={t("Project access")}
             body={(rowData) =>
               rowData &&
               rowData.accessGroups &&
@@ -158,22 +161,22 @@ const UserList = ({
             resizeable
           />
           <Column
-            header="Has password"
+            header={t("Has password")}
             body={(rowData) => (rowData.hasPassword ? 'yes' : 'no')}
             field="hasPassword"
             sortable
             resizeable
           />
           <Column
-            header="Guest"
+            header={t("Guest")}
             body={(rowData) => (rowData.isGuest ? 'yes' : '')}
             field="isGuest"
             sortable
             resizeable
           />
           <Column
-            header="Active"
-            body={(rowData) => (rowData.active ? 'yes' : '')}
+            header={t("Active")}
+            body={(rowData) => (rowData.active ? t("yes") : '')}
             field="active"
             sortable
             resizeable

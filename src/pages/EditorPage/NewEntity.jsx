@@ -16,7 +16,8 @@ import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import TypeEditor from './TypeEditor'
 import checkName from '@helpers/checkName'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ContentStyled = styled.div`
   display: flex;
   align-items: center;
@@ -29,6 +30,7 @@ const ContentStyled = styled.div`
 `
 
 const NewEntity = ({ type, currentSelection = {}, visible, onConfirm, onHide }) => {
+  const {t} = useTranslation()
   const [nameFocused, setNameFocused] = useState(false)
   const [entityType, setEntityType] = useState(null)
   //   build out form state
@@ -37,9 +39,9 @@ const NewEntity = ({ type, currentSelection = {}, visible, onConfirm, onHide }) 
 
   //   format title
   const isRoot = isEmpty(currentSelection)
-  let title = 'Add New '
-  if (isRoot) title += 'Root '
-  title += capitalize(type)
+  let title = `${t("Add New")} `
+  if (isRoot) title += `${t("Root")} `
+  title += t(capitalize(type))
 
   //   type selector
   const tasks = useSelector((state) => state.project.tasks)
@@ -202,14 +204,14 @@ const NewEntity = ({ type, currentSelection = {}, visible, onConfirm, onHide }) 
         <Toolbar onFocus={() => setNameFocused(false)}>
           <Spacer />
           <Button
-            label={`Add`}
+            label={t("Add")}
             variant="text"
             onClick={() => handleSubmit(false)}
             disabled={addDisabled}
             data-shortcut="Shift+Enter"
           />
           <SaveButton
-            label={`Add and Close`}
+            label={t("Add and Close")}
             onClick={() => handleSubmit(true)}
             active={!addDisabled}
             title="Ctrl/Cmd + Enter"

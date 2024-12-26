@@ -12,8 +12,10 @@ import ReleaseInstaller from './ReleaseInstaller'
 import { useGetYnputConnectionsQuery } from '@queries/ynputConnect'
 import ConnectDialog from '@pages/MarketPage/ConnectDialog/ConnectDialog'
 import { useLocation } from 'react-router'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ReleaseInstallerDialog: FC = () => {
+  const {t} = useTranslation()
   const location = useLocation()
   const dispatch = useAppDispatch()
   // STATE
@@ -35,7 +37,7 @@ const ReleaseInstallerDialog: FC = () => {
       isOpen
       onClose={() => {}}
       hideCancelButton
-      header={<Styled.Header>Install pipeline release</Styled.Header>}
+      header={<Styled.Header>{t("Install pipeline release")}</Styled.Header>}
       size="md"
     >
       <ReleaseInstaller onFinish={closeDialog} />

@@ -17,7 +17,8 @@ import { useGetProjectAddonsQuery } from '@queries/addons/getAddons'
 import { TabPanel, TabView } from 'primereact/tabview'
 import AppNavLinks from '@containers/header/AppNavLinks'
 import { SlicerProvider } from '@context/slicerContext'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ProjectContextInfo = () => {
   /**
    * Show a project context in a dialog
@@ -43,7 +44,7 @@ const ProjectPage = () => {
    * It parses the url, loads the project data, dispatches the
    * project data to the store, and renders the requested page.
    */
-
+  const {t} = useTranslation()
   const navigate = useNavigate()
   const { projectName, module, addonName } = useParams()
   const dispatch = useDispatch()
@@ -93,20 +94,20 @@ const ProjectPage = () => {
   const links = useMemo(
     () => [
       {
-        name: 'Browser',
+        name: t("Browser"),
         path: `/projects/${projectName}/browser`,
         module: 'browser',
         uriSync: true,
       },
       {
-        name: 'Task progress',
+        name: t("Task progress"),
         path: `/projects/${projectName}/tasks`,
         module: 'tasks',
         uriSync: true,
       },
-      { name: 'Editor', path: `/projects/${projectName}/editor`, module: 'editor', uriSync: true },
+      { name: t("Editor"), path: `/projects/${projectName}/editor`, module: 'editor', uriSync: true },
       {
-        name: 'Workfiles',
+        name: t("Workfiles"),
         path: `/projects/${projectName}/workfiles`,
         module: 'workfiles',
         uriSync: true,
@@ -145,7 +146,7 @@ const ProjectPage = () => {
     setTimeout(() => {
       navigate('/manageProjects/dashboard')
     }, 1500)
-    return <div className="page">Project Not Found, Redirecting...</div>
+    return <div className="page">{t("Project Not Found, Redirecting...")}</div>
   }
 
   const getPageByModuleAndAddonData = (module, addonName, addonsData) => {
@@ -183,7 +184,7 @@ const ProjectPage = () => {
   return (
     <>
       <Dialog
-        header="Project Context"
+        header={t("Project Context")}
         isOpen={showContextDialog}
         onClose={() => setShowContextDialog(false)}
         size="lg"

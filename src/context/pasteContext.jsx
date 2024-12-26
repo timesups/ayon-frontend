@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useCallback } from 'react'
 import { Button, InputTextarea, Dialog } from '@ynput/ayon-react-components'
 
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const PasteContext = createContext()
 
 const PasteProvider = ({ children }) => {
@@ -48,6 +49,7 @@ const PasteProvider = ({ children }) => {
 }
 
 const PasteModal = () => {
+  const {t} = useTranslation()
   const { closeModal, isModalOpen } = usePaste()
   const [pastedData, setPastedData] = useState('')
 
@@ -60,8 +62,8 @@ const PasteModal = () => {
 
   const footer = (
     <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexDirection: 'row' }}>
-      <Button onClick={() => submit(pastedData)} label="Submit" />
-      <Button onClick={() => submit(null)} label="Cancel" />
+      <Button onClick={() => submit(pastedData)} label={t("Submit")} />
+      <Button onClick={() => submit(null)} label={t("Cancel")}/>
     </div>
   )
 
@@ -79,9 +81,9 @@ const PasteModal = () => {
             fontSize: '14px',
             color: 'var(--md-sys-color-outline)',
           }}
-          data-tooltip="Ensure your browser clipboard permissions are set to 'Allow'."
+          data-tooltip={t("Ensure your browser clipboard permissions are set to 'Allow'.")}
         >
-          Why is pasting not working?
+          {t("Why is pasting not working?")}
         </a>
       </span>
     </p>
@@ -99,7 +101,7 @@ const PasteModal = () => {
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <InputTextarea
           value={pastedData}
-          placeholder="Clipboard API is not supported by your browser. Please paste the data here."
+          placeholder={t("Clipboard API is not supported by your browser. Please paste the data here.")}
           onChange={(e) => setPastedData(e.target.value)}
           style={{ width: '100%', flexGrow: 1 }}
         />

@@ -19,7 +19,8 @@ import getThumbnails from '../helpers/getThumbnails'
 import useScopedStatuses from '@hooks/useScopedStatuses'
 import { useGetAttributeConfigQuery } from '@queries/attributes/getAttributes'
 import { getPriorityOptions } from '@pages/TasksProgressPage/helpers'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const DetailsPanelHeader = ({
   entityType,
   entitySubTypes,
@@ -33,6 +34,7 @@ const DetailsPanelHeader = ({
   scope,
   statePath,
 }) => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
 
   const statuses = useScopedStatuses(
@@ -281,7 +283,7 @@ const DetailsPanelHeader = ({
             <Styled.PriorityEnumDropdown
               options={priorities}
               editor
-              placeholder="No priority"
+              placeholder={t("No priority")}
               value={priorityValues}
               onChange={(value) => handleUpdate('attrib', { priority: value[0] })}
               align="right"

@@ -2,7 +2,8 @@ import { Button, InputText } from '@ynput/ayon-react-components'
 import clsx from 'clsx'
 import { useState } from 'react'
 import styled from 'styled-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledContainer = styled.div``
 
 const StyledButton = styled(Button)`
@@ -39,6 +40,7 @@ type Props = {
 }
 
 const SlicerSearch = ({ value, onChange }: Props) => {
+  const {t} = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
   const onToggle = () => {
@@ -62,7 +64,7 @@ const SlicerSearch = ({ value, onChange }: Props) => {
         <StyledInput
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Search"
+          placeholder={t("Search")}
           autoFocus
           onKeyDown={handleInputKeydown}
         />

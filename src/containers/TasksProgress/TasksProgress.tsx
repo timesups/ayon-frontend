@@ -39,7 +39,8 @@ import useFilterBySlice from './hooks/useFilterBySlice'
 import formatSearchQueryFilters from './helpers/formatSearchQueryFilters'
 import { isEmpty } from 'lodash'
 import { RowSelectionState } from '@tanstack/react-table'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 // what to search by
 const searchFilterTypes: FilterFieldType[] = [
   'attributes',
@@ -71,6 +72,7 @@ const TasksProgress: FC<TasksProgressProps> = ({
   priorities = [],
   projectName,
 }) => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
   const tableRef = useRef<any>(null)
 
@@ -118,7 +120,7 @@ const TasksProgress: FC<TasksProgressProps> = ({
   const filtersWithHierarchy = useMemo(() => {
     const buildHierarchyFilterOption = (hierarchy: SelectionData): Filter => ({
       id: 'hierarchy',
-      label: 'Folder',
+      label: t("Folder"),
       type: 'list_of_strings',
       values: Object.values(hierarchy).map((item) => ({
         id: item.id,
@@ -433,7 +435,7 @@ const TasksProgress: FC<TasksProgressProps> = ({
             style={{ minWidth: 220, justifyContent: 'flex-start' }}
             selected={expandAll}
           >
-            {`${expandAll ? 'Collapse' : 'Expand'} all rows`}
+            {`${expandAll ? t("Collapse") : t("Expand")} ${t("all rows")}`}
             <ShortcutTag style={{ marginLeft: 'auto' }}>Shift + E</ShortcutTag>
           </Button>
         </Toolbar>
@@ -466,7 +468,7 @@ const TasksProgress: FC<TasksProgressProps> = ({
           )
         ) : (
           <EmptyPlaceholder
-            message={'Select a folder to begin.'}
+            message={t("Select a folder to begin.")}
             icon="folder_open"
             error={error}
           />

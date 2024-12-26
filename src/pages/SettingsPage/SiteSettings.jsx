@@ -7,8 +7,10 @@ import SiteList from '@containers/SiteList'
 
 import { useGetSiteSettingsSchemaQuery, useGetSiteSettingsQuery } from '@queries/siteSettings'
 import { useSetSiteSettingsMutation } from '@queries/siteSettings'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const SiteSettingsEditor = ({ addonName, addonVersion, siteId, onChange }) => {
+
   const [formData, setFormData] = useState(null)
 
   const { data: schema, isLoading: schemaLoading } = useGetSiteSettingsSchemaQuery({
@@ -46,6 +48,7 @@ const SiteSettingsEditor = ({ addonName, addonVersion, siteId, onChange }) => {
 }
 
 const SiteSettings = () => {
+  const {t} = useTranslation()
   const [selectedAddons, setSelectedAddons] = useState([])
   const [selectedSites, setSelectedSites] = useState([])
   const [newData, setNewData] = useState({})
@@ -95,7 +98,7 @@ const SiteSettings = () => {
       <Section style={{ flexGrow: 1 }}>
         <Toolbar>
           <Spacer />
-          <Button label="Save Changes" icon="check" onClick={() => saveChanges()} />
+          <Button label={t("Save Changes")} icon="check" onClick={() => saveChanges()} />
         </Toolbar>
 
         {(selectedSites.length && (
@@ -121,7 +124,7 @@ const SiteSettings = () => {
             })}
           </ScrollPanel>
         )) ||
-          'Select a site to edit settings'}
+          t("Select a site to edit settings")}
       </Section>
     </main>
   )

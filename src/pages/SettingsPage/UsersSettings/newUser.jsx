@@ -9,7 +9,8 @@ import UserAccessForm from './UserAccessForm'
 import styled from 'styled-components'
 import useUserMutations from '@containers/Feed/hooks/useUserMutations'
 import callbackOnKeyDown from '@helpers/callbackOnKeyDown'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const DividerSmallStyled = styled(Divider)`
   margin: 8px 0;
 `
@@ -28,7 +29,7 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
   } = useUserMutations({})
   const [addUser, { isLoading: isCreatingUser }] = useAddUserMutation()
   const usernameRef = useRef()
-
+  const {t} = useTranslation()
   const attributes = ayonClient.getAttribsByScope('user')
 
   const resetFormData = ({ password, passwordConfirm, formData, addedUsers }) => {
@@ -40,11 +41,11 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
 
   const validateFormData = (formData) => {
     if (!formData.Username) {
-      return 'Login name must be provided'
+      return t("Login name must be provided")
     }
 
     if (password !== passwordConfirm) {
-      return 'Passwords do not match'
+      return t("Passwords do not match")
     }
 
     return null
@@ -131,19 +132,19 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
         width: '90vw',
         maxWidth: 700,
       }}
-      header={'Create New User'}
+      header={t("Create New User")}
       onClose={handleClose}
       footer={
         <>
           <Button
-            label="Create user"
+            label={t("Create user")}
             onClick={() => handleSubmit(false)}
             disabled={!formData.Username}
             data-shortcut="Shift+Enter"
           ></Button>
           <SaveButton
             onClick={() => handleSubmit(true)}
-            label="Create and close"
+            label={t("Create and close")}
             disabled={!formData.Username}
             saving={isCreatingUser}
             data-shortcut="Ctrl/Cmd+Enter"
@@ -158,11 +159,11 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
           attributes={[
             {
               name: 'Username',
-              data: { title: 'Username' },
-              input: { placeholder: 'No spaces allowed', autoFocus: true, ref: usernameRef },
+              data: { title: t("Username") },
+              input: { placeholder: t("No spaces allowed"), autoFocus: true, ref: usernameRef },
             },
-            { name: 'password', data: { title: 'Password' } },
-            { name: 'passwordConfirm', data: { title: 'Password Confirm' } },
+            { name: 'password', data: { title: t("Password") } },
+            { name: 'passwordConfirm', data: { title: t("Password Confirm") } },
             ...attributes,
           ]}
           {...{ password, setPassword, passwordConfirm, setPasswordConfirm }}

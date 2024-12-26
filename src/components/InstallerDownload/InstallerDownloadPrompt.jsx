@@ -2,8 +2,12 @@ import React from 'react'
 import useLocalStorage from '@hooks/useLocalStorage'
 import * as Styled from './InstallerDownloadPrompt.styled'
 import useGetInstallerDownload from './useGetInstallerDownload'
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
+
 
 const InstallerDownloadPrompt = () => {
+  const {t} = useTranslation()
   const [installersDownloaded, setInstallersDownloaded] = useLocalStorage(
     'installers-downloaded',
     [],
@@ -33,7 +37,7 @@ const InstallerDownloadPrompt = () => {
     <Styled.Container>
       {directDownload && (
         <Styled.DownloadButton icon={'install_desktop'} onClick={handleDirectDownload}>
-          Download launcher
+          {t("Download launcher")}
         </Styled.DownloadButton>
       )}
 

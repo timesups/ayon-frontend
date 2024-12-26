@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { InputText } from '@ynput/ayon-react-components'
 import { Tag } from '@components/MarketAddonCard/MarketAddonCard.styled'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledAddonList = styled.div`
   display: flex;
   flex-direction: column;
@@ -64,6 +65,7 @@ const MarketAddonsList = ({
   isUpdatingAll,
   isUpdatingAllFinished,
 }) => {
+  const {t} = useTranslation()
   const [search, setSearch] = useState('')
 
   // filter addons by search
@@ -102,7 +104,7 @@ const MarketAddonsList = ({
     <StyledAddonList ref={listRef}>
       <div className="search">
         <StyledInput
-          placeholder="Search"
+          placeholder={t("Search")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -113,7 +115,7 @@ const MarketAddonsList = ({
             className={isUpdatingAll ? 'downloading' : ''}
             disabled={isUpdatingAll || isUpdatingAllFinished}
           >
-            {isUpdatingAll ? 'Updating...' : isUpdatingAllFinished ? 'All Updated' : 'Update All'}
+            {isUpdatingAll ? t("Updating...") : isUpdatingAllFinished ? t("All Updated") : t("Update All")}
           </Tag>
         )}
       </div>

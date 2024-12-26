@@ -1,27 +1,29 @@
 import React from 'react'
 import Menu from '../MenuComponents/Menu'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 export const HelpMenu = ({ user, ...props }) => {
+  const {t} = useTranslation()
   const isUser = user.data.isUser
 
   const items = [
     {
       id: 'documentation',
-      label: 'Documentation',
+      label: t("Documentation"),
       link: 'https://ayon.ynput.io/',
       icon: 'description',
       target: '_blank',
     },
     {
       id: 'forum',
-      label: 'Community Forum',
+      label: t("Community Forum"),
       link: 'https://community.ynput.io/',
       icon: 'forum',
       target: '_blank',
     },
     {
       id: 'bug',
-      label: 'Report a Bug',
+      label: t("Report a Bug"),
       link: 'https://github.com/ynput/ayon-frontend/issues/new',
       icon: 'bug_report',
       target: '_blank',
@@ -29,14 +31,14 @@ export const HelpMenu = ({ user, ...props }) => {
     { id: 'divider' },
     {
       id: 'api',
-      label: 'REST API',
+      label: t("REST API"),
       link: '/doc/api',
       icon: 'api',
       target: '_blank',
     },
     {
       id: 'graphql',
-      label: 'GraphQL Explorer',
+      label: t("GraphQL Explorer"),
       link: '/explorer',
       icon: 'hub',
       target: '_blank',
@@ -49,7 +51,7 @@ export const HelpMenu = ({ user, ...props }) => {
     },
     {
       id: 'support',
-      label: 'Get Support',
+      label: t("Get Support"),
       link: 'https://ynput.io/services',
       icon: 'support_agent',
       target: '_blank',

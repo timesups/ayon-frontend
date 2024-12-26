@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import * as Styled from '../util/OnBoardingStep.styled'
 import AddonCardProgress from '@components/AddonCard/AddonCardProgress'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const findLastEvent = (events = []) => {
   // sort by status, null, pending, in_progress, finished, failed
   // then sort by progress (if status is the same)
@@ -40,6 +41,7 @@ export const ProgressInstall = ({
   isFinished,
   setIsFinished,
 }) => {
+  const {t} = useTranslation()
   const refs = React.useRef({})
 
   //   every time status changes, scroll to eventId
@@ -133,7 +135,7 @@ export const ProgressInstall = ({
     setProgress(newProgress)
   }, [installProgress])
 
-  const title = isFinished ? 'Finished Installation!' : 'Getting Everything Installed...'
+  const title = isFinished ? t("Finished Installation!") : t("Getting Everything Installed...")
 
   return (
     <Styled.Section>

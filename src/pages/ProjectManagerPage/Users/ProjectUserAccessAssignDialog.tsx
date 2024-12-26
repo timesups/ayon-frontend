@@ -9,7 +9,8 @@ import { mapInitialAccessGroupStates } from './mappers'
 import { AccessGroupUsers, SelectionStatus } from './types'
 import * as Styled from './ProjectUserAccessAssignDialog.styled'
 import { ProjectUserData } from '@queries/accessGroups/getAccessGroups'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const icons: {[key in SelectionStatus] : string | undefined} = {
   [SelectionStatus.None]: 'add',
   [SelectionStatus.Mixed]: 'remove',
@@ -38,6 +39,7 @@ const ProjectUserAccessAssignDialog = ({
   onSave,
   onClose,
 }: Props) => {
+  const {t} = useTranslation()
   const initialStates = mapInitialAccessGroupStates(accessGroups, users, projectUsers, userAccessGroups)
   const initialStatesList = Object.keys(initialStates).map(agName => ({name: agName, status: initialStates[agName]}))
 
@@ -110,20 +112,20 @@ const ProjectUserAccessAssignDialog = ({
       <Shortcuts shortcuts={shortcuts} deps={[accessGroupItems]} />
       <Dialog
         size="md"
-        header={<span>Add access for {getHeader()}</span>}
+        header={<span>{t("Add access for")} {getHeader()}</span>}
         footer={
           <>
             <Styled.Button
               icon="check"
               variant="surface"
               className={clsx({ 'all-selected': allSelected })}
-              label={allSelected ? 'Deselect all' : 'Select all'}
+              label={allSelected ? t("Deselect all") : t("Select all")}
               onClick={() => handleToggleAll(!allSelected)}
             >
               <ShortcutTag>{getPlatformShortcutKey('a', [KeyMode.Ctrl])}</ShortcutTag>
             </Styled.Button>
             <Spacer />
-            <Button icon="check" variant="filled" label="Save" onClick={() => handleSave()} />
+            <Button icon="check" variant="filled" label={t("Save")} onClick={() => handleSave()} />
           </>
         }
         isOpen={true}

@@ -5,7 +5,8 @@ import useUsersTable from './useUsersTable'
 import useProjectAnatomySlices from './useProjectAnatomySlices'
 import { SliceType, useSlicerContext } from '@context/slicerContext'
 import { Slice, SliceData, SliceOption, TableData, TableRow } from '../types'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 interface Props {
   sliceFields: SliceType[]
 }
@@ -56,8 +57,14 @@ const getSomeValue = (field: string): TableRow => ({
 })
 
 const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
+  const {t} = useTranslation()
   const { sliceType, onSliceTypeChange, useExtraSlices } = useSlicerContext()
   const projectName = useAppSelector((state) => state.project.name)
+
+  for(let i=0;i<defaultSliceOptions.length;i++)
+  {
+    defaultSliceOptions[i].label = t(defaultSliceOptions[i].label)
+  }
 
   const sliceOptions = defaultSliceOptions.filter(
     (option) => !sliceFields.length || sliceFields.includes(option.value),

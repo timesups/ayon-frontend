@@ -11,7 +11,8 @@ import { ReleaseListItemModel } from '@api/rest/releases'
 import { ReleaseForm } from '../hooks/useReleaseForm'
 import { Error } from '../ReleaseInstaller.styled'
 import { Icon } from '@ynput/ayon-react-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 interface ReleaseInstallerOverviewProps {
   releaseForm: ReleaseForm
   release: ReleaseListItemModel | null
@@ -37,22 +38,21 @@ export const ReleaseInstallerOverview: FC<ReleaseInstallerOverviewProps> = ({
   onConfirm,
   error,
 }) => {
+  const {t} = useTranslation()
   return (
     <>
       <p className="bio">
-        Releases are official bundles with the latest tested and stable addons, launchers and their
-        dependencies for your pipeline.
+      {t("Releases are official bundles with the latest tested and stable addons, launchers and their dependencies for your pipeline.")}
       </p>
-      <p className="bio">Your install is pre-configured here, but you can adjust it if needed.</p>
-
+      <p className="bio">{t("Your install is pre-configured here, but you can adjust it if needed.")}</p>
       <Card
-        title="Release"
+        title={t("Release")}
         subTitle={createReleaseSubtitle(release)}
         icon="orders"
         isLoading={isLoading}
       />
       <Card
-        title="Addons"
+        title={t("Addons")}
         subTitle={createAddonsSubtitle(release?.addons || [], releaseForm.addons)}
         icon="extension"
         isLoading={isLoading}
@@ -63,7 +63,7 @@ export const ReleaseInstallerOverview: FC<ReleaseInstallerOverviewProps> = ({
         }
       />
       <Card
-        title="AYON launchers"
+        title={t("AYON launchers")}
         subTitle={createInstallersSubtitle(releaseForm.platforms)}
         icon="devices"
         isLoading={isLoading}
@@ -71,12 +71,12 @@ export const ReleaseInstallerOverview: FC<ReleaseInstallerOverviewProps> = ({
         required={releaseForm.platforms.length === 0}
       />
       <span className="note">
-        This will not affect your existing setup, a new bundle will be created for testing first.
+        {t("This will not affect your existing setup, a new bundle will be created for testing first.")}
       </span>
       {error && (
         <Error>
           <Icon icon="error" />
-          Error installing release: {error}
+          {t("Error installing release")}:{error}
         </Error>
       )}
       <Footer

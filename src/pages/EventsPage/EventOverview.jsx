@@ -5,8 +5,10 @@ import {
   TotalStyledButton,
 } from '@pages/SettingsPage/UsersSettings/UsersOverview'
 import EventTile from './EventTile'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const EventOverview = ({ events, logs, onTotal, search, setSelectedEvent, setShowLogs }) => {
+  const {t} = useTranslation()
   const errors = logs.filter((u) => u.topic.startsWith('log.error'))
   const lastError = errors[0]
   const users = events.filter((u) => u.user)
@@ -25,38 +27,38 @@ const EventOverview = ({ events, logs, onTotal, search, setSelectedEvent, setSho
   return (
     <Section wrap style={{ gap: '5px', bottom: 'unset', maxHeight: '100%', overflow: 'hidden' }}>
       <TotalsStyledPanel style={{ flexWrap: 'wrap' }}>
-        <h2>Events Overview</h2>
+        <h2>{t("Events Overview")}</h2>
         <TotalStyledButton
-          label={`Error - ${errors.length}`}
+          label={`${t("Error")} - ${errors.length}`}
           onClick={() => onTotal('error')}
           highlighted={search === 'error'}
         />
         <TotalStyledButton
-          label={`Server - ${events.filter((u) => u.topic.startsWith('server')).length}`}
+          label={`${t("Server")} - ${events.filter((u) => u.topic.startsWith('server')).length}`}
           onClick={() => onTotal('server')}
           highlighted={search === 'server'}
         />
         <TotalStyledButton
-          label={`Entity - ${events.filter((u) => u.topic.startsWith('entity')).length}`}
+          label={`${t("Entity")} - ${events.filter((u) => u.topic.startsWith('entity')).length}`}
           onClick={() => onTotal('entity')}
           highlighted={search === 'entity'}
         />
 
         <TotalsStyledPanel style={{ padding: 0 }}>
           <TotalStyledButton
-            label={`Product - ${events.filter((u) => u.topic.startsWith('entity.product')).length}
+            label={`${t("Product")} - ${events.filter((u) => u.topic.startsWith('entity.product')).length}
         `}
             onClick={() => onTotal('product')}
             highlighted={search === 'product'}
           />
           <TotalStyledButton
-            label={`Task - ${events.filter((u) => u.topic.startsWith('entity.task')).length}
+            label={`${t("Task")} - ${events.filter((u) => u.topic.startsWith('entity.task')).length}
         `}
             onClick={() => onTotal('task')}
             highlighted={search === 'task'}
           />
           <TotalStyledButton
-            label={`Version - ${events.filter((u) => u.topic.startsWith('entity.version')).length}
+            label={`${t("Version")} - ${events.filter((u) => u.topic.startsWith('entity.version')).length}
         `}
             onClick={() => onTotal('version')}
             highlighted={search === 'version'}
@@ -65,7 +67,7 @@ const EventOverview = ({ events, logs, onTotal, search, setSelectedEvent, setSho
       </TotalsStyledPanel>
 
       <Panel>
-        <h2>Last Error</h2>
+        <h2>{t("Last Error")}</h2>
         {lastError ? (
           <EventTile
             title={lastError.description}
@@ -74,9 +76,9 @@ const EventOverview = ({ events, logs, onTotal, search, setSelectedEvent, setSho
             onClick={() => handleEventClick(lastError)}
           />
         ) : (
-          <EventTile title="No Errors Found" disableHover />
+          <EventTile title={t("No Errors Found")} disableHover />
         )}
-        <h2>Last User</h2>
+        <h2>{t("Last User")}</h2>
         {lastUser ? (
           <EventTile
             title={lastUser.topic}
@@ -85,7 +87,7 @@ const EventOverview = ({ events, logs, onTotal, search, setSelectedEvent, setSho
             onClick={() => handleEventClick(lastUser)}
           />
         ) : (
-          <EventTile title="No Users Found" disableHover />
+          <EventTile title={t("No Users Found")} disableHover />
         )}
       </Panel>
     </Section>

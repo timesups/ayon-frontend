@@ -1,6 +1,7 @@
 import { Button, Dropdown, FormRow, SaveButton } from '@ynput/ayon-react-components'
 import React, { useMemo } from 'react'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const BundleDepsPicker = ({
   packages = [],
   value = {},
@@ -10,6 +11,7 @@ const BundleDepsPicker = ({
   onSubmit,
   onCancel,
 }) => {
+  const {t} = useTranslation()
   const options = useMemo(
     () =>
       [...packages]
@@ -29,7 +31,7 @@ const BundleDepsPicker = ({
           value={[value?.file]}
           disabled={disabled}
           placeholder={
-            disabled ? 'No packages for platform' : 'Select a dependency package file...'
+            disabled ? t("No packages for platform") : t("Select a dependency package file...")
           }
           onChange={onChange}
           onClear={() => onChange([])}
@@ -43,9 +45,9 @@ const BundleDepsPicker = ({
           marginTop: 16,
         }}
       >
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onCancel}>{t("Cancel")}</Button>
         <SaveButton active={value?.file !== initPackage} saving={isUpdating} onClick={onSubmit}>
-          Update Bundle Package
+          {t("Update Bundle Package")}
         </SaveButton>
       </div>
     </>

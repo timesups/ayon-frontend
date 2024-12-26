@@ -3,6 +3,8 @@ import * as Styled from '../util/OnBoardingStep.styled'
 
 import YnputConnector from '@components/YnputCloud/YnputConnector'
 import * as YnputConnect from '@components/YnputCloud/YnputCloud.styled'
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 
 export const BootstrapStart = ({
   nextStep,
@@ -12,19 +14,19 @@ export const BootstrapStart = ({
   Header,
   Body,
 }) => {
-  const message1 = `Bootstrap Setup lets us automatically download and setup all you need to take full advantage of AYON in your production.`
+  const {t} = useTranslation()
+  const message1 = t("Bootstrap Setup lets us automatically download and setup all you need to take full advantage of AYON in your production.")
 
   return (
     <>
       <Styled.Login>
-        <Header>Configure your server</Header>
+        <Header>{t("Configure your server")}</Header>
         <Body>{message1}</Body>
         <Body>
-          If you are in an offline environment or you would rather download and install all the
-          addons, desktop distribution and dependencies manually, you can skip this step.
+          {t("If you are in an offline environment or you would rather download and install all the addons, desktop distribution and dependencies manually, you can skip this step.")}
         </Body>
         <Styled.Connect>
-          <Body>Fast and Automated setup with</Body>
+          <Body>{t("Fast and Automated setup with")}</Body>
           {ynputConnect ? (
             <YnputConnect.HeaderButton
               active
@@ -32,7 +34,7 @@ export const BootstrapStart = ({
               icon="verified_user"
               style={{ flexDirection: 'row', alignItems: 'center' }}
             >
-              Bootstrap Setup
+              {t("Bootstrap Setup")}
             </YnputConnect.HeaderButton>
           ) : (
             <YnputConnector
@@ -46,7 +48,7 @@ export const BootstrapStart = ({
         </Styled.Connect>
 
         <span className="more" onClick={() => onFinish(false, true)}>
-          I know what I am doing, skip bootstrap.
+          {t("I know what I am doing, skip bootstrap.")}
         </span>
       </Styled.Login>
     </>

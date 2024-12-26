@@ -8,7 +8,8 @@ import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import confirmDelete from '@helpers/confirmDelete'
 import copyToClipboard from '@helpers/copyToClipboard'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const PanelStyled = styled(Panel)`
   flex-direction: row;
   background-color: var(--md-sys-color-surface-container);
@@ -31,6 +32,7 @@ const ApiKeyManager = ({
   repeatGenerate = true,
   lightBackground = false,
 }) => {
+  const {t} = useTranslation()
   // temp hold new key
   const [newKey, setNewKey] = useState(null)
   // loading state
@@ -135,7 +137,7 @@ const ApiKeyManager = ({
       onEdit={createNewKey}
       label="API Key"
       editIcon={loading ? 'sync' : 'add'}
-      value={loading ? 'Creating...' : 'Generate new key...'}
+      value={loading ? t("Creating...") : t("Generate new key...")}
     />
   )
 }

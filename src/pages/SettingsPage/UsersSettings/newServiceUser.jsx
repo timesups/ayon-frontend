@@ -11,7 +11,8 @@ import callbackOnKeyDown from '@helpers/callbackOnKeyDown'
 
 import UserAttribForm from './UserAttribForm'
 import { uniqueId } from 'lodash'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const FormRowStyled = styled(FormRow)`
   .label {
     min-width: 160px;
@@ -22,18 +23,18 @@ const NewServiceUser = ({ onHide, open, onSuccess }) => {
   const { formData, setFormData, apiKey, setApiKey, addedUsers, setAddedUsers } = useUserMutations(
     {},
   )
-
+  const {t} = useTranslation()
   const [addUser, { isLoading: isCreatingUser }] = useAddUserMutation()
   const usernameRef = useRef()
   const [keyName, setKeyName] = useState(uniqueId())
 
   const validateFormData = (formData) => {
     if (!formData.Username) {
-      return 'Login name must be provided'
+      return t("Login name must be provided")
     }
 
     if (apiKey == '') {
-      return 'Api key needs to be generated'
+      return t("Api key needs to be generated")
     }
 
     return null
@@ -116,19 +117,19 @@ const NewServiceUser = ({ onHide, open, onSuccess }) => {
         width: '90vw',
         maxWidth: 700,
       }}
-      header={'Create Service User'}
+      header={t("Create Service User")}
       onClose={handleClose}
       footer={
         <>
           <Button
-            label="Create user"
+            label={t("Create user")}
             onClick={() => handleSubmit(false)}
             disabled={validateFormData(formData) != null}
             data-shortcut="Shift+Enter"
           />
           <SaveButton
             onClick={() => handleSubmit(true)}
-            label="Create and close"
+            label={t("Create and close")}
             disabled={validateFormData(formData) != null}
             saving={isCreatingUser}
             data-shortcut="Ctrl/Cmd+Enter"
@@ -143,14 +144,14 @@ const NewServiceUser = ({ onHide, open, onSuccess }) => {
           attributes={[
             {
               name: 'Username',
-              data: { title: 'Username' },
-              input: { placeholder: 'No spaces allowed', autoFocus: true, ref: usernameRef },
+              data: { title: t("Username") },
+              input: { placeholder: t("No spaces allowed"), autoFocus: true, ref: usernameRef },
             },
           ]}
           customFormRow={FormRowStyled}
         />
 
-        <FormRowStyled label="Service user key" />
+        <FormRowStyled label={t("Service user key")} />
 
         <ApiKeyManager
           name={keyName}

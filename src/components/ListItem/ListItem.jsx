@@ -3,7 +3,8 @@ import * as Styled from './ListItem.styled'
 import { Icon } from '@ynput/ayon-react-components'
 import { addDays, formatDistanceToNow, isSameDay, isValid } from 'date-fns'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ListItem = forwardRef(
   (
     {
@@ -27,6 +28,7 @@ const ListItem = forwardRef(
     },
     ref,
   ) => {
+    const {t} = useTranslation()
     if (task.isLoading) {
       return <Styled.Item className="loading"></Styled.Item>
     }
@@ -35,7 +37,7 @@ const ListItem = forwardRef(
       return <Styled.Item ref={ref} tabIndex={0} id={task.id} className="placeholder"></Styled.Item>
     }
 
-    if (none) return <Styled.Item className="none">No tasks found</Styled.Item>
+    if (none) return <Styled.Item className="none">{t("No tasks found")}</Styled.Item>
 
     // path but with last /folderName removed
     const hoverPath = `${task.projectName}/${task.folderPath.split('/').slice(0, -1).join('/')}`

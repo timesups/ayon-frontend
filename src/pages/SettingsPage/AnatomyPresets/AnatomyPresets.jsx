@@ -26,8 +26,10 @@ import {
   useUpdatePrimaryPresetMutation,
 } from '@queries/anatomy/updateAnatomy'
 import confirmDelete from '@helpers/confirmDelete'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const AnatomyPresets = () => {
+  const {t} = useTranslation()
   const [formData, setFormData] = useState(null)
   const [selectedPreset, setSelectedPreset] = useState('_')
   const [showNameDialog, setShowNameDialog] = useState(false)
@@ -157,13 +159,13 @@ const AnatomyPresets = () => {
     <main>
       {showNameDialog && (
         <Dialog
-          header="Preset name"
+          header={t("Preset name")}
           isOpen={true}
           onClose={() => setShowNameDialog(false)}
           size="sm"
           footer={
             <SaveButton
-              label="Create New Preset"
+              label={t("Create New Preset")}
               onClick={() => savePreset(newPresetName)}
               active={newPresetName}
               style={{ marginLeft: 'auto' }}
@@ -174,7 +176,7 @@ const AnatomyPresets = () => {
             value={newPresetName}
             ref={nameInputRef}
             onChange={(e) => setNewPresetName(e.target.value)}
-            placeholder="Preset name"
+            placeholder={t("Preset name")}
             style={{
               width: '100%',
             }}
@@ -196,29 +198,29 @@ const AnatomyPresets = () => {
       <Section>
         <Toolbar>
           <Button
-            label="Copy anatomy"
+            label={t("Copy anatomy")}
             icon="content_copy"
             onClick={() => {
               copyToClipboard(JSON.stringify(formData, null, 2))
             }}
           />
-          <Button label="Paste anatomy" icon="content_paste" onClick={onPasteAnatomy} />
+          <Button label={t("Paste anatomy")} icon="content_paste" onClick={onPasteAnatomy} />
 
           <Spacer />
           <Button
-            label="Set as primary"
+            label={t("Set as primary")}
             icon="flag"
             disabled={isSelectedPrimary}
             onClick={() => setPrimaryPreset(selectedPreset)}
           />
           <Button
-            label="Delete preset"
+            label={t("Delete preset")}
             icon="delete"
             disabled={selectedPreset === '_'}
             onClick={() => handleDeletePreset(selectedPreset, isSelectedPrimary)}
           />
           <Button
-            label="Save as a new preset"
+            label={t("Save as a new preset")}
             icon="add"
             onClick={() => {
               setNewPresetName('')
@@ -228,7 +230,7 @@ const AnatomyPresets = () => {
           />
 
           <SaveButton
-            label="Save Current Preset"
+            label={t("Save Current Preset")}
             saving={isUpdating}
             active={isChanged && selectedPreset !== '_'}
             onClick={() => savePreset(selectedPreset)}

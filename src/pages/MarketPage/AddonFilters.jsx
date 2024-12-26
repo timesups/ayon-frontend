@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import Type from '@/theme/typography.module.css'
 import clsx from 'clsx'
 import YnputConnector from '@components/YnputCloud/YnputConnector'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledSection = styled(Section)`
   height: 100%;
   flex: 0.5;
@@ -37,39 +38,40 @@ const StyledList = styled(Panel)`
 `
 
 const AddonFilters = ({ onSelect, onConnection }) => {
+  const {t} = useTranslation()
   const downloadFilters = [
     {
       id: 'all',
-      name: 'All',
+      name: t("All"),
       filter: [],
-      tooltip: 'All addons, downloaded or not',
+      tooltip: t("All addons, downloaded or not"),
     },
     {
       id: 'updates',
-      name: 'Updates Available',
+      name: t("Updates Available"),
       filter: [{ isOutdated: true }, { isDownloaded: true }],
-      tooltip: 'Addons with updates available',
+      tooltip: t("Addons with updates available"),
     },
     {
       id: 'production',
-      name: 'In Production',
+      name: t("In Production"),
       filter: [{ currentProductionVersion: (v) => v }, { isDownloaded: true }],
-      tooltip: 'Addons used in the production bundle',
+      tooltip: t("Addons used in the production bundle"),
     },
     {
       id: 'production-outdated',
-      name: 'Production Outdated',
+      name: t("Production Outdated"),
       filter: [
         { isProductionOutdated: true, isDownloaded: true, currentProductionVersion: (v) => v },
       ],
-      tooltip: 'Addons using an outdated version in the production bundle',
+      tooltip: t("Addons using an outdated version in the production bundle"),
     },
 
     {
       id: 'uninstalled',
-      name: 'Downloads Available',
+      name: t("Downloads Available"),
       filter: [{ isDownloaded: false }],
-      tooltip: 'Addons available to download',
+      tooltip: t("Addons available to download"),
     },
   ]
 
@@ -83,7 +85,7 @@ const AddonFilters = ({ onSelect, onConnection }) => {
   return (
     <StyledSection>
       <StyledList>
-        <div className={clsx('title', Type.titleMedium)}>Downloaded</div>
+        <div className={clsx('title', Type.titleMedium)}>{t("Downloaded")}</div>
         {downloadFilters.map((filter) => (
           <div
             key={filter.id}

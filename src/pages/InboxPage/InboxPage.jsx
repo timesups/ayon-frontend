@@ -3,8 +3,10 @@ import AppNavLinks from '@containers/header/AppNavLinks'
 import Inbox from './Inbox/Inbox'
 import { useGetInboxUnreadCountQuery } from '@queries/inbox/getInbox'
 import { UnreadCount } from './Inbox/Inbox.styled'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const InboxPage = () => {
+  const {t} = useTranslation()
   const { module } = useParams()
 
   const { data: importantUnreadCount } = useGetInboxUnreadCountQuery({ important: true })
@@ -12,7 +14,7 @@ const InboxPage = () => {
 
   let links = [
     {
-      name: 'Important',
+      name: t("Important"),
       path: '/inbox/important',
       module: 'important',
       endContent: !!importantUnreadCount && (
@@ -20,20 +22,20 @@ const InboxPage = () => {
           {importantUnreadCount > 99 ? '99+' : importantUnreadCount}
         </UnreadCount>
       ),
-      tooltip: 'Activities where you are directly mentioned',
+      tooltip: t("Activities where you are directly mentioned"),
       shortcut: 'I+I',
     },
     {
-      name: 'Other',
+      name: t("Other"),
       path: '/inbox/other',
       module: 'other',
       endContent: !!otherUnreadCount && (
         <UnreadCount>{otherUnreadCount > 99 ? '99+' : otherUnreadCount}</UnreadCount>
       ),
-      tooltip: 'Changes to tasks assigned to you or authored by you',
+      tooltip: t("Changes to tasks assigned to you or authored by you"),
     },
     {
-      name: 'Cleared',
+      name: t("Cleared"),
       path: '/inbox/cleared',
       module: 'cleared',
     },

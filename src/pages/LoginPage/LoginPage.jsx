@@ -13,6 +13,10 @@ import * as Styled from './LoginPage.styled'
 import useLocalStorage from '@hooks/useLocalStorage'
 import { isEmpty, isEqual } from 'lodash'
 
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
+
+
 const clearQueryParams = () => {
   const url = new URL(window.location)
   url.search = ''
@@ -21,6 +25,7 @@ const clearQueryParams = () => {
 }
 
 const LoginPage = ({ isFirstTime = false }) => {
+  const {t} = useTranslation()
   // get query params from url
   const search = new URLSearchParams(window.location.search)
   const dispatch = useDispatch()
@@ -104,7 +109,7 @@ const LoginPage = ({ isFirstTime = false }) => {
           console.error('SSO Callback error', err.response.data)
           toast.error(
             <>
-              <p>Unable to login using {providerConfig.name}:</p>
+              <p>{t("Unable to login using")}:{providerConfig.name}:</p>
               <p>{err.response?.data?.detail || `Error ${err.response.status}`}</p>
             </>,
           )
@@ -183,25 +188,25 @@ const LoginPage = ({ isFirstTime = false }) => {
           <Styled.Methods>
             {showPasswordLogin && (
               <form onSubmit={handleSubmit}>
-                <label id="username">Username</label>
+                <label id="username">{t("Username")}</label>
                 <InputText
                   autoFocus
-                  placeholder="Enter your username"
+                  placeholder={t("Enter your username")}
                   name="username"
-                  aria-label="Username"
+                  aria-label={t("Username")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                <label id="password">Password</label>
+                <label id="password">{t("Password")}</label>
                 <InputPassword
-                  placeholder="Enter password"
+                  placeholder={t("Enter password")}
                   name="password"
-                  aria-label="Password"
+                  aria-label={t("Password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button type="submit">
-                  <span className="label">Login with password</span>
+                  <span className="label">{t("Login with password")}</span>
                 </Button>
               </form>
             )}
@@ -233,11 +238,11 @@ const LoginPage = ({ isFirstTime = false }) => {
             }
           </Styled.Methods>
           {info?.passwordRecoveryAvailable && showPasswordLogin && (
-            <a href="/passwordReset">Reset password</a>
+            <a href="/passwordReset">{t("Reset password")}</a>
           )}
           {!showAllProviders && (
             <Button style={{ width: '100%' }} variant="text" onClick={() => setShownProviders([])}>
-              Show all login options
+              {t("Show all login options")}
             </Button>
           )}
         </Panel>

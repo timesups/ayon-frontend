@@ -16,8 +16,10 @@ import {
 import VariantSelector from '@containers/AddonSettings/VariantSelector'
 import { useCreateServiceMutation } from '@queries/services/updateServices'
 import { useGetServiceAddonsQuery, useGetServiceHostsQuery } from '@queries/services/getServices'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const NewServiceDialog = ({ onHide }) => {
+  const {t} = useTranslation()
   const [serviceName, setServiceName] = useState('')
   const [selectedAddon, setSelectedAddon] = useState(null)
   const [selectedVersion, setSelectedVersion] = useState(null)
@@ -126,16 +128,16 @@ const NewServiceDialog = ({ onHide }) => {
       size="lg"
     >
       <FormLayout>
-        <FormRow label="Host">
+        <FormRow label={t("Host")}>
           <Dropdown
             options={hostOptions}
             value={[selectedHost]}
             onChange={(e) => setSelectedHost(e[0])}
-            placeholder="Select a host..."
+            placeholder={t("Select a host...")}
           />
         </FormRow>
 
-        <FormRow label="Addon name">
+        <FormRow label={t("Addon name")}>
           <Dropdown
             options={addonOptions}
             value={[selectedAddon]}
@@ -145,20 +147,20 @@ const NewServiceDialog = ({ onHide }) => {
               setSelectedService(null)
               setServiceName('')
             }}
-            placeholder="Select an addon..."
+            placeholder={t("Select an addon...")}
           />
         </FormRow>
 
-        <FormRow label="Addon version">
+        <FormRow label={t("Addon version")}>
           <Dropdown
             options={versionOptions}
             value={[selectedVersion]}
             onChange={(e) => setSelectedVersion(e[0])}
-            placeholder="Select a version..."
+            placeholder={t("Select a version...")}
           />
         </FormRow>
 
-        <FormRow label="Service">
+        <FormRow label={t("Service")}>
           <Dropdown
             options={serviceOptions}
             value={[selectedService]}
@@ -167,19 +169,19 @@ const NewServiceDialog = ({ onHide }) => {
               setServiceName(e[0])
             }}
             disabled={!selectedVersion}
-            placeholder="Select a service..."
+            placeholder={t("Select a service...")}
           />
         </FormRow>
 
-        <FormRow label="Service name">
+        <FormRow label={t("Service name")}>
           <InputText value={serviceName} onChange={(e) => setServiceName(e.target.value)} />
         </FormRow>
       </FormLayout>
 
-      <Divider>Advanced settings</Divider>
+      <Divider>{t("Advanced settings")}</Divider>
 
       <FormLayout>
-        <FormRow label="Settings variant">
+        <FormRow label={t("Settings variant")}>
           <VariantSelector
             addonName={selectedAddon?.name}
             addonVersion={selectedVersion}
@@ -188,7 +190,7 @@ const NewServiceDialog = ({ onHide }) => {
           />
         </FormRow>
 
-        <FormRow label="Storages">
+        <FormRow label={t("Storages")}>
           <InputTextarea
             value={storages}
             style={{ minHeight: 80 }}

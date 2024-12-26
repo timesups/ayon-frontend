@@ -5,6 +5,8 @@ import { useGetSettingsAddonsQuery } from '@queries/addons/getAddons'
 import SettingsAddon from './SettingsAddon'
 import AppNavLinks from '@containers/header/AppNavLinks'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 
 const AnatomyPresets = lazy(() => import('./AnatomyPresets/AnatomyPresets'))
 const Bundles = lazy(() => import('./Bundles'))
@@ -17,6 +19,7 @@ const Secrets = lazy(() => import('./Secrets'))
 const AddonsManager = lazy(() => import('./AddonsManager'))
 
 const SettingsPage = () => {
+  const {t} = useTranslation()
   const { module, addonName } = useParams()
   const isManager = useSelector((state) => state.user.data.isManager)
 
@@ -78,14 +81,14 @@ const SettingsPage = () => {
   const links = useMemo(() => {
       const adminExtras = [
         {
-        name: 'Addons',
+        name: t("Addons"),
         path: '/settings/addons',
         module: 'addons',
         accessLevels: ['manager'],
       },
 
       {
-        name: 'Bundles',
+        name: t("Bundles"),
         path: '/settings/bundles',
         module: 'bundles',
         accessLevels: ['manager'],
@@ -95,45 +98,45 @@ const SettingsPage = () => {
 
     let result = [
       {
-        name: 'Studio settings',
+        name: t("Studio settings"),
         path: '/settings/studio',
         module: 'studio',
         accessLevels: ['manager'],
         shortcut: 'S+S',
       },
       {
-        name: 'Site settings',
+        name: t("Site settings"),
         path: '/settings/site',
         module: 'site',
         accessLevels: [],
       },
       {
-        name: 'Anatomy presets',
+        name: t("Anatomy presets"),
         path: '/settings/anatomyPresets',
         module: 'anatomyPresets',
         accessLevels: ['manager'],
       },
       {
-        name: 'Attributes',
+        name: t("Attributes"),
         path: '/settings/attributes',
         module: 'attributes',
         accessLevels: ['manager'],
       },
       {
-        name: 'Users',
+        name: t("Users"),
         path: '/settings/users',
         module: 'users',
         accessLevels: ['manager'],
         shortcut: 'U+U',
       },
       {
-        name: 'Permissions',
+        name: t("Permissions"),
         path: '/settings/accessGroups',
         module: 'accessGroups',
         accessLevels: ['manager'],
       },
       {
-        name: 'Secrets',
+        name: t("Secrets"),
         path: '/settings/secrets',
         module: 'secrets',
         accessLevels: ['manager'],

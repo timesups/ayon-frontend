@@ -8,8 +8,10 @@ import { upperFirst } from 'lodash'
 import BundleCompare from './BundleCompare'
 import useAddonSelection from './useAddonSelection'
 import { useUpdateBundleMutation } from '@queries/bundles/updateBundles'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const BundleDetail = ({ bundles = [], onDuplicate, installers, toggleBundleStatus, addons }) => {
+  const {t} = useTranslation()
   const [selectedBundle, setSelectedBundle] = useState(null)
 
   const [formData, setFormData] = useState({})
@@ -70,15 +72,15 @@ const BundleDetail = ({ bundles = [], onDuplicate, installers, toggleBundleStatu
               icon={active && 'check'}
               onClick={() => toggleBundleStatus(name, bundle.name)}
               disabled={bundles.length > 1}
-              data-tooltip={`${!active ? 'Set' : 'Unset'} bundle to ${name}`}
+              data-tooltip={`${!active ? t("Set") : t("Unset")} ${t("bundle to")} ${t(name)}`}
               data-shortcut={`shift+${name.charAt(0).toUpperCase()}`}
             >
-              {!active ? 'Set' : ''} {upperFirst(name)}
+              {!active ? t("Set") : ''} {t(upperFirst(name))}
             </Styled.BadgeButton>
           ))}
         </>
         <Button
-          label="Duplicate and edit"
+          label={t("Duplicate and edit")}
           icon="edit_document"
           onClick={() => onDuplicate(bundle.name)}
           disabled={bundles.length > 1}

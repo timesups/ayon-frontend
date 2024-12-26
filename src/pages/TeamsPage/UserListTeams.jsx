@@ -9,7 +9,8 @@ import useCreateContext from '@hooks/useCreateContext'
 import UsersListTeamsSmall from './UsersListTeamsSmall'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const UserListTeams = ({
   selectedProjects,
   selectedUsers = [],
@@ -23,6 +24,7 @@ const UserListTeams = ({
   onUpdateTeams,
   isFullSize = true,
 }) => {
+  const {t} = useTranslation()
   // Selection
   const selection = useMemo(
     () => userList.filter((user) => selectedUsers.includes(user.name)),
@@ -186,7 +188,7 @@ const UserListTeams = ({
         >
           <Column
             field="name"
-            header="Username"
+            header={t("Username")}
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
             style={{
               width: '20%',
@@ -194,13 +196,13 @@ const UserListTeams = ({
           />
           <Column
             field="attrib.fullName"
-            header="Full Name"
+            header={t("Full Name")}
             style={{
               width: '20%',
             }}
           />
           <Column
-            header="Teams"
+            header={t("Teams")}
             body={(rowData) => {
               if (!rowData.teams) return null
               // sort teams by leader and sort teams by if they are selected
@@ -233,7 +235,7 @@ const UserListTeams = ({
             sortField="teamsList"
           />
           <Column
-            header="Roles"
+            header={t("Roles")}
             body={(rowData) => {
               const allRoles = []
               const selectedRoles = []

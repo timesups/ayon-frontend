@@ -4,8 +4,10 @@ import { Section, TablePanel } from '@ynput/ayon-react-components'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import useLocalStorage from '@hooks/useLocalStorage'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const SiteList = ({ value, onChange, style, multiselect = false }) => {
+  const {t} = useTranslation()
   const [preferredSite, setPreferredSite] = useLocalStorage('prefferedSite', null)
   const selection = useMemo(() => {
     if (multiselect)
@@ -47,10 +49,10 @@ const SiteList = ({ value, onChange, style, multiselect = false }) => {
           dataKey="id"
           selection={selection}
           onSelectionChange={onSelectionChange}
-          emptyMessage="No sites found"
+          emptyMessage={t("No sites found")}
         >
-          <Column field="id" header="Site ID" />
-          <Column field="platform" header="Platform" />
+          <Column field="id" header={t("Site ID")} />
+          <Column field="platform" header={t("Platform")} />
         </DataTable>
       </TablePanel>
     </Section>

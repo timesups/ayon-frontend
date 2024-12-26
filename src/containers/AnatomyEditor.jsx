@@ -21,7 +21,8 @@ import SettingsEditor from '@containers/SettingsEditor'
 import { getValueByPath, setValueByPath, sameKeysStructure } from '@containers/AddonSettings/utils'
 import { cloneDeep } from 'lodash'
 import { usePaste } from '@context/pasteContext'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const AnatomyEditor = ({
   preset,
   projectName,
@@ -31,6 +32,7 @@ const AnatomyEditor = ({
   setBreadcrumbs,
   setIsChanged,
 }) => {
+  const {t} = useTranslation()
   const [originalData, setOriginalData] = useState(null)
   const { requestPaste } = usePaste()
   const { data: schema } = useGetAnatomySchemaQuery()
@@ -101,8 +103,8 @@ const AnatomyEditor = ({
     return 'Loading...'
   }
 
-  if (!(preset || projectName)) return 'No preset or project selected'
-  if (preset && projectName) return 'Select either preset or project'
+  if (!(preset || projectName)) return t("No preset or project selected")
+  if (preset && projectName) return t("Select either preset or project")
   if (!(schema && originalData)) return null
 
   const handleBreadcrumbs = (path) => {

@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
 import useCreateContext from '@hooks/useCreateContext'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 import {
   Button,
   Spacer,
@@ -74,6 +75,7 @@ const isChildPath = (childPath, parentPath) => {
 }
 
 const AddonSettings = ({ projectName, showSites = false, bypassPermissions = false }) => {
+  const {t} = useTranslation()
   const isUser = useSelector((state) => state.user.data.isUser)
   //const navigate = useNavigate()
   const [showHelp, setShowHelp] = useState(false)
@@ -558,13 +560,13 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     setTimeout(() => {
       const menuItems = [
         {
-          label: 'Copy settings from...',
+          label: t("Copy settings from..."),
           command: () => setShowCopySettings(true),
         },
       ]
       if (user?.data?.isAdmin) {
         menuItems.push({
-          label: 'Low-level editor',
+          label: t("Low-level editor"),
           command: () => setShowRawEdit(true),
           disabled: selectedAddons.length !== 1,
         })
@@ -632,19 +634,19 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
       <>
         <Spacer />
         <Button
-          label="Clear Changes"
+          label={t("Clear Changes")}
           icon="clear"
           onClick={onRevertAllChanges}
           disabled={!canCommit}
         />
         <SaveButton
-          label="Save Changes"
+          label={t("Save Changes")}
           disabled={
             (!bypassPermissions && !userPermissions.canEditSettings(projectName)) || !canCommit
           }
           data-tooltip={
             !bypassPermissions && !userPermissions.canEditSettings(projectName)
-              ? "You don't have edit permissions"
+              ? t("You don't have edit permissions")
               : undefined
           }
           onClick={onSave}

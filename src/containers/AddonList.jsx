@@ -8,7 +8,8 @@ import { Column } from 'primereact/column'
 import { useGetAddonSettingsListQuery } from '@queries/addonSettings'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const AddonList = ({
   selectedAddons,
   setSelectedAddons,
@@ -21,6 +22,7 @@ const AddonList = ({
   siteId, // used for changed addons
   setBundleName,
 }) => {
+  const {t} = useTranslation()
   const { data, isLoading, isError } = useGetAddonSettingsListQuery({
     projectName,
     siteId,
@@ -152,10 +154,10 @@ const AddonList = ({
           onContextMenu={onContextMenu}
           className={clsx('addon-list-table', { loading: isLoading })}
           rowClassName={rowDataClassNameFormatter}
-          emptyMessage={isError ? `WARNING: No bundle set to ${variant}` : 'No addons found'}
+          emptyMessage={isError ? `${t("WARNING: No bundle set to")} ${variant}` : t("No addons found")}
         >
-          <Column field="title" header="Addon" />
-          <Column field="version" header="Version" style={{ maxWidth: 110 }} />
+          <Column field="title" header={t("Addon")} />
+          <Column field="version" header={t("Version")} style={{ maxWidth: 110 }} />
         </DataTable>
       </TablePanel>
     </Section>

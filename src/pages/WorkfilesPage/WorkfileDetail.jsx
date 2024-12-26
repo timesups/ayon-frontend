@@ -8,7 +8,8 @@ import { useGetWorkfileByIdQuery } from '@queries/getWorkfiles'
 import { useGetSiteRootsQuery } from '@queries/customRoots'
 import SiteDropdown from '@containers/SiteDropdown'
 import { getCurrentPlatform } from '@helpers/platform'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 
 const replaceRoot = (inputStr, replacements) => {
   if (!inputStr) return inputStr
@@ -26,6 +27,7 @@ const replaceRoot = (inputStr, replacements) => {
 }
 
 const WorkfileDetail = ({ style }) => {
+  const {t} = useTranslation()
   const projectName = useSelector((state) => state.project.name)
   const focusedWorkfiles = useSelector((state) => state.context.focused.workfiles)
   const [selectedSite, setSelectedSite] = useState(null)
@@ -50,7 +52,7 @@ const WorkfileDetail = ({ style }) => {
     <Section style={style}>
       <Panel>
         {isLoading ? (
-          <div>Loading...</div>
+          <div>{t("Loading...")}</div>
         ) : (
           <>
             <Thumbnail
@@ -65,11 +67,11 @@ const WorkfileDetail = ({ style }) => {
               data={data?.attrib || {}}
               additionalData={[
                 {
-                  title: 'Path for site',
+                  title: t("Path for site"),
                   value: <SiteDropdown value={selectedSite} onChange={setSelectedSite} allowNull />,
                 },
                 {
-                  title: 'Path',
+                  title: t("Path"),
                   value: <PathField value={path} />,
                 },
               ]}

@@ -21,7 +21,8 @@ import ProjectUserAccess from './Users/ProjectUserAccess'
 import ProjectPermissions from './ProjectPermissions'
 import { isActiveDecider, projectSorter, Module, ModuleList, ModulePath } from './mappers'
 import { replaceQueryParams } from '@helpers/url'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ProjectSettings = ({ projectList, projectManager, projectName }) => {
   return (
     <ProjectManagerPageLayout projectList={projectList} passthrough={!projectManager}>
@@ -38,6 +39,7 @@ const SiteSettings = ({ projectList, projectManager, projectName }) => {
 }
 
 const ProjectManagerPage = () => {
+  const {t} = useTranslation()
   const isUser = useSelector((state) => state.user.data.isUser)
   const projectName = useSelector((state) => state.project.name)
   const navigate = useNavigate()
@@ -93,7 +95,7 @@ const ProjectManagerPage = () => {
   if (!isUser || (!isLoadingUserPermissions && userPermissions.projectSettingsAreEnabled())) {
     if (userPermissions.canViewAny(UserPermissionsEntity.anatomy) || module === Module.anatomy) {
       links.push({
-        name: 'Anatomy',
+        name: t("Anatomy"),
         path: ModulePath[Module.anatomy],
         module: Module.anatomy,
         accessLevels: [],
@@ -106,7 +108,7 @@ const ProjectManagerPage = () => {
       module === Module.projectSettings
     ) {
       links.push({
-        name: 'Project settings',
+        name: t("Project setting"),
         path: ModulePath[Module.projectSettings],
         module: Module.projectSettings,
         accessLevels: [],
@@ -115,7 +117,7 @@ const ProjectManagerPage = () => {
     }
 
     links.push({
-      name: 'Project permissions',
+      name: t("Project permissions"),
       path: ModulePath[Module.permissions],
       module: Module.permissions,
       accessLevels: ['manager'],
@@ -123,7 +125,7 @@ const ProjectManagerPage = () => {
 
     if (userPermissions.canViewAny(UserPermissionsEntity.access) || module === Module.projectAccess) {
       links.push({
-        name: 'Project access',
+        name: t("Project access"),
         path: ModulePath[Module.projectAccess],
         module: Module.projectAccess,
         accessLevels: [],
@@ -134,19 +136,19 @@ const ProjectManagerPage = () => {
 
   links.push(
     {
-      name: 'Site settings',
+      name: t("Site settings"),
       path: ModulePath[Module.siteSettings],
       module: Module.siteSettings,
       accessLevels: [],
     },
     {
-      name: 'Roots',
+      name: t("Roots"),
       path: ModulePath[Module.roots],
       module: Module.roots,
       accessLevels: [],
     },
     {
-      name: 'Teams',
+      name: t("Teams"),
       path: ModulePath[Module.teams],
       module: Module.teams,
       accessLevels: ['manager'],

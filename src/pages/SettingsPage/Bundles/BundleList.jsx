@@ -10,7 +10,8 @@ import confirmDelete from '@helpers/confirmDelete'
 import { toast } from 'react-toastify'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const BundleList = ({
   selectedBundles = [],
   onBundleSelect,
@@ -22,6 +23,7 @@ const BundleList = ({
   errorMessage,
   developerMode,
 }) => {
+  const {t} = useTranslation()
   const prodBundleName = useMemo(() => bundleList.find((b) => b.isProduction)?.name, [bundleList])
   const stagingBundleName = useMemo(() => bundleList.find((b) => b.isStaging)?.name, [bundleList])
   const hasDevBundles = useMemo(() => bundleList.some((b) => b.isDev), [bundleList])
@@ -74,8 +76,8 @@ const BundleList = ({
 
   const getBundleStatusItem = (status, bundle, disabledExtra) => {
     const key = 'is' + status.charAt(0).toUpperCase() + status.slice(1)
-    const setLabel = 'Set ' + status
-    const unsetLabel = 'Unset ' + status
+    const setLabel = t("Set ") + status
+    const unsetLabel = t("Unset ") + status
     const isStatus = bundle[key]
     const label = isStatus ? unsetLabel : setLabel
     const icon = isStatus ? 'remove' : 'add'
@@ -110,9 +112,9 @@ const BundleList = ({
     }
     if (!isArchived) {
       // production
-      ctxMenuItems.push(getBundleStatusItem('production', activeBundle, isDev))
+      ctxMenuItems.push(getBundleStatusItem(t("production"), activeBundle, isDev))
       // staging
-      ctxMenuItems.push(getBundleStatusItem('staging', activeBundle, isDev))
+      ctxMenuItems.push(getBundleStatusItem(t("staging"), activeBundle, isDev))
       // dev
       if (developerMode)
         ctxMenuItems.push(getBundleStatusItem('dev', activeBundle, isProduction || isStaging))
@@ -120,7 +122,7 @@ const BundleList = ({
 
     // duplicate and edit
     ctxMenuItems.push({
-      label: 'Duplicate and Edit',
+      label: t("Duplicate and Edit"),
       icon: 'edit_document',
       shortcut: 'Shift+D',
       command: () => onDuplicate(activeBundleName),
@@ -145,7 +147,7 @@ const BundleList = ({
     }
 
     ctxMenuItems.push({
-      label: 'Copy settings from...',
+      label: t("Copy settings from..."),
       icon: 'system_update_alt',
       command: () => onCopySettings(activeBundle),
       disabled: resolveCanCopySettings(),
@@ -160,7 +162,7 @@ const BundleList = ({
 
     // duplicate and edit
     ctxMenuItems.push({
-      label: isArchiving ? 'Archive' : 'Unarchive',
+      label: isArchiving ? t("Archive") : t("Unarchive"),
       icon: isArchiving ? 'archive' : 'unarchive',
       command: () => onArchive(newSelectedBundles, isArchiving),
       disabled: isStaging || isProduction,
@@ -174,7 +176,7 @@ const BundleList = ({
     if (metaKey || isArchived) {
       // secret delete bundle
       ctxMenuItems.push({
-        label: 'Delete',
+        label: t("Delete"),
         icon: 'delete',
         command: () => onDelete(newSelection),
         disabled: isStaging || isProduction || (!allArchived && !metaKey),
@@ -197,12 +199,12 @@ const BundleList = ({
       >
         {rowData.isProduction && (
           <Badge hl="production" data-testid={`${rowData.name}-production`}>
-            Production
+            {t("Production")}
           </Badge>
         )}
         {rowData.isStaging && (
           <Badge hl="staging" data-testid={`${rowData.name}-staging`}>
-            Staging
+            {t("Staging")}
           </Badge>
         )}
         {rowData.isDev && (
@@ -240,10 +242,10 @@ const BundleList = ({
       >
         <Column
           field="name"
-          header="Name"
+          header={t("Name")}
           body={(b) => `${b.name} ${b?.isArchived ? '(archived)' : ''}`}
         />
-        <Column header="Status" body={formatStatus} style={{ maxWidth: 130 }} />
+        <Column header={t("Status")} body={formatStatus} style={{ maxWidth: 130 }} />
       </DataTable>
     </TablePanel>
   )

@@ -5,8 +5,10 @@ import { useUpdateBundleMutation } from '@queries/bundles/updateBundles'
 import { toast } from 'react-toastify'
 import { useListDependencyPackagesQuery } from '@queries/dependencyPackages/getDependencyPackages'
 import BundleDepsPicker from './BundleDepsPicker'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const BundleDeps = ({ bundle, onChange }) => {
+  const {t} = useTranslation()
   const initPackageForm = {
     platform: null,
     file: null,
@@ -69,7 +71,7 @@ const BundleDeps = ({ bundle, onChange }) => {
   return (
     <>
       <Dialog
-        header={'Update Dependency Package'}
+        header={t("Update Dependency Package")}
         isOpen={!!updatePackageForm.platform}
         onClose={handleCloseForm}
         size="sm"
@@ -86,7 +88,7 @@ const BundleDeps = ({ bundle, onChange }) => {
         />
       </Dialog>
       <section style={{ flex: 1, overflow: 'hidden' }}>
-        <h2>Dependency Packages</h2>
+        <h2>{t("Dependency Packages")}</h2>
         {bundle && (
           <FormLayout style={{ maxWidth: 'max-content', minWidth: 300 }}>
             {platforms.map((platform) => (

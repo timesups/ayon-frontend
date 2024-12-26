@@ -4,8 +4,10 @@ import ListStatsTile from './ListStatsTile'
 import copyToClipboard from '@helpers/copyToClipboard'
 import { useGetProjectDashboardQuery } from '@queries/getProjectDashboard'
 import getEntityTypeIcon from '@helpers/getEntityTypeIcon'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ProjectStats = ({ projectName, share, position }) => {
+  const {t} = useTranslation()
   const {
     data = {},
 
@@ -15,16 +17,16 @@ const ProjectStats = ({ projectName, share, position }) => {
   const { folders, products, tasks, versions, representations, workfiles } = data
 
   const stats = {
-    folders: { label: 'Folders', icon: getEntityTypeIcon('folder'), stat: folders },
-    products: { label: 'Products', icon: getEntityTypeIcon('product'), stat: products },
-    versions: { label: 'Versions', icon: getEntityTypeIcon('version'), stat: versions },
+    folders: { label: t("Folders"), icon: getEntityTypeIcon('folder'), stat: folders },
+    products: { label: t("Products"), icon: getEntityTypeIcon('product'), stat: products },
+    versions: { label: t("Versions"), icon: getEntityTypeIcon('version'), stat: versions },
     representations: {
-      label: 'Representations',
+      label: t("Representations"),
       icon: getEntityTypeIcon('representation'),
       stat: representations,
     },
-    tasks: { label: 'Tasks', icon: getEntityTypeIcon('task'), stat: tasks },
-    workfiles: { label: 'Workfiles', icon: getEntityTypeIcon('workfile'), stat: workfiles },
+    tasks: { label: t("Tasks"), icon: getEntityTypeIcon('task'), stat: tasks },
+    workfiles: { label: t("Workfiles"), icon: getEntityTypeIcon('workfile'), stat: workfiles },
   }
 
   const statsOrder = ['folders', 'products', 'versions', 'representations', 'tasks', 'workfiles']
@@ -42,7 +44,7 @@ const ProjectStats = ({ projectName, share, position }) => {
 
   return (
     <DashboardPanelWrapper
-      title="Project Stats"
+      title={t("Project Stats")}
       icon={{ icon: 'share', onClick: () => share('stats', shareData, position) }}
       style={{
         display: 'grid',

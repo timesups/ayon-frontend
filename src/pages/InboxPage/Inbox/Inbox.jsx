@@ -22,7 +22,8 @@ import useGroupMessages from '../hooks/useGroupMessages'
 import useKeydown from '../hooks/useKeydown'
 import useUpdateInboxMessage from '../hooks/useUpdateInboxMessage'
 import useInboxRefresh from '../hooks/useInboxRefresh'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const placeholderMessages = Array.from({ length: 100 }, (_, i) => ({
   activityId: `placeholder-${i}`,
   folderName: 'Loading...',
@@ -38,6 +39,7 @@ const filters = {
 }
 
 const Inbox = ({ filter }) => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
 
   const user = useSelector((state) => state.user.name)
@@ -267,21 +269,21 @@ const Inbox = ({ filter }) => {
     // find the group message with id
     const group = groupedMessages.find((g) => g.activityId === id)
 
-    if (!group) return [{ label: 'No message selected', disabled: true }]
+    if (!group) return [{ label: t("No message selected"), disabled: true }]
     const referenceIds = group.messages.map((m) => m.referenceId)
     const isRead = group.read
 
     return [
       {
         id: 'clear',
-        label: isActive ? 'Clear' : 'Unclear',
-        icon: isActive ? 'done' : 'replay',
+        label: isActive ? t("Clear") : t("Unclear"),
+        icon: isActive ? t("done") : t("replay"),
         shortcut: 'c',
         command: () => clearMessages(id, group.messages, group.projectName),
       },
       {
         id: isRead ? 'unread' : 'read',
-        label: isRead ? 'Mark as unread' : 'Mark as read',
+        label: isRead ? t("Mark as unread") : t("Mark as read"),
         icon: isRead ? 'mark_email_unread' : 'drafts',
         disabled: !isActive,
         shortcut: 'x',
@@ -352,11 +354,11 @@ const Inbox = ({ filter }) => {
             disabled={!messages.length}
             shortcut={{ children: 'Shift+C' }}
           >
-            Clear all
+            {t("Clear all")}
           </Button>
         )}
         <Button icon="refresh" onClick={refreshInbox} shortcut={{ children: 'R' }}>
-          Refresh
+          {t("Refresh")}
         </Button>
       </Styled.Tools>
       <Styled.InboxSection direction="row">
@@ -419,7 +421,7 @@ const Inbox = ({ filter }) => {
         {!isLoadingAny && (errorInbox || !messagesData.length) && (
           <EmptyPlaceholder
             icon="done_all"
-            message="All caught up! No messages to show."
+            message={t("All caught up! No messages to show.")}
             error={errorInbox}
           />
         )}

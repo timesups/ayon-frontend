@@ -2,7 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import clsx from 'clsx'
 import { Icon } from '@ynput/ayon-react-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 export const TileStyled = styled.div`
   display: flex;
   align-items: center;
@@ -34,11 +35,12 @@ export const TileStyled = styled.div`
 `
 
 const ListStatsTile = ({ title, stat, icon, isLoading, onClick }) => {
+  const {t} = useTranslation()
   return (
     <TileStyled onClick={onClick} className={clsx({ loading: isLoading })}>
       {icon && <Icon icon={icon} />}
       <h3>{title}</h3>
-      <span>{isLoading ? '' : stat || 'unknown'}</span>
+      <span>{isLoading ? '' : stat || t("unknown")}</span>
     </TileStyled>
   )
 }

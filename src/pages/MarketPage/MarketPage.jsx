@@ -22,7 +22,8 @@ import ConnectDialog from './ConnectDialog/ConnectDialog'
 import { useRestart } from '@context/restartContext'
 import { toast } from 'react-toastify'
 import EmptyPlaceholder from '@components/EmptyPlaceholder/EmptyPlaceholder'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const placeholders = [...Array(20)].map((_, i) => ({
   name: `Addon ${i}`,
   isPlaceholder: true,
@@ -44,6 +45,7 @@ const StyledHeader = styled.header`
 `
 
 const MarketPage = () => {
+  const {t} = useTranslation()
   // GET ALL ADDONS IN MARKET
   const {
     data: marketAddonsData = [],
@@ -317,7 +319,7 @@ const MarketPage = () => {
       />
       <main style={{ flexDirection: 'column', overflow: 'hidden' }}>
         <StyledHeader>
-          <h1 className={Type.headlineSmall}>Addon Market</h1>
+          <h1 className={Type.headlineSmall}>{t("Addon Market")}</h1>
         </StyledHeader>
         <Section style={{ overflow: 'hidden', flexDirection: 'row', justifyContent: 'center' }}>
           <AddonFilters onSelect={setFilter} onConnection={(user) => setIsCloudConnected(!!user)} />

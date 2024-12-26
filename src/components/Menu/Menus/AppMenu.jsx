@@ -7,8 +7,10 @@ import { useRestart } from '@context/restartContext'
 import { useAppDispatch } from '@state/store'
 import { toggleReleaseInstaller } from '@state/releaseInstaller'
 import { useNavigate } from 'react-router'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 export const AppMenu = ({ user, ...props }) => {
+  const {t} = useTranslation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   // check if user is logged in and is manager or admin
@@ -44,7 +46,7 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'projectsManager',
       link: '/manageProjects',
-      label: 'Projects Settings',
+      label: t("Projects Settings"),
       icon: 'settings_applications',
       shortcut: 'P+P',
     },
@@ -54,7 +56,7 @@ export const AppMenu = ({ user, ...props }) => {
     items.unshift({
       id: 'settings',
       link: '/settings/studio',
-      label: 'Studio Settings',
+      label: t("Studio Settings"),
       icon: 'settings',
       shortcut: 'S+S',
     })
@@ -63,14 +65,14 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'events',
       link: '/events',
-      label: 'Event Viewer',
+      label: t("Event Viewer"),
       icon: 'history',
       shortcut: 'E+E',
     },
     {
       id: 'services',
       link: '/services',
-      label: 'Services',
+      label: t("Services"),
       icon: 'home_repair_service',
       shortcut: 'V+V',
     },
@@ -86,19 +88,19 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'market',
       link: '/market',
-      label: 'Addon Market',
+      label: t("Addon Market"),
       icon: 'store',
       shortcut: 'M+M',
     },
     {
       id: 'releases',
-      label: 'Update Pipeline',
+      label: t("Update Pipeline"),
       onClick: handleReleaseInstaller,
       icon: 'valve',
     },
     {
       id: 'restart',
-      label: isRestartRequired ? 'Restart Required' : 'Restart Server',
+      label: isRestartRequired ? t("Restart Required") : t("Restart Server"),
       icon: 'restart_alt',
       onClick: confirmRestart,
       highlighted: isRestartRequired,
@@ -115,7 +117,7 @@ export const AppMenu = ({ user, ...props }) => {
     },
     {
       id: 'onboarding',
-      label: 'Launch Bootstrap Setup',
+      label: t("Launch Bootstrap Setup"),
       onClick: handleBootstrapLaunch,
       icon: 'verified_user',
       isDev: true,

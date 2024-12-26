@@ -18,7 +18,8 @@ import UserAccessForm from './UserAccessForm'
 import ServiceDetails from './ServiceDetails'
 import UserDetailsHeader from '@components/User/UserDetailsHeader'
 import { cloneDeep, isEqual } from 'lodash'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const FormsStyled = styled.section`
   flex: 1;
   overflow-x: clip;
@@ -181,6 +182,7 @@ const UserDetail = ({
   managerDisabled,
   accessGroupsData,
 }) => {
+  const {t} = useTranslation()
   const [formData, setFormData] = useState(null)
   const [initData, setInitData] = useState({})
   const [changesMade, setChangesMade] = useState(false)
@@ -358,16 +360,16 @@ const UserDetail = ({
         <FormsStyled>
           {singleUserEdit && (
             <Panel>
-              <FormRow label="Username" key="Username">
+              <FormRow label={t("Username")} key="Username">
                 <LockedInput
                   value={singleUserEdit.name}
                   onEdit={() => setShowRenameUser(true)}
                   disabled={managerDisabled}
                 />
               </FormRow>
-              <FormRow label="Password" key="Password">
+              <FormRow label={t("Password")} key="Password">
                 <LockedInput
-                  label="Password"
+                  label={t("Password")}
                   value={singleUserEdit.hasPassword ? '1234567890' : ''}
                   type="password"
                   onEdit={() => setShowSetPassword(true)}
@@ -399,13 +401,13 @@ const UserDetail = ({
       <PanelButtonsStyled>
         <Button
           onClick={onCancel}
-          label="Cancel"
+          label={t("Cancel")}
           icon="clear"
           disabled={!changesMade || selectedUsers.length > 1}
         />
         <SaveButton
           onClick={onSave}
-          label="Save selected users"
+          label={t("Save selected users")}
           active={changesMade}
           saving={isUpdating}
           disabled={isUpdating}

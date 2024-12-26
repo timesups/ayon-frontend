@@ -5,10 +5,12 @@ import { confirmDialog } from 'primereact/confirmdialog'
 import ServerRestartingPage from '@components/ServerRestartingPage'
 import { useSelector } from 'react-redux'
 import useLocalStorage from '@hooks/useLocalStorage'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const RestartContext = createContext()
 
 function RestartProvider(props) {
+  const {t} = useTranslation()
   const isAdmin = useSelector((state) => state.user.data.isAdmin)
   const [restartServer] = useRestartServerMutation()
 
@@ -28,7 +30,7 @@ function RestartProvider(props) {
   const confirmRestart = () =>
     confirmDialog({
       // message,
-      header: 'Restart Server?',
+      header: t("Restart Server?"),
       // icon: 'pi pi-exclamation-triangle',
       contentStyle: { display: 'none' },
       accept: () => {

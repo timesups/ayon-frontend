@@ -1,7 +1,8 @@
 import { Button, FormRow } from '@ynput/ayon-react-components'
 import React from 'react'
 import styled from 'styled-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledFormRow = styled(FormRow)`
   .field {
     flex-direction: row;
@@ -20,15 +21,16 @@ const StyledFormRow = styled(FormRow)`
 `
 
 const BundleDepPackage = ({ children, label, onEdit }) => {
+  const {t} = useTranslation()
   return (
     <StyledFormRow label={label}>
       <Button
         icon={children ? 'edit' : 'add'}
         onClick={onEdit}
-        data-tooltip={children ? 'Edit dependency package' : 'Add dependency package'}
+        data-tooltip={children ? t("Edit dependency package") : t("Add dependency package")}
       />
       <span>
-        {children || '(NONE)'}
+        {children || t("(NONE)")}
         {/* <span> (author)</span> */}
       </span>
     </StyledFormRow>

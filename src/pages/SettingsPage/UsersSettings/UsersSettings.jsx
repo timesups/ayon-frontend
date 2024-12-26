@@ -21,7 +21,8 @@ import NewServiceUser from './newServiceUser'
 import { useGetAccessGroupsQuery } from '@queries/accessGroups/getAccessGroups'
 import Shortcuts from '@containers/Shortcuts'
 import DeleteUserDialog from './DeleteUserDialog'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 // what to show in the access column
 const formatAccessGroups = (rowData) => {
   let res = {}
@@ -50,6 +51,7 @@ const formatAccessGroups = (rowData) => {
 }
 
 const UsersSettings = () => {
+  const {t} = useTranslation()
   // QUERY PARAMS STATE
   const [searchParams] = useSearchParams()
   const queryNames = searchParams.getAll('name')
@@ -239,7 +241,7 @@ const UsersSettings = () => {
             <form autoComplete="off" onSubmit={(e) => e.preventDefault()}>
               <InputText
                 style={{ width: '200px' }}
-                placeholder="Filter users..."
+                placeholder={t("Filter users...")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 autoComplete="search-users"
@@ -248,14 +250,14 @@ const UsersSettings = () => {
             <Spacer />
             <Button
               onClick={() => setShowDeleteUser(selectedUsers)}
-              label="Delete Users"
+              label={t("Delete Users")}
               icon="person_remove"
               disabled={!selectedUsers.length || isSelfSelected || managerDisabled}
             />
-            <Button onClick={openNewServiceUser} label="Add Service User" icon="person_add" />
+            <Button onClick={openNewServiceUser} label={t("Add Service User")} icon="person_add" />
             <Button
               onClick={openNewUser}
-              label="Add New User"
+              label={t("Add New User")}
               icon="person_add"
               data-shortcut="n"
             />

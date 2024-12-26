@@ -12,8 +12,10 @@ import EventOverview from './EventOverview'
 import { useMemo, useRef, useState } from 'react'
 import { useEffect } from 'react'
 import { debounce } from 'lodash'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const EventsPage = () => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
   const [showLogs, setShowLogs] = useLocalStorage('events-logs', true)
   // use query param to get selected event
@@ -212,7 +214,7 @@ const EventsPage = () => {
           <form onSubmit={handleSearchSubmit}>
             <InputText
               style={{ width: '200px' }}
-              placeholder="Filter events..."
+              placeholder={t("Filter events...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoComplete="off"
@@ -223,7 +225,7 @@ const EventsPage = () => {
             onChange={() => setShowLogs(!showLogs)}
             style={{ width: 40, marginLeft: 10 }}
           />
-          Show With Logs
+          {t("Show With Logs")}
         </Toolbar>
         <Splitter style={{ height: '100%', width: '100%' }}>
           <SplitterPanel size={70}>

@@ -9,7 +9,8 @@ import { FilePath, LatestIcon } from './Bundles.styled'
 import useCreateContext from '@hooks/useCreateContext'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledDataTable = styled(DataTable)`
   tr {
     display: flex;
@@ -39,6 +40,7 @@ const StyledDataTable = styled(DataTable)`
 `
 
 const AddonListItem = ({ version, setVersion, selection, addons = [], versions }) => {
+  const {t} = useTranslation()
   const options = useMemo(
     () =>
       selection.length > 1
@@ -60,7 +62,7 @@ const AddonListItem = ({ version, setVersion, selection, addons = [], versions }
       buttonStyle={{ zIndex: 0 }}
       versions={options}
       value={version ? [version] : []}
-      placeholder="NONE"
+      placeholder={t("NONE")}
       onChange={(e) => setVersion(e[0])}
     />
   )
@@ -98,6 +100,7 @@ const BundlesAddonList = React.forwardRef(
     },
     ref,
   ) => {
+    const {t} = useTranslation()
     const navigate = useNavigate()
 
     const { data: { addons = [] } = {}, refetch } = useListAddonsQuery({})
@@ -142,7 +145,7 @@ const BundlesAddonList = React.forwardRef(
     const createContextItems = (selected) => {
       let items = [
         {
-          label: 'View in Market',
+          label: t("View in Market"),
           icon: 'store',
           command: () => navigate(`/market/?addon=${selected.name}`),
         },
@@ -184,7 +187,7 @@ const BundlesAddonList = React.forwardRef(
         ref={ref}
       >
         <Column
-          header="Name"
+          header={t("Name")}
           field="name"
           pt={{
             root: {
@@ -199,7 +202,7 @@ const BundlesAddonList = React.forwardRef(
         <Column
           sortable
           field="version"
-          header="Version"
+          header={t("Version")}
           className="version-column"
           body={(addon) => {
             const isPipeline = addon.addonType === 'pipeline'

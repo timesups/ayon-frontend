@@ -20,10 +20,12 @@ import {
   useSaveAccessGroupMutation,
 } from '@queries/accessGroups/updateAccessGroups'
 import confirmDelete from '@helpers/confirmDelete'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const PROJECT_GROUP_MSG = 'Clear project overrides'
 
 const AccessGroupDetail = ({ projectName, accessGroupName }) => {
+  const {t} = useTranslation()
   const [originalData, setOriginalData] = useState(null)
   const [formData, setFormData] = useState(null)
 
@@ -77,12 +79,12 @@ const AccessGroupDetail = ({ projectName, accessGroupName }) => {
 
   const onDeleteLocalGroupSettings = async () =>
     confirmDelete({
-      header: 'Clear project overrides',
+      header: t("Clear project overrides"),
       deleteLabel: 'Clear',
-      label: 'Project overrides',
+      label: t("Project overrides"),
       accept: async () => await deleteAccessGroup({ accessGroupName, projectName }).unwrap(),
       message:
-        'Are you sure you want to delete all project override settings for this access group?',
+        t("Are you sure you want to delete all project override settings for this access group?"),
     })
 
   const isLocalProject = !!projectName
@@ -101,7 +103,7 @@ const AccessGroupDetail = ({ projectName, accessGroupName }) => {
             icon="delete"
           />
         )}
-        <SaveButton onClick={onSave} label="Save Changes" active={isChanged} saving={saving} />
+        <SaveButton onClick={onSave} label={t("Save Changes")} active={isChanged} saving={saving} />
       </Toolbar>
       <ScrollPanel
         className="nopad transparent"

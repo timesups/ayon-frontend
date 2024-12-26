@@ -38,8 +38,10 @@ import * as Styled from './Products.styled'
 import { openViewer } from '@state/viewer'
 import { extractIdFromClassList } from '@containers/Feed/hooks/useTableKeyboardNavigation'
 import useScopedStatuses from '@hooks/useScopedStatuses'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const Products = () => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
 
   // context
@@ -271,7 +273,7 @@ const Products = () => {
     () => [
       {
         field: 'name',
-        header: 'Product',
+        header: t("Product"),
         width: 200,
         body: (node) => {
           let className = ''
@@ -300,7 +302,7 @@ const Products = () => {
       },
       {
         field: 'versionStatus',
-        header: 'Version Status',
+        header: t("Version Status"),
         width: 180,
         style: { height: 'max-content' },
         body: (node) => {
@@ -328,22 +330,22 @@ const Products = () => {
       },
       {
         field: 'productType',
-        header: 'Product type',
+        header: t("Product type"),
         width: 120,
       },
       {
         field: 'taskName',
-        header: 'Task',
+        header: t("Task"),
         width: 120,
       },
       {
         field: 'folder',
-        header: 'Folder',
+        header: t("Folder"),
         width: 120,
       },
       {
         field: 'versionList',
-        header: 'Version',
+        header: t("Version"),
         width: 70,
         body: (node) => (
           <VersionList
@@ -355,18 +357,18 @@ const Products = () => {
       },
       {
         field: 'createdAt',
-        header: 'Created At',
+        header: t("Created At"),
         width: 150,
         body: (node) => node.data.createdAt && <TimestampField value={node.data.createdAt} />,
       },
       {
         field: 'versionAuthor',
-        header: 'Author',
+        header: t("Author"),
         width: 120,
       },
       {
         field: 'frames',
-        header: 'Frames',
+        header: t("Frames"),
         width: 120,
       },
     ],
@@ -644,7 +646,7 @@ const Products = () => {
       <Toolbar>
         <InputText
           style={{ width: '200px' }}
-          placeholder="Filter products..."
+          placeholder={t("Filter products...")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           autoComplete="off"
@@ -656,7 +658,7 @@ const Products = () => {
           onChange={handleTaskTypeChange}
           onClear={!!selectedTaskTypes.length && handleTaskTypeChange}
           clearTooltip="Clear task types"
-          placeholder="Task types..."
+          placeholder={t("Task types...")}
           multiSelect
         />
         <Styled.ColumnsFilterSelect

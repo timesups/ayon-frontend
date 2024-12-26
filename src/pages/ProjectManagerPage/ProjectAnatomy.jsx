@@ -10,8 +10,10 @@ import { usePaste } from '@context/pasteContext'
 import useUserProjectPermissions, { PermissionLevel } from '@hooks/useUserProjectPermissions'
 import EmptyPlaceholder from '@components/EmptyPlaceholder/EmptyPlaceholder'
 import { useSelector } from 'react-redux'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ProjectAnatomy = ({ projectName, projectList }) => {
+  const {t} = useTranslation()
   const isUser = useSelector((state) => state.user.data.isUser)
   const [updateProjectAnatomy, { isLoading: isUpdating }] = useUpdateProjectAnatomyMutation()
   const { requestPaste } = usePaste()
@@ -65,17 +67,17 @@ const ProjectAnatomy = ({ projectName, projectList }) => {
         userPermissions.canViewAnatomy(projectName) && (
           <>
             <Button
-              label="Copy anatomy"
+              label={t("Copy anatomy")}
               icon="content_copy"
               onClick={() => {
                 copyToClipboard(JSON.stringify(formData, null, 2))
               }}
             />
-            <Button label="Paste anatomy" icon="content_paste" onClick={onPasteAnatomy} />
+            <Button label={t("Paste anatomy" )} icon="content_paste" onClick={onPasteAnatomy} />
             {PermissionLevel.readOnly === accessLevel && 'Read-only'}
             <Spacer />
             <SaveButton
-              label="Save changes"
+              label={t("Save changes")}
               data-tooltip={
                 !userPermissions.canEditAnatomy(projectName) ? "You don't have edit permissions" : undefined
               }
@@ -98,7 +100,7 @@ const ProjectAnatomy = ({ projectName, projectList }) => {
         ) : (
           <EmptyPlaceholder
             icon="settings_alert"
-            message="You don't have permission to view this project's anatomy"
+            message={t("You don't have permission to view this project's anatomy")}
           />
         )}
       </ScrollPanel>

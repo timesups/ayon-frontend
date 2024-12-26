@@ -56,8 +56,10 @@ import useTableKeyboardNavigation, {
   extractIdFromClassList,
 } from '@containers/Feed/hooks/useTableKeyboardNavigation'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const EditorPage = () => {
+  const {t} = useTranslation()
   const project = useSelector((state) => state.project)
   const { folders: foldersObject, tasks = [], attrib, statusesOrder = [] } = project
 
@@ -1303,25 +1305,25 @@ const EditorPage = () => {
   const getCtxMenuTableItems = (sel) => {
     return [
       {
-        label: 'Add Folders',
+        label: t("Add Folders"),
         icon: 'create_new_folder',
         shortcut: 'N',
         command: () => setNewEntity('folder'),
       },
       {
-        label: 'Add Tasks',
+        label: t("Add Tasks"),
         icon: 'add_task',
         shortcut: 'T',
         command: () => setNewEntity('task'),
       },
       {
-        label: 'Clear Changes',
+        label: t("Clear Changes"),
         icon: 'clear',
         command: () => revertChangesOnSelection(sel),
         disabled: !canCommit,
       },
       {
-        label: 'Delete',
+        label: t("Delete"),
         icon: 'delete',
         command: () => onDelete(sel),
         danger: true,
@@ -1624,7 +1626,7 @@ const EditorPage = () => {
       <Column
         field="labelThenName"
         key="name"
-        header="Name"
+        header={t("Name")}
         expander={true}
         body={(rowData) => (
           <NameField
@@ -1641,21 +1643,21 @@ const EditorPage = () => {
       <Column
         field="type"
         key="type"
-        header="Type"
+        header={t("Type")}
         body={(rowData) => formatType(rowData.data, changes)}
         style={{ width: columnsWidths['type'] || 140 }}
       />,
       <Column
         field="status"
         key="status"
-        header="Status"
+        header={t("Status")}
         body={(rowData) => formatStatus(rowData.data, changes, columnsWidths['status'] || 140)}
         style={{ width: columnsWidths['status'] || 140 }}
       />,
       <Column
         field="assignees"
         key="assignees"
-        header="Assignees"
+        header={t("Assignees")}
         body={(rowData) => formatAssignees(rowData.data, changes, allUsers)}
         style={{ width: columnsWidths['assignees'] || 140 }}
       />,
@@ -1798,24 +1800,24 @@ const EditorPage = () => {
         <Toolbar>
           <Button
             icon="create_new_folder"
-            label="Add folders"
+            label={t("Add folders")}
             onClick={() => setNewEntity('folder')}
             data-tooltip="Add new folders"
             data-shortcut="N"
           />
           <Button
             icon="topic"
-            label="Add folder sequence"
+            label={t("Add folder sequence")}
             onClick={() => setNewEntity('sequence')}
-            data-tooltip="Add new folder sequence"
+            data-tooltip={t("Add new folder sequence")}
             data-shortcut="M"
           />
           <Button
             icon="add_task"
-            label="Add tasks"
+            label={t("Add tasks")}
             disabled={disableAddNew}
             onClick={() => setNewEntity('task')}
-            data-tooltip="Add new tasks"
+            data-tooltip={t("Add new tasks")}
             data-shortcut="T"
           />
           <BuildHierarchyButton disabled={!focusedFolders.length && focusedTasks.length} />
@@ -1823,7 +1825,7 @@ const EditorPage = () => {
             options={columnFilterOptions}
             value={shownColumns}
             onChange={handleColumnsFilter}
-            placeholder={`Show Columns`}
+            placeholder={t("Show Columns")}
             fixedPlaceholder={shownColumns.length >= columnFilterOptions.length}
             style={{ maxWidth: 200 }}
           />
@@ -1831,7 +1833,7 @@ const EditorPage = () => {
             suggestions={searchableFolders}
             suggestionsLimit={5}
             isLoading={isSearchLoading}
-            placeholder="Filter folders & tasks..."
+            placeholder={t("Filter folders & tasks...")}
             filter={searchFilter}
             onSubmit={handleSearchComplete}
             onClear={() => searchIds && setSearchIds({})}
@@ -1839,12 +1841,12 @@ const EditorPage = () => {
           <Spacer />
           <Button
             icon="clear"
-            label="Clear All Changes"
+            label={t("Clear All Changes")}
             onClick={handleRevert}
             disabled={!canCommit}
           />
           <SaveButton
-            label="Save Changes"
+            label={t("Save Changes")}
             onClick={onCommit}
             active={canCommit}
             saving={commitUpdating}

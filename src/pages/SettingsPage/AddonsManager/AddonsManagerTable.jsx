@@ -5,7 +5,8 @@ import { Button, Section, TablePanel } from '@ynput/ayon-react-components'
 import useCreateContext from '@hooks/useCreateContext'
 import confirmDelete from '@helpers/confirmDelete'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const AddonsManagerTable = ({
   title = '',
   header,
@@ -22,7 +23,8 @@ const AddonsManagerTable = ({
   isLoading,
   ...props
 }) => {
-  const deleteLabel = isArchive ? 'Archive' : 'Uninstall'
+  const {t} = useTranslation()
+  const deleteLabel = isArchive ? t("Archive") : t("Uninstall")
   const deleteIcon = isArchive ? 'archive' : 'delete'
   const tableSelection = value?.filter((d) => selection.includes(d && d[field]))
 
@@ -136,7 +138,7 @@ const AddonsManagerTable = ({
           />
           <Column
             field="status"
-            header={'Status'}
+            header={t("Status")}
             style={{ minWidth: 90, flex: 0 }}
             headerStyle={{ width: 50 }}
             body={(d) => <BundleStatus statuses={d.status} />}

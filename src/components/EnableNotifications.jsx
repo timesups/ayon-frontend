@@ -4,8 +4,10 @@ import { useSetFrontendPreferencesMutation } from '@queries/user/updateUser'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const EnableNotifications = () => {
+  const {t} = useTranslation()
   const [hide, setHide] = useState(false)
   const user = useSelector((state) => state.user)
   const { sendNotification } = useNotifications()
@@ -48,7 +50,7 @@ const EnableNotifications = () => {
         variant="filled"
         disabled={disabled}
       >
-        Enable notifications
+        {t("Enable notifications")}
       </Button>
     )
   )

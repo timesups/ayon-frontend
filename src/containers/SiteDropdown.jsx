@@ -2,8 +2,10 @@ import ayonClient from '@/ayon'
 import { useMemo, useEffect } from 'react'
 import { Dropdown } from '@ynput/ayon-react-components'
 import useLocalStorage from '@hooks/useLocalStorage'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const SiteDropdown = ({ value, onChange, disabled, multiselect = false, allowNull = false }) => {
+  const {t} = useTranslation()
   const [preferredSite, setPreferredSite] = useLocalStorage('prefferedSite', null)
 
   const siteOptions = useMemo(() => {
@@ -30,7 +32,7 @@ const SiteDropdown = ({ value, onChange, disabled, multiselect = false, allowNul
       multiSelect={multiselect}
       onChange={handleChange}
       onClearNull={allowNull ? () => onChange(null) : null}
-      placeholder="Select a site"
+      placeholder={t("Select a site")}
       style={{ flexGrow: 1 }}
       disabled={disabled}
     />

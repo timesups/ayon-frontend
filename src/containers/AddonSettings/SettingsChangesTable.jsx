@@ -6,8 +6,10 @@ import { Section, TablePanel, Button } from '@ynput/ayon-react-components'
 import useCreateContext from '@hooks/useCreateContext'
 import { Badge, BadgeWrapper } from '@components/Badge'
 import { useURIContext } from '@context/uriContext'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const SettingsChangesTable = ({ changes, unpins, onRevert }) => {
+  const {t} = useTranslation()
   const [expandedKeys, setExpandedKeys] = useState({})
   const [selectedKeys, setSelectedKeys] = useState({})
   const [knownAddonKeys, setKnownAddonKeys] = useState({})
@@ -101,7 +103,7 @@ const SettingsChangesTable = ({ changes, unpins, onRevert }) => {
 
     if (onRevert) {
       result.push({
-        label: 'Clear Selected',
+        label: t("Clear Selected"),
         icon: 'delete',
         command: () => {
           const result = {}
@@ -170,11 +172,11 @@ const SettingsChangesTable = ({ changes, unpins, onRevert }) => {
           onSelectionChange={handleSelectionChange}
           onContextMenuSelectionChange={handleSelectionChange}
           onContextMenu={(event) => ctxMenuShow(event.originalEvent)}
-          emptyMessage="No changes"
+          emptyMessage={t("No changes")}
           scrollable="true"
           scrollHeight="100%"
         >
-          <Column header="Name" body={changeNameRenderer} field="key" expander />
+          <Column header={t("Name")} body={changeNameRenderer} field="key" expander />
           <Column header="" body={actionRenderer} style={{ width: 28 }} />
         </TreeTable>
       </TablePanel>

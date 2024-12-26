@@ -23,7 +23,8 @@ import styled from 'styled-components'
 import useSearchFilter from '@hooks/useSearchFilter'
 import { useSearchParams } from 'react-router-dom'
 import confirmDelete from '@helpers/confirmDelete'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const SectionStyled = styled(Section)`
   align-items: start;
   height: 100%;
@@ -44,6 +45,7 @@ const SectionStyled = styled(Section)`
 `
 
 const TeamsPage = ({ projectName, projectList, isUser }) => {
+  const {t} = useTranslation()
   // QUERY PARAMS STATE
   const [searchParams] = useSearchParams()
   const queryNames = searchParams.getAll('name')
@@ -134,12 +136,12 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
         const isTeamSelected = selectedTeams.some((team) => teamsList.includes(team))
 
         const group = isTeamSelected
-          ? 'On A Selected Team'
+          ? t("On A Selected Team")
           : teamsList.filter((t) => !selectedTeams.includes(t)).length
           ? selectedTeams.length
-            ? 'On Other Teams'
-            : 'On Teams'
-          : 'On No Teams'
+            ? t("On Other Teams")
+            : t("On Teams")
+          : t("On No Teams")
 
         // Include any other user data in the merged object
         usersObject[user.name] = {
@@ -419,7 +421,7 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
       <Dialog
         isOpen={duplicateTeamNameVisible}
         onClose={onCancelDuplicate}
-        header={<span>Duplicate Team - {selectedTeams[0]}</span>}
+        header={<span>{t("Duplicate Team")} - {selectedTeams[0]}</span>}
         style={{ minWidth: 300 }}
         size="sm"
       >
@@ -429,14 +431,14 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
             value={duplicateTeamName}
             onChange={(e) => setDuplicateTeamName(e.target.value)}
             autoFocus
-            placeholder="New team name..."
+            placeholder={t("New team name...")}
             style={{ width: '100%' }}
           />
           <span style={{ height: 18, display: 'block' }}>
-            {duplicateTeamName && !isDuplicateTeamNameValid && 'Team name already taken'}
+            {duplicateTeamName && !isDuplicateTeamNameValid && t("Team name already taken")}
           </span>
           <SaveButton
-            label="Create"
+            label={t("Create")}
             type="submit"
             active={!!isDuplicateTeamNameValid}
             style={{
@@ -453,13 +455,13 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
               <>
                 <Button
                   icon={'group_add'}
-                  label="Add New Team"
+                  label={t("Add New Team")}
                   onClick={() => setCreateTeamOpen(true)}
                   style={{ width: 200 }}
                 />
                 <InputText
                   style={{ width: '200px' }}
-                  placeholder="Filter users..."
+                  placeholder={t("Filter users...")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   autoComplete="off"
@@ -468,7 +470,7 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
                   checked={showTeamUsersOnly}
                   onChange={() => setShowTeamUsersOnly(!showTeamUsersOnly)}
                 />
-                Hide Other Team Members
+               {t("Hide Other Team Members")}
                 <Spacer />
               </>
             )}

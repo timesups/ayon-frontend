@@ -14,7 +14,8 @@ import ProjectManagerPageLayout from './ProjectManagerPageLayout'
 import { toast } from 'react-toastify'
 import EmptyPlaceholder from '@components/EmptyPlaceholder/EmptyPlaceholder'
 import LoadingPage from '@pages/LoadingPage'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const ProjectRootForm = ({ projectName, siteName, siteId, roots }) => {
   const [setCustomRoots, { isLoading }] = useSetCustomRootsMutation()
   const [rootValues, setRootValues] = useState(null)
@@ -80,7 +81,7 @@ const ProjectRoots = ({ projectName, projectList, userPermissions }) => {
         />
     </ProjectManagerPageLayout>
   }
-
+  const {t} = useTranslation()
   const {
     data: project,
     isLoading: isLoadingProject,
@@ -118,10 +119,10 @@ const ProjectRoots = ({ projectName, projectList, userPermissions }) => {
       {(!isLoadingProject && isError) || !userPermissions.assignedToProject(projectName) ? (
         <EmptyPlaceholder
           icon="settings_alert"
-          message="You went wrong while fetching project roots data"
+          message={t("You went wrong while fetching project roots data")}
         />
       ) : forms.length === 0 ? (
-        <EmptyPlaceholder icon="lists" message="No sites were found" />
+        <EmptyPlaceholder icon="lists" message={t("No sites were found")} />
       ) : (
         <Section className="invisible" style={{ maxWidth: 600 }}>
           {forms.map((form) => (

@@ -3,7 +3,8 @@ import { InputSwitch, FormLayout, FormRow, Icon } from '@ynput/ayon-react-compon
 import { SelectButton } from 'primereact/selectbutton'
 import AccessGroupsDropdown from '@containers/AccessGroupsDropdown'
 import styled from 'styled-components'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const FormRowStyled = styled(FormRow)`
   .label {
     min-width: 160px;
@@ -22,6 +23,7 @@ const NoteStyled = styled.span`
 `
 
 const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
+  const {t} = useTranslation()
   const authenticatedUser = useSelector((state) => state.user.data)
 
   const userLevels = [
@@ -35,8 +37,8 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
   }
 
   const activeOptions = [
-    { label: 'Active', value: true },
-    { label: 'Inactive', value: false },
+    { label: t("Active"), value: true },
+    { label: t("Inactive"), value: false },
   ]
 
   const updateFormData = (key, value) => {
@@ -58,23 +60,23 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
 
   const getTooltip = () => {
     if (isUser) {
-      return 'Users cannot be developers'
+      return t("Users cannot be developers")
     }
     if (isManager) {
-      return 'Managers cannot be developers'
+      return t("Managers cannot be developers")
     }
     if (authenticatedUser.isManager) {
-      return 'Only admins can set developers'
+      return t("Only admins can set developers")
     }
 
-    return 'Developers have access to enhanced tools and features'
+    return t("Developers have access to enhanced tools and features")
   }
 
   return (
     <>
-      <b>Access Control</b>
+      <b>{t("Access Control")}</b>
       <FormLayout>
-        <FormRowStyled label="User active">
+        <FormRowStyled label={t("User active")}>
           <SelectButton
             unselectable={false}
             value={formData?.userActive}
@@ -83,9 +85,9 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
           />
         </FormRowStyled>
 
-        <FormRowStyled label="Guest">
+        <FormRowStyled label={t("Guest")}>
           <div
-            data-tooltip={isAdmin ? 'Admins cannot be guests' : undefined}
+            data-tooltip={isAdmin ? t("Admins cannot be guests") : undefined}
             data-tooltip-delay={0}
             style={{ width: 'fit-content' }}
           >
@@ -100,7 +102,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
           </div>
         </FormRowStyled>
 
-        <FormRowStyled label="Developer">
+        <FormRowStyled label={t("Developer")}>
           <div data-tooltip={getTooltip()} data-tooltip-delay={0} style={{ width: 'fit-content' }}>
             <InputSwitch
               checked={formData?.isDeveloper}
@@ -113,7 +115,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
           </div>
         </FormRowStyled>
 
-        <FormRowStyled label="Access level">
+        <FormRowStyled label={t("Access level")}>
           <SelectButton
             unselectable={false}
             value={formData?.userLevel}
@@ -125,16 +127,16 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
 
         {isUser ? (
           <FormRowStyled
-            label={'Default projects access'}
+            label={t("Default projects access")}
             data-tooltip={
-              'When a new project is created, the user will automatically be added to the selected access groups. To grant a user the ability to manage project access for others, ensure an access group with those permissions is included here.'
+              t("When a new project is created, the user will automatically be added to the selected access groups. To grant a user the ability to manage project access for others, ensure an access group with those permissions is included here.")
             }
           >
             <AccessGroupsDropdown
               style={{ flexGrow: 1 }}
               selectedAccessGroups={defaultAccessGroups}
               setSelectedAccessGroups={handleDefaultAccessGroupsChange}
-              placeholder={'Add access groups...'}
+              placeholder={t("Add access groups...")}
               isMultiple={formData._mixedFields?.includes('defaultAccessGroups')}
               accessGroups={accessGroupsData}
             />
@@ -142,7 +144,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled}) => {
         ) : (
           <NoteStyled>
             <Icon icon="info" />
-            Admins, managers and services have full access to all projects.
+            {t("Admins, managers and services have full access to all projects.")}
           </NoteStyled>
         )}
       </FormLayout>

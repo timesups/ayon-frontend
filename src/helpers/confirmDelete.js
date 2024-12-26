@@ -1,7 +1,6 @@
 import { upperFirst } from 'lodash'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { toast } from 'react-toastify'
-
 const confirmDelete = ({
   label = '',
   message = 'Are you sure? This cannot be undone',

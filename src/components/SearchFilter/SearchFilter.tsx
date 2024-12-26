@@ -11,7 +11,8 @@ import { useFocusOptions } from './hooks'
 import buildFilterId from './buildFilterId'
 import getFilterFromId from './getFilterFromId'
 import doesFilterExist from './doesFilterExist'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const sortSelectedToTopFields = ['assignee', 'taskType']
 
 export interface SearchFilterProps {
@@ -344,8 +345,10 @@ const SearchFilter: FC<SearchFilterProps> = ({
 
 export default SearchFilter
 
-const getEmptyPlaceholder = (allowGlobalSearch: boolean) => {
-  return allowGlobalSearch ? 'Search and filter' : 'Filter'
+const getEmptyPlaceholder = (allowGlobalSearch: boolean) => 
+{
+  const {t} = useTranslation()
+  return allowGlobalSearch ? t("Search and filter") : t("Filter")
 }
 const getOptionsWithSearch = (options: Option[], allowGlobalSearch: boolean) => {
   if (!allowGlobalSearch) return options

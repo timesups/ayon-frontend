@@ -7,6 +7,8 @@ import { useEffect } from 'react'
 import useCreateContext from '@hooks/useCreateContext'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 
 const TeamList = ({
   teams,
@@ -26,6 +28,7 @@ const TeamList = ({
   onNewTeam,
   onDuplicate,
 }) => {
+  const {t} = useTranslation()
   // if selection does not exist in data, set selection to null
   useEffect(() => {
     if (isLoading) return
@@ -73,7 +76,7 @@ const TeamList = ({
   const globalContextItems = useMemo(
     () => [
       {
-        label: 'Create Team',
+        label: t("Create Team"),
         icon: 'group_add',
         command: onNewTeam,
       },
@@ -87,18 +90,18 @@ const TeamList = ({
   const tableContextItems = useMemo(
     () => [
       {
-        label: 'Create Team',
+        label: t("Create Team"),
         icon: 'group_add',
         command: onNewTeam,
       },
       {
-        label: 'Duplicate Team',
+        label: t("Duplicate Team"),
         icon: 'content_copy',
         command: onDuplicate,
         disabled: selection.length > 1,
       },
       {
-        label: `Delete Team${selection.length > 1 ? 's' : ''}`,
+        label: `${"Delete Team"}${selection.length > 1 ? 's' : ''}`,
         icon: 'delete',
         command: onDelete,
         danger: true,
@@ -130,9 +133,9 @@ const TeamList = ({
             onContextMenuSelectionChange={onContextMenuSelectionChange}
             className={clsx({ loading: isLoading })}
             rowClassName={(rowData) => clsx({ loading: rowData.isLoading })}
-            emptyMessage="No teams found"
+            emptyMessage={t("No teams found")}
           >
-            <Column field="name" header="Team" style={{ minWidth: 150, ...style }} />
+            <Column field="name" header={t("Team")} style={{ minWidth: 150, ...style }} />
           </DataTable>
         </TablePanel>
       </Section>

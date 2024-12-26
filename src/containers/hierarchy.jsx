@@ -17,7 +17,8 @@ import useTableKeyboardNavigation, {
 } from './Feed/hooks/useTableKeyboardNavigation'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const filterHierarchy = (text, folder, folders) => {
   let result = []
   if (!folder) return []
@@ -74,6 +75,7 @@ const filterHierarchy = (text, folder, folders) => {
 }
 
 const Hierarchy = (props) => {
+  const {t} = useTranslation()
   const projectName = useSelector((state) => state.project.name)
   const foldersOrder = useSelector((state) => state.project.foldersOrder || [])
   const folders = useSelector((state) => state.project.folders || {})
@@ -100,7 +102,7 @@ const Hierarchy = (props) => {
       const folder_type_label = option ? option.replace(/[a-z]/g, '') : '??'
       return <span style={{ marginRight: '8px' }}>{folder_type_label}</span>
     }
-    return 'Folder types'
+    return t("Folder types")
   }
 
   //
@@ -394,7 +396,7 @@ const Hierarchy = (props) => {
           },
         }}
       >
-        <Column header="Hierarchy" field="body" expander={true} style={{ width: '100%' }} />
+        <Column header={t("Hierarchy")} field="body" expander={true} style={{ width: '100%' }} />
       </TreeTable>
     )
   }, [treeData, selectedFolders, expandedFolders, isFetching, ctxMenuShow])
@@ -409,7 +411,7 @@ const Hierarchy = (props) => {
         <Toolbar>
           <InputText
             style={{ flexGrow: 1, minWidth: 100 }}
-            placeholder="Filter folders..."
+            placeholder={t("Filter folders...")}
             disabled={!projectName || isFetching}
             value={query}
             onChange={(evt) => setQuery(evt.target.value)}
@@ -419,7 +421,7 @@ const Hierarchy = (props) => {
           <MultiSelect
             value={selectedFolderTypes}
             options={folderTypeList}
-            placeholder="Select folder types"
+            placeholder={t("Select folder types")}
             showClear={true}
             optionLabel="label"
             disabled={!projectName || isFetching}

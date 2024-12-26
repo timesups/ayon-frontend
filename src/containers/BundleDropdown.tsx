@@ -7,7 +7,8 @@ import styled from 'styled-components'
 import { BundleModel } from '@api/rest/bundles'
 import { $Any } from '@types'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 export const BundleDropdownItemStyled = styled.div`
   width: 100%;
   display: flex;
@@ -164,6 +165,7 @@ const BundleDropdown = ({
   activeOnly,
   ...props
 }: BundleDropdownProps) => {
+  const {t} = useTranslation()
   const { data: { bundles = [] } = {}, isLoading, isError } = useListBundlesQuery({})
   const devMode = useSelector((state: $Any) => state.user.attrib.developerMode)
 
@@ -206,7 +208,7 @@ const BundleDropdown = ({
       value={bundleName ? [bundleName] : null}
       options={bundleOptions}
       onChange={handleChange}
-      placeholder="Select a bundle"
+      placeholder={t("Select a bundle")}
       style={style || { flex: 1 }}
       disabled={disabled}
       valueTemplate={(value, _selected, isOpen) => (

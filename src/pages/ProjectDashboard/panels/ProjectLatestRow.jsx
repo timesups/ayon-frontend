@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import { useGetProjectDashboardActivityQuery } from '@queries/getProjectDashboard'
 import { EntityCard } from '@ynput/ayon-react-components'
 import { productTypes } from '@state/project'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const GridStyled = styled.div`
   /* 1 row, 3 columns */
   /* columns minWidth 150px, max width 250px */
@@ -53,6 +54,7 @@ const ProjectLatestRow = ({
   rowIndex,
   onEntityClick,
 }) => {
+  const {t} = useTranslation()
   const project = useSelector((state) => state.project)
   const { folders, tasks, statuses } = project
   // transform args object to graphql arguments string
@@ -147,7 +149,7 @@ const ProjectLatestRow = ({
             />
           ),
       )}
-      {isNoData && <span>No Recent Data</span>}
+      {isNoData && <span>{t("No Recent Data")}</span>}
     </GridStyled>
   )
 }

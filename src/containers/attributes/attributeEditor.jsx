@@ -14,7 +14,8 @@ import {
 import { camelCase, upperFirst } from 'lodash'
 import MinMaxField from '@components/MinMaxField/MinMaxField'
 import EnumEditor from '@components/EnumEditor/EnumEditor'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const SCOPE_OPTIONS = [
   { value: 'project', label: 'Project' },
   { value: 'folder', label: 'Folder' },
@@ -63,7 +64,7 @@ const TYPE_OPTIONS = {
 
 const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
   const [formData, setFormData] = useState(null)
-
+  const {t} = useTranslation()
   useEffect(
     () =>
       setFormData(
@@ -96,8 +97,8 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
   let error = null
   if (formData) {
     if (isNew) {
-      if (existingNames.includes(formData.name)) error = 'This attribute already exists'
-      else if (!formData.name.match('^[a-zA-Z_]{2,20}$')) error = 'Invalid attribute name'
+      if (existingNames.includes(formData.name)) error = t("This attribute already exists")
+      else if (!formData.name.match('^[a-zA-Z_]{2,20}$')) error = t("Invalid attribute name")
     } // name validation
   }
 
@@ -105,7 +106,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
     <div style={{ display: 'flex', width: '100%', flexDirection: 'row' }}>
       <Spacer />
       <Button
-        label={isNew ? 'Create Attribute' : 'Save Attribute'}
+        label={isNew ? t("Create Attribute") : t("Save Attribute")}
         icon={'check'}
         disabled={!!error}
         onClick={() => onEdit(formData)}
@@ -166,7 +167,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
     >
       {formData && (
         <FormLayout>
-          <FormRow label={'Title'} key={'title'}>
+          <FormRow label={t("Title")} key={'title'}>
             <InputText value={formData?.data['title']} onChange={handleTitleChange} />
           </FormRow>
           <FormRow label={'Name'} key={'name'}>
@@ -177,7 +178,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
               label="name"
             />
           </FormRow>
-          <FormRow label="Scope">
+          <FormRow label={t("Scope")}>
             <Dropdown
               options={SCOPE_OPTIONS}
               disabled={formData.builtin}
@@ -187,7 +188,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
               widthExpand
             />
           </FormRow>
-          <FormRow label="Type">
+          <FormRow label={t("Type")}>
             <Dropdown
               value={[formData?.data?.type]}
               disabled={formData.builtin}

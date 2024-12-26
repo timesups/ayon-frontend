@@ -1,6 +1,9 @@
 import React from 'react'
 import ReleasePreset from '@components/Release/ReleasePreset'
 import * as Styled from '../util/OnBoardingStep.styled'
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
+
 
 export const ReleaseSelect = ({
   releases,
@@ -10,6 +13,7 @@ export const ReleaseSelect = ({
   setSelectedPreset,
   isLoadingReleases,
 }) => {
+  const {t} = useTranslation()
   // create array of 4 loading releases
   const loadingReleases = Array.from({ length: 4 }, (_, i) => ({
     name: `loading-${i}`,
@@ -25,7 +29,7 @@ export const ReleaseSelect = ({
 
   return (
     <Styled.Section>
-      <Header>Select a Release Package</Header>
+      <Header>{t("Select a Release Package")}</Header>
       <Styled.PresetsContainer>
         {releases.map(({ name, ...props }, i) => (
           <ReleasePreset

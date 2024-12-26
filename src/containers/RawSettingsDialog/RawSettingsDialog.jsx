@@ -11,7 +11,8 @@ import {
   useLazyGetRawAddonSettingsOverridesQuery,
 } from '@queries/addonSettings'
 import copyToClipboard from '@helpers/copyToClipboard'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const EditorWrapper = styled.div`
   position: relative;
   top: 0;
@@ -77,6 +78,7 @@ const RawSettingsDialog = ({
   reloadAddons,
   onClose,
 }) => {
+  const {t} = useTranslation()
   const [code, setCode] = useState('{}')
 
   const [triggerGetSettings] = useLazyGetRawAddonSettingsOverridesQuery()
@@ -125,10 +127,10 @@ const RawSettingsDialog = ({
 
   const footer = (
     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
-      <Button label="Copy" icon="content_copy" onClick={() => copyToClipboard(code)} />
+      <Button label={t("Copy")} icon="content_copy" onClick={() => copyToClipboard(code)} />
       <SaveButton
         style={{ marginLeft: '8px' }}
-        label="Save"
+        label={t("Save")}
         icon="save"
         active={!warn}
         onClick={onSave}
@@ -138,7 +140,7 @@ const RawSettingsDialog = ({
 
   return (
     <Dialog
-      header={`${addonName} ${addonVersion} ${variant} raw settings`}
+      header={`${addonName} ${addonVersion} ${variant} ${t("raw settings")}`}
       footer={footer}
       isOpen={true}
       style={{ width: '800px', maxWidth: '1000px' }}
@@ -147,16 +149,14 @@ const RawSettingsDialog = ({
     >
       {warn && (
         <Warning onClick={() => setWarn(false)}>
-          <h1>Warning</h1>
+          <h1>{t("Warning")}</h1>
           <p>
-            This interface is intended for advanced users only. Incorrect modifications can make the
-            addon completely inoperable.
+            {t("This interface is intended for advanced users only. Incorrect modifications can make the addon completely inoperable.")}
           </p>
           <p>
-            Proceed with extreme caution and ensure you fully understand the implications of any
-            changes made.
+            {t("Proceed with extreme caution and ensure you fully understand the implications of any changes made.")}
           </p>
-          <p>Click here to continue</p>
+          <p>{t("Click here to continue")}</p>
         </Warning>
       )}
       <EditorWrapper>
@@ -164,7 +164,7 @@ const RawSettingsDialog = ({
           wrap="false"
           value={code}
           language="json"
-          placeholder="Please enter JS code."
+          placeholder={t("Please enter JS code.")}
           onChange={(evn) => setCode(evn.target.value)}
         />
       </EditorWrapper>

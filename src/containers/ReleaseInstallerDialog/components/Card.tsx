@@ -3,7 +3,8 @@ import * as Styled from '../ReleaseInstaller.styled'
 import { MaterialSymbol } from '@types'
 import { Button, Icon } from '@ynput/ayon-react-components'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string
   subTitle: string
@@ -15,6 +16,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ title, subTitle, icon, onChange, isLoading, required, className, ...props }, ref) => {
+    const {t} = useTranslation()
     return (
       <Styled.Card
         {...props}
@@ -28,7 +30,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         </div>
         {onChange && (
           <Button onClick={onChange} variant={required ? 'filled' : 'surface'}>
-            {required ? `Pick ${title}` : 'Change'}
+            {required ? `Pick ${title}` : t("Change")}
           </Button>
         )}
       </Styled.Card>

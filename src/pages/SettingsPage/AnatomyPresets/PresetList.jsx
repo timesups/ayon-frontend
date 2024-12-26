@@ -8,7 +8,8 @@ import useCreateContext from '@hooks/useCreateContext'
 import styled from 'styled-components'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -31,6 +32,7 @@ const PresetList = ({
   presetList,
   isLoading,
 }) => {
+  const {t} = useTranslation()
   const getCtxMenuItems = useCallback(
     (data = {}) => {
       // empty string is default preset
@@ -39,13 +41,13 @@ const PresetList = ({
 
       const items = [
         {
-          label: 'Set as primary',
+          label: t("Set as primary"),
           icon: 'flag',
           command: () => onSetPrimary(isDefault ? '_' : data.name),
           disabled: primarySelected || isDefault,
         },
         {
-          label: 'Delete',
+          label: t("Delete"),
           icon: 'delete',
           disabled: isDefault,
           command: () => onDelete(data.name, primarySelected),
@@ -67,7 +69,7 @@ const PresetList = ({
     return [
       {
         name: '_',
-        label: 'AYON default (read only)',
+        label: t("AYON default (read only)"),
         primary: noPrimary,
       },
       ...presetList.map((preset) => ({
@@ -97,10 +99,10 @@ const PresetList = ({
           rowClassName={(data) => clsx({ default: data.primary, loading: isLoading })}
         >
           <Column field="label" header="Name" />
-          <Column field="version" header="Version" style={{ maxWidth: 80 }} />
+          <Column field="version" header={t("Version")} style={{ maxWidth: 80 }} />
           <Column
             field="primary"
-            header="Primary"
+            header={t("Primary")}
             style={{ maxWidth: 50 }}
             body={(data) => (data?.primary ? <Icon icon={'check'} /> : '')}
           />

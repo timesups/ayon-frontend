@@ -6,8 +6,10 @@ import NewProjectDialog from '../../ProjectManagerPage/NewProjectDialog'
 import { useNavigate } from 'react-router'
 import { useSelector } from 'react-redux'
 import { $Any } from '@types'
-
+import { useTranslation } from 'react-i18next'
+import "@/i18n/config"
 const UserDashboardNoProjects = () => {
+  const {t} = useTranslation()
   const [openNewProject, setOpenNewProject] = useState(false)
   const user = useSelector((state: $Any) => state.user)
   const newProjectButtonVisible = user.data.isAdmin || user.data.isManager
@@ -15,10 +17,10 @@ const UserDashboardNoProjects = () => {
 
   return (
     <Styled.Container>
-      <NoProducts label="No Projects" error={undefined} />
+      <NoProducts label={t("No Projects" )}error={undefined} />
       {newProjectButtonVisible && (
         <Button
-          label="Create first project"
+          label={t("Create first project")}
           variant="filled"
           icon="create_new_folder"
           onClick={() => setOpenNewProject(true)}
