@@ -16,7 +16,13 @@ import { confirmDelete } from '@shared/helpers'
 import { useGetDashboardAddonsQuery } from '@queries/addons/getAddons'
 import DashboardAddon from '@pages/ProjectDashboard/DashboardAddon'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 const UserDashboardPage = () => {
+  //translation
+  const {t} = useTranslation()
   let { module, addonName } = useParams()
 
   const {
@@ -27,14 +33,14 @@ const UserDashboardPage = () => {
 
   const links = [
     {
-      name: 'Tasks',
+      name: t("Tasks"),
       path: '/dashboard/tasks',
       module: 'tasks',
       accessLevels: [],
       shortcut: 'H+H',
     },
     {
-      name: 'Overview',
+      name: t("Overview"),
       path: '/dashboard/overview',
       module: 'overview',
       accessLevels: [],

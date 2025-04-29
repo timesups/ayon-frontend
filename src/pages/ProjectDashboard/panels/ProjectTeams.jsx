@@ -9,6 +9,8 @@ import clsx from 'clsx'
 import styled from 'styled-components'
 import TeamMembersStacked from '@components/TeamMembersStacked/TeamMembersStacked'
 
+import { useTranslation } from 'react-i18next'
+
 const subTitle = (members, leaders) => {
   let mt = ''
   let lt = ''
@@ -42,6 +44,8 @@ const StyledTeam = styled.div`
 `
 
 const ProjectTeams = ({ projectName }) => {
+  //translate
+  const {t} = useTranslation()
   let { data = [], isFetching } = useGetTeamsQuery({ projectName })
 
   if (isFetching) {
@@ -58,7 +62,7 @@ const ProjectTeams = ({ projectName }) => {
   }
 
   return (
-    <DashboardPanelWrapper title={`Teams - ${data.length}`}>
+    <DashboardPanelWrapper title={t("Teams length",{length:data.length})}>
       {data.map((team, i) => (
         <StyledTeam key={i} className={clsx({ loading: isFetching })}>
           {!isFetching && (
@@ -102,12 +106,12 @@ const ProjectTeams = ({ projectName }) => {
         <>
           {!data.length && (
             <h2 style={{ position: 'relative' }}>
-              <span>No teams found</span>
+              <span>{t("No teams found")}</span>
             </h2>
           )}
           <Link to={`/manageProjects/teams?project=${projectName}`}>
             <Button style={{ width: '100%', maxHeight: 'unset', height: 36 }} icon="group_add">
-              Create new team
+              {t("Create new team")}
             </Button>
           </Link>
         </>

@@ -18,6 +18,8 @@ import { useProjectSelectDispatcher } from './ProjectMenu/hooks/useProjectSelect
 import useAyonNavigate from '@hooks/useAyonNavigate'
 import useUserProjectPermissions from '@hooks/useUserProjectPermissions'
 
+import { useTranslation } from 'react-i18next'
+
 const formatName = (rowData, defaultTitle, field = 'name') => {
   if (rowData[field] === '_') return defaultTitle
   return rowData[field]
@@ -125,6 +127,10 @@ const ProjectList = ({
   isActiveCallable,
   hideAddProjectButton = false,
 }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const navigate = useAyonNavigate()
   const tableRef = useRef(null)
   const user = useSelector((state) => state.user)
@@ -419,7 +425,7 @@ const ProjectList = ({
           {/* <div className="spacer" /> */}
           <div className="content">
             <Icon icon="create_new_folder" />
-            <span className="title">Add New Project</span>
+            <span className="title">{t("Add New Project")}</span>
           </div>
           {/* <div className="spacer" /> */}
         </StyledAddButton>
@@ -459,7 +465,7 @@ const ProjectList = ({
         >
           <Column
             field="name"
-            header="Projects"
+            header={t("Projects")}
             body={(rowData) => {
               const isActiveCallableValue = isActiveCallable ? isActiveCallable(rowData.name) : true
               return (
