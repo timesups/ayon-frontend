@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
+
+
 import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 
 import {
@@ -45,6 +47,10 @@ import { attachLabels } from './searchTools'
 import useUserProjectPermissions from '@hooks/useUserProjectPermissions'
 import LoadingPage from '@pages/LoadingPage'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 /*
  * key is {addonName}|{addonVersion}|{variant}|{siteId}|{projectKey}
  * if project name or siteid is N/a, use _ instead
@@ -74,6 +80,10 @@ const isChildPath = (childPath, parentPath) => {
 }
 
 const AddonSettings = ({ projectName, showSites = false, bypassPermissions = false }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const isUser = useSelector((state) => state.user.data.isUser)
   //const navigate = useNavigate()
   const [showHelp, setShowHelp] = useState(false)
@@ -352,8 +362,8 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
 
     const message = (
       <>
-        <p>This action will instantly remove the selected override.</p>
-        <p>Are you sure you want to continue?</p>
+        <p>{t("This action will instantly remove the selected override.")}</p>
+        <p>{t("Are you sure you want to continue?")}</p>
       </>
     )
 
@@ -392,8 +402,8 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     // Remove all overrides for this addon (within current project and variant)
     const message = (
       <>
-        <p>This action will instantly remove all overrides for this addon.</p>
-        <p>Are you sure you want to proceed?</p>
+        <p>{t("This action will instantly remove all overrides for this addon.")}</p>
+        <p>{t("Are you sure you want to proceed?")}</p>
       </>
     )
 
@@ -428,8 +438,8 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
   const onPinOverride = async (addon, siteId, path) => {
     const message = (
       <>
-        <p>This action will instantly pin the current value as an override. </p>
-        <p>Are you sure you want to proceed?</p>
+        <p>{t("This action will instantly pin the current value as an override. ")}</p>
+        <p>{t("Are you sure you want to proceed?")}</p>
       </>
     )
 
@@ -527,11 +537,10 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     const message = (
       <>
         <p>
-          Are you sure you want to push <strong>{bundleName}</strong> to production?
+          {t("push to production",{name:bundleName})}
         </p>
         <p>
-          This will mark the current staging bundle as production and copy all staging studio
-          settings and staging projects overrides to production as well.
+          {t("This will mark the current staging bundle as production and copy all staging studio settings and staging projects overrides to production as well.")}
         </p>
       </>
     )
@@ -558,13 +567,13 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     setTimeout(() => {
       const menuItems = [
         {
-          label: 'Copy settings from...',
+          label: t("Copy settings from..."),
           command: () => setShowCopySettings(true),
         },
       ]
       if (user?.data?.isAdmin) {
         menuItems.push({
-          label: 'Low-level editor',
+          label: t("Low-level editor"),
           command: () => setShowRawEdit(true),
           disabled: selectedAddons.length !== 1,
         })
@@ -632,19 +641,19 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
       <>
         <Spacer />
         <Button
-          label="Clear Changes"
+          label={t("Clear Changes")}
           icon="clear"
           onClick={onRevertAllChanges}
           disabled={!canCommit}
         />
         <SaveButton
-          label="Save Changes"
+          label={t("Save Changes")}
           disabled={
             (!bypassPermissions && !userPermissions.canEditSettings(projectName)) || !canCommit
           }
           data-tooltip={
             !bypassPermissions && !userPermissions.canEditSettings(projectName)
-              ? "You don't have edit permissions"
+              ? t("You don't have edit permissions")
               : undefined
           }
           onClick={onSave}
@@ -686,7 +695,7 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     return (
       <EmptyPlaceholder
         icon="settings_alert"
-        message="You don't have permission to view the addon settings for this project"
+        message={t("You don't have permission to view the addon settings for this project")}
       />
     )
   }

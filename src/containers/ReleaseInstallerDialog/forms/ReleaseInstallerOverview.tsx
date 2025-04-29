@@ -12,6 +12,9 @@ import { ReleaseForm } from '../hooks/useReleaseForm'
 import { Error } from '../ReleaseInstaller.styled'
 import { Icon } from '@ynput/ayon-react-components'
 
+import { useTranslation } from 'react-i18next'
+
+
 interface ReleaseInstallerOverviewProps {
   releaseForm: ReleaseForm
   release: ReleaseListItemModel | null

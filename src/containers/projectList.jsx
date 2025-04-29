@@ -413,7 +413,7 @@ const ProjectList = ({
     >
       {onSelectAll && (
         <Button
-          label={!collapsed && 'Select all projects'}
+          label={!collapsed && t("Select all projects")}
           onClick={() => onSelectAll(projectNames)}
           icon={collapsed && 'checklist'}
           disabled={onSelectAllDisabled}

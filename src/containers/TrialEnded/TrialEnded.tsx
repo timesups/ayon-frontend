@@ -8,11 +8,15 @@ import { useAppSelector } from '@state/store'
 import { useGetActiveUsersCountQuery } from '@queries/user/getUsers'
 import { useLogOutMutation } from '@queries/auth/getAuth'
 
+import { useTranslation } from 'react-i18next'
+
 interface TrialEndedProps {
   orgName: string
 }
 
 const TrialEnded: FC<TrialEndedProps> = ({ orgName }) => {
+  
+
   const user = useAppSelector((state) => state.user)
   const canManage = user.data.isAdmin || user.data.isManager
   const navigate = useNavigate()

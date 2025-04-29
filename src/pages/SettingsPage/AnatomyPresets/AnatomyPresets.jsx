@@ -27,7 +27,16 @@ import {
 } from '@queries/anatomy/updateAnatomy'
 import { confirmDelete } from '@shared/helpers'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 const AnatomyPresets = () => {
+  //translation
+
+  const {t} = useTranslation()
+
+
   const [formData, setFormData] = useState(null)
   const [selectedPreset, setSelectedPreset] = useState('_')
   const [showNameDialog, setShowNameDialog] = useState(false)
@@ -196,29 +205,29 @@ const AnatomyPresets = () => {
       <Section>
         <Toolbar>
           <Button
-            label="Copy anatomy"
+            label={t("Copy anatomy")}
             icon="content_copy"
             onClick={() => {
               copyToClipboard(JSON.stringify(formData, null, 2))
             }}
           />
-          <Button label="Paste anatomy" icon="content_paste" onClick={onPasteAnatomy} />
+          <Button label={t("Paste anatomy")} icon="content_paste" onClick={onPasteAnatomy} />
 
           <Spacer />
           <Button
-            label="Set as primary"
+            label={t("Set as primary")}
             icon="flag"
             disabled={isSelectedPrimary}
             onClick={() => setPrimaryPreset(selectedPreset)}
           />
           <Button
-            label="Delete preset"
+            label={t("Delete preset")}
             icon="delete"
             disabled={selectedPreset === '_'}
             onClick={() => handleDeletePreset(selectedPreset, isSelectedPrimary)}
           />
           <Button
-            label="Save as a new preset"
+            label={t("Save as a new preset")}
             icon="add"
             onClick={() => {
               setNewPresetName('')
@@ -228,7 +237,7 @@ const AnatomyPresets = () => {
           />
 
           <SaveButton
-            label="Save Current Preset"
+            label={t("Save Current Preset")}
             saving={isUpdating}
             active={isChanged && selectedPreset !== '_'}
             onClick={() => savePreset(selectedPreset)}

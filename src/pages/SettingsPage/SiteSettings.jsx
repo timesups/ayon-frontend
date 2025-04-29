@@ -8,6 +8,8 @@ import SiteList from '@containers/SiteList'
 import { useGetSiteSettingsSchemaQuery, useGetSiteSettingsQuery } from '@queries/siteSettings'
 import { useSetSiteSettingsMutation } from '@queries/siteSettings'
 
+
+import { useTranslation } from 'react-i18next'
 const SiteSettingsEditor = ({ addonName, addonVersion, siteId, onChange }) => {
   const [formData, setFormData] = useState(null)
 
@@ -50,7 +52,7 @@ const SiteSettings = () => {
   const [selectedSites, setSelectedSites] = useState([])
   const [newData, setNewData] = useState({})
   const [setSiteSettings] = useSetSiteSettingsMutation()
-
+  const {t} = useTranslation()
   const saveChanges = () => {
     for (const key in newData) {
       // eslint-disable-next-line no-unused-vars
@@ -95,7 +97,7 @@ const SiteSettings = () => {
       <Section style={{ flexGrow: 1 }}>
         <Toolbar>
           <Spacer />
-          <Button label="Save Changes" icon="check" onClick={() => saveChanges()} />
+          <Button label={t("Save Changes")} icon="check" onClick={() => saveChanges()} />
         </Toolbar>
 
         {(selectedSites.length && (
@@ -121,7 +123,7 @@ const SiteSettings = () => {
             })}
           </ScrollPanel>
         )) ||
-          'Select a site to edit settings'}
+          t("Select a site to edit settings")}
       </Section>
     </main>
   )

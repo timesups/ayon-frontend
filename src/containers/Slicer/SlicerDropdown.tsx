@@ -3,6 +3,8 @@ import { SliceType } from '@context/slicerContext'
 import { Dropdown, DropdownProps, DropdownRef } from '@ynput/ayon-react-components'
 import { forwardRef } from 'react'
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
+
 
 const StyledDropdown = styled(Dropdown)`
   height: 28px;
@@ -37,6 +39,9 @@ export interface SlicerDropdownProps extends DropdownProps {
 
 const SlicerDropdown = forwardRef<DropdownRef, SlicerDropdownProps>(
   ({ sliceTypes, ...props }, ref) => {
+
+    const {t} = useTranslation()
+
     const { setPowerpackDialog } = usePowerpack()
 
     const options = [...props.options].map((option) => {
@@ -58,7 +63,7 @@ const SlicerDropdown = forwardRef<DropdownRef, SlicerDropdownProps>(
     return (
       <StyledDropdown
         {...props}
-        data-tooltip="Power feature - Slicer"
+        data-tooltip={t("Power feature - Slicer")}
         data-tooltip-delay={0}
         onChange={handleOnChange}
         options={options}

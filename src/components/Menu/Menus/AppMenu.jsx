@@ -7,7 +7,15 @@ import { useRestart } from '@context/restartContext'
 import { useAppDispatch } from '@state/store'
 import { toggleReleaseInstaller } from '@state/releaseInstaller'
 
+import { useTranslation } from 'react-i18next'
+
 export const AppMenu = ({ user, ...props }) => {
+
+
+  //translation
+  const {t} = useTranslation()
+
+
   const dispatch = useAppDispatch()
   // check if user is logged in and is manager or admin
   const isUser = user?.data?.isUser
@@ -40,7 +48,7 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'projectsManager',
       link: '/manageProjects/projectSettings',
-      label: 'Projects Settings',
+      label: t("Projects Settings"),
       icon: 'settings_applications',
       shortcut: 'P+P',
     },
@@ -50,7 +58,7 @@ export const AppMenu = ({ user, ...props }) => {
     items.unshift({
       id: 'settings',
       link: '/settings/studio',
-      label: 'Studio Settings',
+      label: t("Studio Settings"),
       icon: 'settings',
       shortcut: 'S+S',
     })
@@ -59,14 +67,14 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'events',
       link: '/events',
-      label: 'Event Viewer',
+      label: t("Event Viewer"),
       icon: 'history',
       shortcut: 'E+E',
     },
     {
       id: 'services',
       link: '/services',
-      label: 'Services',
+      label: t("Services"),
       icon: 'home_repair_service',
       shortcut: 'V+V',
     },
@@ -82,19 +90,19 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'market',
       link: '/market',
-      label: 'Market',
+      label: t("Market"),
       icon: 'store',
       shortcut: 'M+M',
     },
     {
       id: 'releases',
-      label: 'Update Pipeline',
+      label: t("Update Pipeline"),
       onClick: handleReleaseInstaller,
       icon: 'valve',
     },
     {
       id: 'restart',
-      label: isRestartRequired ? 'Restart Required' : 'Restart Server',
+      label: isRestartRequired ? t("Restart Required") : t("Restart Server"),
       icon: 'restart_alt',
       onClick: confirmRestart,
       highlighted: isRestartRequired,

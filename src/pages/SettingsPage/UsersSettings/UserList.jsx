@@ -12,6 +12,8 @@ import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 import { useGetUserPoolsQuery } from '@queries/auth/getAuth'
 import { accessGroupsSortFunction, userPoolSortFunction } from './tableSorting'
+import { useTranslation } from 'react-i18next'
+
 
 const StyledProfileRow = styled.div`
   display: flex;
@@ -71,6 +73,11 @@ const UserList = ({
   onSelectUsers,
   isSelfSelected,
 }) => {
+
+
+  //translation
+  const {t} = useTranslation()
+
   // GET LICENSE USER POOLS
   const { data: userPools = [] } = useGetUserPoolsQuery()
 
@@ -99,19 +106,19 @@ const UserList = ({
   const ctxMenuItems = (newSelectedUsers) => {
     return [
       {
-        label: 'Set username',
+        label: t("Set username"),
         disabled: selection.length !== 1,
         command: () => setShowRenameUser(true),
         icon: 'edit',
       },
       {
-        label: 'Set password',
+        label: t("Set password"),
         disabled: selection.length !== 1,
         command: () => setShowSetPassword(true),
         icon: 'key',
       },
       {
-        label: 'Delete selected',
+        label: t("Delete selected"),
         disabled: !selection.length || isSelfSelected,
         command: () => setShowDeleteUser(newSelectedUsers),
         icon: 'delete',
@@ -150,13 +157,13 @@ const UserList = ({
         >
           <Column
             field="name"
-            header="Username"
+            header={t("Username")}
             sortable
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
             resizeable
           />
-          <Column field="attrib.fullName" header="Full name" sortable resizeable />
-          <Column field="attrib.email" header="Email" sortable />
+          <Column field="attrib.fullName" header={t("Full name")} sortable resizeable />
+          <Column field="attrib.email" header={t("Email")} sortable />
           {!!userPools.length && (
             <Column
               field="userPool"
@@ -176,7 +183,7 @@ const UserList = ({
           )}
           <Column
             field={'accessLevel'}
-            header="Access level"
+            header={t("Access level")}
             body={(rowData) => getUserRole(rowData)}
             sortFunction={accessGroupsSortFunction}
             sortable
@@ -184,27 +191,27 @@ const UserList = ({
           />
           <Column
             field="defaultAccessGroups"
-            header="Default projects access"
+            header={t("Default projects access")}
             sortable
             resizeable
             body={(rowData) => rowData.defaultAccessGroups?.join(', ')}
           />
           <Column
-            header="Has password"
+            header={t("Has password")}
             body={(rowData) => (rowData.hasPassword ? 'yes' : 'no')}
             field="hasPassword"
             sortable
             resizeable
           />
           <Column
-            header="Guest"
+            header={t("Guest")}
             body={(rowData) => (rowData.isGuest ? 'yes' : '')}
             field="isGuest"
             sortable
             resizeable
           />
           <Column
-            header="Active"
+            header={t("Active")}
             body={(rowData) => (rowData.active ? 'yes' : '')}
             field="active"
             sortable

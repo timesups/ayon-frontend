@@ -57,6 +57,10 @@ import { Icon } from '@ynput/ayon-react-components'
 import { AttributeEnumItem, AttributeWithPermissions, BuiltInFieldOptions } from './types'
 import { useProjectTableContext } from './context/ProjectTableContext'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 //These are the important styles to make sticky column pinning work!
 //Apply styles like this using your CSS strategy of choice with this kind of logic to head cells, data cells, footer cells, etc.
 //View the index.css file for more needed styles such as border-collapse: separate
@@ -477,6 +481,9 @@ const TableBody = ({
   attribs,
   onOpenNew,
 }: TableBodyProps) => {
+  const {t} = useTranslation()
+
+
   const { handleTableBodyContextMenu } = useCellContextMenu({ attribs, onOpenNew })
 
   const { handlePreFetchTasks } = usePrefetchFolderTasks()
@@ -530,7 +537,7 @@ const TableBody = ({
   ) : (
     tableContainerRef.current &&
       createPortal(
-        <EmptyPlaceholder message="No folders or tasks found" />,
+        <EmptyPlaceholder message={t("No folders or tasks found")} />,
         tableContainerRef.current,
       )
   )
