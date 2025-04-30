@@ -3,14 +3,7 @@ import * as Styled from './MeOrUserSwitch.styled'
 import { AssigneeSelect, Button } from '@ynput/ayon-react-components'
 import { useMemo } from 'react'
 
-
-import { useTranslation } from 'react-i18next'
-
-
 const MeOrUserSwitch = ({ value = [], onChange, filter, ...props }) => {
-  //translation
-  const {t} = useTranslation()
-
   const { data: users = [] } = useGetUsersQuery({})
 
   const options = useMemo(
@@ -33,7 +26,7 @@ const MeOrUserSwitch = ({ value = [], onChange, filter, ...props }) => {
   return (
     <Styled.MeOrUserSwitchContainer>
       <Button
-        label={t("Me")}
+        label="Me"
         icon="person"
         className="switch-button me"
         variant="surface"
@@ -60,7 +53,7 @@ const MeOrUserSwitch = ({ value = [], onChange, filter, ...props }) => {
         onClick={handleDropdownClick}
         disableOpen={filter !== 'users' && !!value.length}
         emptyIcon="groups"
-        emptyMessage={t("Assignees")}
+        emptyMessage="Assignees"
         style={{ zIndex: 'none' }}
         data-tooltip="View other users tasks"
         onSelectAll

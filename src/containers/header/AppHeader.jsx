@@ -21,9 +21,6 @@ import clsx from 'clsx'
 import InboxNotificationIcon from './InboxNotification'
 import ReleaseInstallerPrompt from '@containers/ReleaseInstallerDialog/ReleaseInstallerPrompt/ReleaseInstallerPrompt'
 
-import { useTranslation } from 'react-i18next'
-
-
 const FlexWrapper = styled.div`
   display: flex;
   gap: var(--base-gap-small);
@@ -75,10 +72,6 @@ const StyledSwitch = styled(InputSwitch)`
 `
 
 const Header = () => {
-  //translation
-  const {t} = useTranslation()
-
-
   const dispatch = useAppDispatch()
   const menuOpen = useAppSelector((state) => state.context.menuOpen)
   const handleToggleMenu = (menu) => dispatch(toggleMenuOpen(menu))
@@ -160,7 +153,7 @@ const Header = () => {
         <Link to={'/dashboard/tasks'}>
           <HeaderButton
             icon="home"
-            label={t("Home")}
+            label="Home"
             variant="nav"
             className={clsx({ selected: location.pathname.startsWith('/dashboard') })}
             id="home-button"
@@ -169,7 +162,7 @@ const Header = () => {
 
         <HeaderButton
           icon="event_list"
-          label={t("Projects")}
+          label="Projects"
           variant="nav"
           onClick={() => handleToggleMenu('project')}
           style={{

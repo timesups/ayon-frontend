@@ -5,11 +5,7 @@ import copyToClipboard from '@helpers/copyToClipboard'
 import { useGetProjectDashboardQuery } from '@queries/getProjectDashboard'
 import getEntityTypeIcon from '@helpers/getEntityTypeIcon'
 
-import { useTranslation } from 'react-i18next'
-
 const ProjectStats = ({ projectName, share, position }) => {
-  //translation
-  const {t} = useTranslation()
   const {
     data = {},
 
@@ -46,7 +42,7 @@ const ProjectStats = ({ projectName, share, position }) => {
 
   return (
     <DashboardPanelWrapper
-      title={t("Project Stats")}
+      title="Project Stats"
       icon={{ icon: 'share', onClick: () => share('stats', shareData, position) }}
       style={{
         display: 'grid',

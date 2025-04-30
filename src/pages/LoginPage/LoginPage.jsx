@@ -13,9 +13,6 @@ import { useLocalStorage } from '@shared/hooks'
 import { isEmpty, isEqual } from 'lodash'
 import remarkGfm from 'remark-gfm'
 
-import { useTranslation } from 'react-i18next'
-
-
 const clearQueryParams = () => {
   const url = new URL(window.location)
   url.search = ''
@@ -24,8 +21,6 @@ const clearQueryParams = () => {
 }
 
 const LoginPage = ({ isFirstTime = false }) => {
-  //translation
-  const {t} = useTranslation() 
   // get query params from url
   const search = new URLSearchParams(window.location.search)
   const dispatch = useDispatch()
@@ -186,7 +181,7 @@ const LoginPage = ({ isFirstTime = false }) => {
           <Styled.Methods>
             {showPasswordLogin && (
               <form onSubmit={handleSubmit}>
-                <label id="username">{t("Username")}</label>
+                <label id="username">Username</label>
                 <InputText
                   autoFocus
                   placeholder="Enter your username"
@@ -195,7 +190,7 @@ const LoginPage = ({ isFirstTime = false }) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                <label id="password">{t("Password")}</label>
+                <label id="password">Password</label>
                 <InputPassword
                   placeholder="Enter password"
                   name="password"
