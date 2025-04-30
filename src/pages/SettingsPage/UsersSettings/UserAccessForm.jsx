@@ -4,9 +4,6 @@ import { SelectButton } from 'primereact/selectbutton'
 import AccessGroupsDropdown from '@containers/AccessGroupsDropdown'
 import styled from 'styled-components'
 
-import { useTranslation } from 'react-i18next'
-
-
 const FormRowStyled = styled(FormRow)`
   .label {
     min-width: 160px;
@@ -25,9 +22,6 @@ const NoteStyled = styled.span`
 `
 
 const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
-  
-  const {t} = useTranslation()
-  
   const authenticatedUser = useSelector((state) => state.user.data)
 
   const userLevels = [
@@ -75,9 +69,9 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
     <>
       <b>Access</b>
       <FormLayout>
-        <FormRowStyled label={t("Guest")}>
+        <FormRowStyled label="Guest">
           <div
-            data-tooltip={isAdmin ? t("Admins cannot be guests") : undefined}
+            data-tooltip={isAdmin ? 'Admins cannot be guests' : undefined}
             data-tooltip-delay={0}
             style={{ width: 'fit-content' }}
           >
@@ -92,7 +86,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
           </div>
         </FormRowStyled>
 
-        <FormRowStyled label={t("Developer")}>
+        <FormRowStyled label="Developer">
           <div data-tooltip={getTooltip()} data-tooltip-delay={0} style={{ width: 'fit-content' }}>
             <InputSwitch
               checked={formData?.isDeveloper}
@@ -105,7 +99,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
           </div>
         </FormRowStyled>
 
-        <FormRowStyled label={t("Access level")}>
+        <FormRowStyled label="Access level">
           <SelectButton
             unselectable={false}
             value={formData?.userLevel}
@@ -117,16 +111,16 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
 
         {isUser ? (
           <FormRowStyled
-            label={t("Default projects access")}
+            label={'Default projects access'}
             data-tooltip={
-              t("When a new project is created, the user will automatically be added to the selected access groups. To grant a user the ability to manage project access for others, ensure an access group with those permissions is included here.")
+              'When a new project is created, the user will automatically be added to the selected access groups. To grant a user the ability to manage project access for others, ensure an access group with those permissions is included here.'
             }
           >
             <AccessGroupsDropdown
               style={{ flexGrow: 1 }}
               selectedAccessGroups={defaultAccessGroups}
               setSelectedAccessGroups={handleDefaultAccessGroupsChange}
-              placeholder={t("Add access groups...")}
+              placeholder={'Add access groups...'}
               isMultiple={formData._mixedFields?.includes('defaultAccessGroups')}
               accessGroups={accessGroupsData}
             />
@@ -134,7 +128,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
         ) : (
           <NoteStyled>
             <Icon icon="info" />
-            {t("Admins, managers and services have full access to all projects.")}
+            Admins, managers and services have full access to all projects.
           </NoteStyled>
         )}
       </FormLayout>

@@ -18,16 +18,11 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import AppNavLinks from '@containers/header/AppNavLinks'
 import { SlicerProvider } from '@context/slicerContext'
 
-import { useTranslation } from 'react-i18next'
-
-
 const ProjectContextInfo = () => {
   /**
    * Show a project context in a dialog
    * this is for development only
    */
-
-  
   const context = useSelector((state) => state.context)
   const project = useSelector((state) => state.project)
   return (
@@ -48,8 +43,6 @@ const ProjectPage = () => {
    * It parses the url, loads the project data, dispatches the
    * project data to the store, and renders the requested page.
    */
-  const {t} = useTranslation()
-
 
   const navigate = useNavigate()
   const { projectName, module, addonName } = useParams()
@@ -100,25 +93,25 @@ const ProjectPage = () => {
   const links = useMemo(
     () => [
       {
-        name: t("Overview"),
+        name: 'Overview',
         path: `/projects/${projectName}/overview`,
         module: 'overview',
         uriSync: true,
       },
       {
-        name: t("Task progress"),
+        name: 'Task progress',
         path: `/projects/${projectName}/tasks`,
         module: 'tasks',
         uriSync: true,
       },
       {
-        name: t("Browser"),
+        name: 'Browser',
         path: `/projects/${projectName}/browser`,
         module: 'browser',
         uriSync: true,
       },
       {
-        name: t("Workfiles"),
+        name: 'Workfiles',
         path: `/projects/${projectName}/workfiles`,
         module: 'workfiles',
         uriSync: true,

@@ -4,9 +4,6 @@ import { useMemo, useEffect } from 'react'
 import { useListBundlesQuery } from '@queries/bundles/getBundles'
 import styled from 'styled-components'
 
-import { useTranslation } from 'react-i18next'
-
-
 const BundleDropdownItem = styled.div`
   display: flex;
   flex-direction: row;
@@ -111,10 +108,6 @@ const DevModeSelector = ({ variant, setVariant, disabled, style }) => {
 }
 
 const VariantSelector = ({ variant, setVariant, disabled = false, style }) => {
-
-  //translation
-  const {t} = useTranslation()
-
   const user = useSelector((state) => state.user)
 
   useEffect(() => {
@@ -146,13 +139,13 @@ const VariantSelector = ({ variant, setVariant, disabled = false, style }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: 6 }}>
       <Button
-        label={t("Production")}
+        label="Production"
         onClick={() => setVariant('production')}
         style={variant === 'production' ? styleHlProd : {}}
         disabled={disabled}
       />
       <Button
-        label={t("Staging")}
+        label="Staging"
         onClick={() => setVariant('staging')}
         style={variant === 'staging' ? styleHlStag : {}}
         disabled={disabled}

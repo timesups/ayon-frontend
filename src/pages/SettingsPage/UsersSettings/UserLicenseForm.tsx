@@ -4,9 +4,6 @@ import { Dropdown, FormLayout, FormRow, InputSwitch } from '@ynput/ayon-react-co
 import { FC } from 'react'
 import styled from 'styled-components'
 
-
-import { useTranslation } from 'react-i18next'
-
 const FormRowStyled = styled(FormRow)`
   .label {
     min-width: 160px;
@@ -30,12 +27,6 @@ const UserLicenseForm: FC<UserLicenseFormProps> = ({
   onActiveChange,
   onPoolChange,
 }) => {
-
-  // translation
-
-  const {t} = useTranslation()
-
-
   // GET LICENSE USER POOLS
   const { data: userPools = [], isLoading: isLoadingPools } = useGetUserPoolsQuery()
   const isUsingPools = !!userPools.length
@@ -43,13 +34,11 @@ const UserLicenseForm: FC<UserLicenseFormProps> = ({
   const licenseActiveTooltip = `Inactive users cannot log in and will lose their assigned license.`
   const poolSelectTooltip = `Login requires an assigned license. If none is assigned, the system will automatically assign one from an available fixed pool.  You cannot log in if no licenses are available. [License documentation](https://ayon.ynput.io/docs/admin_server_licenses)`
 
-
-  
   return (
     <>
-      <b>{isUsingPools ? t("License control") : t("Login control")}</b>
+      <b>{isUsingPools ? 'License control' : 'Login control'}</b>
       <FormLayout>
-        <FormRowStyled label={t("User active")}>
+        <FormRowStyled label="User active">
           <div
             style={{ width: 'fit-content' }}
             data-tooltip={isUsingPools ? licenseActiveTooltip : ''}
@@ -63,7 +52,7 @@ const UserLicenseForm: FC<UserLicenseFormProps> = ({
           </div>
         </FormRowStyled>
         {isUsingPools && (
-          <FormRowStyled label={t("User license")}>
+          <FormRowStyled label="User license">
             <Dropdown
               value={isPoolMixed ? [pool] : [pool]}
               options={buildPoolsOptions(userPools)}

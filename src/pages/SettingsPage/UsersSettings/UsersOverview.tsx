@@ -3,9 +3,6 @@ import { useGetUserPoolsQuery } from '@queries/auth/getAuth'
 import { useMemo } from 'react'
 import styled from 'styled-components'
 
-import { useTranslation } from 'react-i18next'
-
-
 const Totals = styled.div`
   display: flex;
   align-items: center;
@@ -37,9 +34,6 @@ type UsersOverviewProps = {
 }
 
 const UsersOverview = ({ users = [] }: UsersOverviewProps) => {
-  //translation
-  const {t} = useTranslation()
-
   const usersWithoutService = users.filter((user) => !user.isService)
   const { data: userPools = [] } = useGetUserPoolsQuery()
   const isUsingPools = !!userPools.length
@@ -54,24 +48,24 @@ const UsersOverview = ({ users = [] }: UsersOverviewProps) => {
     }
   } = {
     total: {
-      label: t("Total users"),
-      tooltip: t("Total number of users not including services"),
+      label: 'Total users',
+      tooltip: 'Total number of users not including services',
       value: usersWithoutService.length,
     },
     active: {
-      label: t("Active"),
+      label: 'Active',
       value: usersWithoutService.filter((user) => user.active).length,
     },
     admins: {
-      label: t("Admins"),
+      label: 'Admins',
       value: usersWithoutService.filter((user) => user.isAdmin).length,
     },
     managers: {
-      label: t("Managers"),
+      label: 'Managers',
       value: usersWithoutService.filter((user) => user.isManager).length,
     },
     services: {
-      label: t("Services"),
+      label: 'Services',
       value: users.filter((user) => user.isService).length,
     },
   }

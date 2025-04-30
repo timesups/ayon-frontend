@@ -20,13 +20,7 @@ import { isEqual } from 'lodash'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 
-import { useTranslation } from 'react-i18next'
-
-
 const Attributes = () => {
-
-  const {t} = useTranslation()
-
   const [attributes, setAttributes] = useState([])
   const [selectedAttribute, setSelectedAttribute] = useState(null)
   const [showEditor, setShowEditor] = useState(false)
@@ -160,29 +154,29 @@ const Attributes = () => {
         )}
         <Section>
           <Toolbar>
-            <Button label={t("Add Attribute")} icon="add" onClick={onNewAttribute} />
+            <Button label="Add Attribute" icon="add" onClick={onNewAttribute} />
             <Button
-              label={t("Delete attribute")}
+              label="Delete attribute"
               icon="delete"
               disabled={selectedAttribute?.builtin}
               onClick={onDelete}
             />
             <InputText
               style={{ width: '200px' }}
-              placeholder={t("Filter attributes...")}
+              placeholder="Filter attributes..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <Spacer />
             {isChanges && 'Unsaved Changes'}
             <Button
-              label={t("Clear changes")}
+              label="Clear changes"
               icon="clear"
               disabled={!isChanges}
               onClick={() => setAttributes(data)}
             />
             <SaveButton
-              label={t("Save attributes changes")}
+              label="Save attributes changes"
               onClick={onSave}
               active={isChanges}
               saving={updateLoading}
@@ -206,8 +200,8 @@ const Attributes = () => {
               rowClassName={() => ({ loading: isLoading })}
             >
               <Column rowReorder style={{ maxWidth: 30 }} />
-              <Column field="name" header={t("Name")} style={{ maxWidth: 130 }} sortable />
-              <Column field="data.title" header={t("Title")} style={{ maxWidth: 130 }} sortable />
+              <Column field="name" header="Name" style={{ maxWidth: 130 }} sortable />
+              <Column field="data.title" header="Title" style={{ maxWidth: 130 }} sortable />
               <Column
                 field="builtin"
                 header=""
@@ -216,16 +210,16 @@ const Attributes = () => {
                 sortable
               />
               <Column
-                header={t("Scopes")}
+                header="Scopes"
                 field="scopeLength"
                 body={(rowData) => rowData?.scope?.join(', ')}
                 style={{ maxWidth: 330 }}
                 sortable
               />
-              <Column field="data.type" header={t("Type")} style={{ maxWidth: 150 }} sortable />
-              <Column field="data.example" header={t("Example")} style={{ maxWidth: 200 }} sortable />
-              <Column field="data.description" header={t("Description")} sortable />
-              <Column field="data.inherit" header={t("Inherit")} sortable style={{ maxWidth: 80 }} />
+              <Column field="data.type" header="Type" style={{ maxWidth: 150 }} sortable />
+              <Column field="data.example" header="Example" style={{ maxWidth: 200 }} sortable />
+              <Column field="data.description" header="Description" sortable />
+              <Column field="data.inherit" header="Inherit" sortable style={{ maxWidth: 80 }} />
             </DataTable>
           </TablePanel>
         </Section>

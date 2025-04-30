@@ -11,9 +11,6 @@ import { toast } from 'react-toastify'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 
-import { useTranslation } from 'react-i18next'
-
-
 const BundleList = ({
   selectedBundles = [],
   onBundleSelect,
@@ -25,10 +22,6 @@ const BundleList = ({
   errorMessage,
   developerMode,
 }) => {
-  //translation
-  const {t} = useTranslation()
-
-
   const prodBundleName = useMemo(() => bundleList.find((b) => b.isProduction)?.name, [bundleList])
   const stagingBundleName = useMemo(() => bundleList.find((b) => b.isStaging)?.name, [bundleList])
   const hasDevBundles = useMemo(() => bundleList.some((b) => b.isDev), [bundleList])
@@ -245,10 +238,10 @@ const BundleList = ({
       >
         <Column
           field="name"
-          header={t("Name")}
+          header="Name"
           body={(b) => `${b.name} ${b?.isArchived ? '(archived)' : ''}`}
         />
-        <Column header={t("Status")} body={formatStatus} style={{ maxWidth: 130 }} />
+        <Column header="Status" body={formatStatus} style={{ maxWidth: 130 }} />
       </DataTable>
     </TablePanel>
   )

@@ -23,15 +23,7 @@ import Shortcuts from '@containers/Shortcuts'
 import CopyBundleSettingsDialog from './CopyBundleSettingsDialog/CopyBundleSettingsDialog'
 import BundleFormLoading from './BundleFormLoading'
 
-
-import { useTranslation } from 'react-i18next'
-
-
-
 const Bundles = () => {
-
-  const {t} = useTranslation()
-
   const userName = useSelector((state) => state.user.name)
   const developerMode = useSelector((state) => state.user.attrib.developerMode)
   const dispatch = useDispatch()
@@ -412,42 +404,42 @@ const Bundles = () => {
                 <Button
                   icon="add"
                   onClick={handleNewBundleStart}
-                  data-tooltip={t("Add new bundle")}
+                  data-tooltip="Add new bundle"
                   data-shortcut="N"
                 >
-                  <span>{t("Add Bundle")}</span>
+                  <span>Add Bundle</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('addon')}
-                  data-tooltip={t("Upload addon zip files")}
+                  data-tooltip="Upload addon zip files"
                   data-shortcut="A"
                 >
-                  <span className="large">{t("Upload Addons")}</span>
-                  <span className="small">{t("Addons")}</span>
+                  <span className="large">Upload Addons</span>
+                  <span className="small">Addons</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('installer')}
-                  data-tooltip={t("Upload launchers for download")}
+                  data-tooltip="Upload launchers for download"
                   data-shortcut="L"
                 >
-                  <span className="large">{t("Upload Launcher")}</span>
-                  <span className="small">{t("Launcher")}</span>
+                  <span className="large">Upload Launcher</span>
+                  <span className="small">Launcher</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('package')}
-                  data-tooltip={t("Upload dependency packages")}
+                  data-tooltip="Upload dependency packages"
                   data-shortcut="P"
                 >
-                  <span className="large">{t("Upload Dependency Package")}</span>
-                  <span className="small">{t("Package")}</span>
+                  <span className="large">Upload Dependency Package</span>
+                  <span className="small">Package</span>
                 </Button>
                 <span style={{ whiteSpace: 'nowrap' }} className="large">
                   Show Archived
                 </span>
-                <span className="small">{t("Archived")}</span>
+                <span className="small">Archived</span>
                 <InputSwitch
                   checked={showArchived}
                   onChange={(e) => setShowArchived(e.target.checked)}

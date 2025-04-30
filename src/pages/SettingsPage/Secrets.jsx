@@ -13,10 +13,6 @@ import { toast } from 'react-toastify'
 import { confirmDelete } from '@shared/helpers'
 import copyToClipboard from '@helpers/copyToClipboard'
 
-
-import { useTranslation } from 'react-i18next'
-
-
 const SecretList = styled.div`
   display: flex;
   flex-direction: column;
@@ -40,12 +36,6 @@ const StyledSecretItem = styled.div`
 `
 
 const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
-
-
-  //translate
-  const {t} = useTranslation()
-
-
   const [name, setName] = useState(initialName)
   const [value, setValue] = useState(initialValue)
   const [setSecret] = useSetSecretMutation()
@@ -92,14 +82,14 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         readOnly={stored}
-        placeholder={t("Secret name")}
+        placeholder="Secret name"
         pattern="^\S+$"
       />
 
       <InputPassword
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder={t("Secret value")}
+        placeholder="Secret value"
       />
 
       {stored && <Button icon="content_copy" onClick={() => copyToClipboard(value)} />}
@@ -109,7 +99,7 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
         icon={stored ? 'check' : 'add'}
         onClick={handleSave}
         variant={stored ? 'surface' : 'filled'}
-        label={stored ? '' : t("Add")}
+        label={stored ? '' : 'Add'}
       />
       {stored && <Button icon="delete" onClick={handleDelete} />}
     </StyledSecretItem>
@@ -117,10 +107,6 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
 }
 
 const Secrets = () => {
-  //translation
-  const {t} = useTranslation()
-
-
   const { data } = useGetSecretsQuery()
 
   return (
@@ -132,9 +118,9 @@ const Secrets = () => {
         }}
       >
         <SecretList>
-          <h2>{t("New secret")}</h2>
+          <h2>New secret</h2>
           <SecretItem name="" value="" stored={false} />
-          <h2>{t("Stored secrets")}</h2>
+          <h2>Stored secrets</h2>
           {data?.length &&
             data
               .filter((secret) => secret.name !== 'ynput_cloud_key')

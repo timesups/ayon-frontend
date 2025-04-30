@@ -20,9 +20,6 @@ import UserDetailsHeader from '@components/User/UserDetailsHeader'
 import { cloneDeep, isEqual } from 'lodash'
 import UserLicenseForm from './UserLicenseForm'
 
-import { useTranslation } from 'react-i18next'
-
-
 const FormsStyled = styled.section`
   flex: 1;
   overflow-x: clip;
@@ -200,12 +197,6 @@ const UserDetail = ({
   accessGroupsData,
   isFetchingUsers,
 }) => {
-
-  //translation
-
-
-  const {t} = useTranslation()
-
   const [formData, setFormData] = useState(null)
   const [initData, setInitData] = useState({})
   const [changesMade, setChangesMade] = useState([])
@@ -393,7 +384,7 @@ const UserDetail = ({
       <UserDetailsHeader
         users={formUsers}
         onClose={onClose}
-        subTitle={headerAccessGroups.length ? headerAccessGroups.join(', ') : t("No AccessGroups")}
+        subTitle={headerAccessGroups.length ? headerAccessGroups.join(', ') : 'No AccessGroups'}
       />
       {hasServiceUser && singleUserEdit ? (
         <FormsStyled>
@@ -403,14 +394,14 @@ const UserDetail = ({
         <FormsStyled>
           {singleUserEdit && (
             <Panel>
-              <FormRow label={t("Username")} key="Username">
+              <FormRow label="Username" key="Username">
                 <LockedInput
                   value={singleUserEdit.name}
                   onEdit={() => setShowRenameUser(true)}
                   disabled={managerDisabled}
                 />
               </FormRow>
-              <FormRow label={t("Password")} key="Password">
+              <FormRow label="Password" key="Password">
                 <LockedInput
                   label="Password"
                   value={singleUserEdit.hasPassword ? '1234567890' : ''}
@@ -456,13 +447,13 @@ const UserDetail = ({
       <PanelButtonsStyled>
         <Button
           onClick={onCancel}
-          label={t("Cancel")}
+          label="Cancel"
           icon="clear"
           disabled={!changesMade.length || selectedUsers.length > 1}
         />
         <SaveButton
           onClick={onSave}
-          label={t("Save selected users")}
+          label="Save selected users"
           active
           saving={isUpdating || isFetchingUsers}
           disabled={isUpdating || isFetchingUsers || !changesMade.length}

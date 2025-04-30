@@ -14,10 +14,6 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import usePortalElements from '@hooks/usePortalElements'
 
-
-import { useTranslation } from 'react-i18next'
-
-
 const StyledSection = styled(Section)`
   padding: var(--padding-m);
   align-items: center;
@@ -44,10 +40,6 @@ const StyledScrollPanel = styled(ScrollPanel)`
 `
 
 const ServerConfig = () => {
-  //translation
-  const { t } = useTranslation()
-
-
   const { bgElement, logoElement, containerRef } = usePortalElements()
 
   const { data: originalData = {}, isLoading: isLoadingData } = useGetServerConfigQuery()
@@ -165,7 +157,7 @@ const ServerConfig = () => {
             active={!!changedKeys.length}
             onClick={onSave}
             saving={isSaving}
-            label={t("Save server config")}
+            label="Save server config"
           />
         </Toolbar>
 

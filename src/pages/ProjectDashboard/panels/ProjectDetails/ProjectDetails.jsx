@@ -13,14 +13,7 @@ import { useUpdateProjectMutation } from '@queries/project/updateProject'
 import { toast } from 'react-toastify'
 import clsx from 'clsx'
 
-import { useTranslation } from 'react-i18next'
-
-
 const ProjectDetails = ({ projectName }) => {
-  //translate
-
-  const {t} = useTranslation()
-
   const isUser = useSelector((state) => state.user.data.isUser)
 
   // GET DATA
@@ -101,13 +94,13 @@ const ProjectDetails = ({ projectName }) => {
   }
 
   attribArray.unshift({
-    name: t("Library"),
+    name: 'Library',
     value: !!library,
   })
 
   // project code
   attribArray.unshift({
-    name: t("Code"),
+    name: 'Code',
     value: code,
   })
 
@@ -115,10 +108,10 @@ const ProjectDetails = ({ projectName }) => {
   attribArray.unshift({
     value: (
       <Styled.Active className={clsx({ loading: isFetching, active })}>
-        {active ? t("active") : t("inactive")}
+        {active ? 'active' : ' inactive'}
       </Styled.Active>
     ),
-    name: t("Status"),
+    name: 'Status',
   })
 
   // HANDLERS
@@ -194,7 +187,7 @@ const ProjectDetails = ({ projectName }) => {
           <Styled.Header>
             {!editing ? (
               <Button
-                label={t("Edit")}
+                label="Edit"
                 icon="edit"
                 onClick={() => setEditing(true)}
                 disabled={isFetching || isError}
@@ -203,7 +196,7 @@ const ProjectDetails = ({ projectName }) => {
               <>
                 <Button label="Cancel" icon="close" onClick={handleCancel} className="cancel" />
                 <SaveButton
-                  label={t("Save")}
+                  label="Save"
                   active={hasChanges}
                   saving={isUpdating}
                   onClick={handleAttribSubmit}

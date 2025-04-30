@@ -10,17 +10,12 @@ import { confirmDelete } from '@shared/helpers'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 
-import { useTranslation } from 'react-i18next'
-
-
 const AccessGroupList = ({
   projectName,
   selectedAccessGroup,
   onSelectAccessGroup,
   canCreateOrDelete,
 }) => {
-  const {t} = useTranslation()
-
   const [showNewAccessGroup, setShowNewAccessGroup] = useState(false)
 
   // Load user list
@@ -77,7 +72,7 @@ const AccessGroupList = ({
   const ctxMenuItems = (eventData) => {
     const menuItems = [
       {
-        label: t("Clear Overrides"),
+        label: 'Clear Overrides',
         icon: 'clear',
         disabled: !eventData.isProjectLevel,
         command: async () =>
@@ -92,7 +87,7 @@ const AccessGroupList = ({
           }),
       },
       {
-        label: t("Delete"),
+        label: 'Delete',
         icon: 'delete',
         command: async () =>
           confirmDelete({
@@ -123,12 +118,12 @@ const AccessGroupList = ({
       {canCreateOrDelete && (
         <Toolbar>
           <Button
-            label={t("New access group")}
+            label="New access group"
             onClick={() => setShowNewAccessGroup(true)}
             icon="group_add"
           />
           <Spacer />
-          <Button label={t("Delete access group")} onClick={onDeleteGlobal} icon="delete" />
+          <Button label="Delete access group" onClick={onDeleteGlobal} icon="delete" />
         </Toolbar>
       )}
 
@@ -145,7 +140,7 @@ const AccessGroupList = ({
           className={clsx({ loading: isLoading })}
           onContextMenu={(e) => onContextMenu(e)}
         >
-          <Column field="name" header={t("Access group")} />
+          <Column field="name" header="Access group" />
         </DataTable>
       </TablePanel>
     </Section>

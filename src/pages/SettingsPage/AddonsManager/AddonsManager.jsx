@@ -21,16 +21,7 @@ import { Link } from 'react-router-dom'
 import AddonDialog from '@components/AddonDialog/AddonDialog'
 import Shortcuts from '@containers/Shortcuts'
 
-import { useTranslation } from 'react-i18next'
-
-
 const AddonsManager = () => {
-  //translation
-
-  const {t} = useTranslation()
-
-
-
   const navigate = useNavigate()
   // QUERIES
   const { data: { addons = [] } = {}, isLoading } = useListAddonsQuery({})
@@ -142,7 +133,7 @@ const AddonsManager = () => {
 
   const viewInMarket = (selected) => [
     {
-      label: t("View in Market"),
+      label: 'View in Market',
       command: () => navigate(`/market?selected=${selected[0].split(' ')[0]}`),
       icon: 'store',
     },
@@ -177,7 +168,7 @@ const AddonsManager = () => {
           <AddonDialog uploadOpen={uploadOpen} setUploadOpen={setUploadOpen} />
           {/* ADDONS TABLE */}
           <AddonsManagerTable
-            title={t("Addons")}
+            title="Addons"
             value={addonsTableData}
             selection={selectedAddons}
             onChange={handleAddonsSelect}
@@ -187,8 +178,8 @@ const AddonsManager = () => {
                 <Button
                   onClick={() => setUploadOpen('addon')}
                   data-shortcut="A"
-                  data-tooltip={t("Upload addon zip files")}
-                  label= {t("Upload Addons")}
+                  data-tooltip="Upload addon zip files"
+                  label="Upload Addons"
                   icon="upload"
                   style={{ width: '100%' }}
                 />
@@ -198,14 +189,14 @@ const AddonsManager = () => {
               </div>
             }
             extraContext={viewInMarket}
-            emptyMessage={t("No addons found")}
+            emptyMessage="No addons found"
             isLoading={isLoading}
           />
         </SplitterPanel>
         <SplitterPanel>
           {/* VERSIONS TABLE */}
           <AddonsManagerTable
-            title={t("Versions")}
+            title="Versions"
             value={versionsTableData}
             selection={selectedVersions}
             onChange={handleVersionSelect}
@@ -214,14 +205,14 @@ const AddonsManager = () => {
             onDelete={handleDeleteVersions}
             onDeleteSuccess={handleDeleteVersionsSuccess}
             extraContext={viewInMarket}
-            emptyMessage={selectedAddons.length ? t("No versions found") : t("Select an addon")}
+            emptyMessage={selectedAddons.length ? 'No versions found' : 'Select an addon'}
             isLoading={isLoading}
           />
         </SplitterPanel>
         <SplitterPanel>
           {/* BUNDLES TABLE */}
           <AddonsManagerTable
-            title={t("Bundles")}
+            title="Bundles"
             value={bundlesTableData}
             selection={selectedBundles}
             onChange={setSelectedBundles}
@@ -235,7 +226,7 @@ const AddonsManager = () => {
                 icon: 'arrow_circle_right',
               },
             ]}
-            emptyMessage={selectedVersions.length ? t("No bundles found") : t("Select versions")}
+            emptyMessage={selectedVersions.length ? 'No bundles found' : 'Select versions'}
             isLoading={isLoading}
           />
         </SplitterPanel>

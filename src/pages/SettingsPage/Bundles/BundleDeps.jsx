@@ -6,10 +6,6 @@ import { toast } from 'react-toastify'
 import { useListDependencyPackagesQuery } from '@queries/dependencyPackages/getDependencyPackages'
 import BundleDepsPicker from './BundleDepsPicker'
 
-import { useTranslation } from 'react-i18next'
-import { t } from 'i18next'
-
-
 const BundleDeps = ({ bundle, onChange }) => {
   const initPackageForm = {
     platform: null,
@@ -58,22 +54,22 @@ const BundleDeps = ({ bundle, onChange }) => {
   const platforms = [
     {
       id: 'windows',
-      label: t("Windows"),
+      label: 'Windows',
     },
     {
       id: 'linux',
-      label: t("Linux"),
+      label: 'Linux',
     },
     {
       id: 'darwin',
-      label: t("MacOS"),
+      label: 'MacOS',
     },
   ]
 
   return (
     <>
       <Dialog
-        header={t("Update Dependency Package")}
+        header={'Update Dependency Package'}
         isOpen={!!updatePackageForm.platform}
         onClose={handleCloseForm}
         size="sm"
@@ -90,7 +86,7 @@ const BundleDeps = ({ bundle, onChange }) => {
         />
       </Dialog>
       <section style={{ flex: 1, overflow: 'hidden' }}>
-        <h2>{t("Dependency Packages")}</h2>
+        <h2>Dependency Packages</h2>
         {bundle && (
           <FormLayout style={{ maxWidth: 'max-content', minWidth: 300 }}>
             {platforms.map((platform) => (

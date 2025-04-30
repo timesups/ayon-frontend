@@ -5,14 +5,7 @@ import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
 
-import { useTranslation } from 'react-i18next'
-
 const EnableNotifications = () => {
-
-  //translation
-
-  const {t} = useTranslation()
-
   const [hide, setHide] = useState(false)
   const user = useSelector((state) => state.user)
   const { sendNotification } = useNotifications()
@@ -42,8 +35,8 @@ const EnableNotifications = () => {
 
   const disabled = window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' // disable if not on HTTPS or localhost
   const tooltip = disabled
-    ? t("Browser notifications only work over HTTPS")
-    : t("Get notifications on your device")
+    ? 'Browser notifications only work over HTTPS'
+    : 'Get notifications on your device'
 
   return (
     Notification.permission !== 'granted' &&
@@ -55,7 +48,7 @@ const EnableNotifications = () => {
         variant="filled"
         disabled={disabled}
       >
-        {t("Enable notifications")}
+        Enable notifications
       </Button>
     )
   )
