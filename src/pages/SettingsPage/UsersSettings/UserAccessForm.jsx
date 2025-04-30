@@ -73,7 +73,7 @@ const UserAccessForm = ({ accessGroupsData, formData, onChange, disabled }) => {
 
   return (
     <>
-      <b>Access</b>
+      <b>{t("Access")}</b>
       <FormLayout>
         <FormRowStyled label={t("Guest")}>
           <div

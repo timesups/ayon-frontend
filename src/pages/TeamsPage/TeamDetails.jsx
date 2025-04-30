@@ -9,6 +9,7 @@ import {
   Panel,
 } from '@ynput/ayon-react-components'
 import DetailHeader from '@components/DetailHeader'
+import { useTranslation } from 'react-i18next'
 
 const TeamDetails = ({
   teams = [],
@@ -17,6 +18,10 @@ const TeamDetails = ({
   roles = [],
   onRenameTeam,
 }) => {
+  // translation
+  const {t} = useTranslation()
+
+
   const noneSelected = selectedTeams.length === 0
   const disableName = noneSelected || selectedTeams.length > 1
 
@@ -47,7 +52,9 @@ const TeamDetails = ({
     selectedTeams.length > 1
       ? `${selectedTeams.length} Teams Selected (${selectedTeams.join(', ')})`
       : selectedTeams[0]
-  const subTitle = `${totalMembers - totalLeaders} Members - ${totalLeaders} Leaders`
+
+  const subTitle = t("member leader count",{member:totalMembers - totalLeaders,leaders:totalLeaders})
+  //const subTitle = `${totalMembers - totalLeaders} Members - ${totalLeaders} Leaders`
 
   const handleRoleRename = (role, value) => {
     // loop through every team and every member on each team to rename the role
@@ -85,7 +92,7 @@ const TeamDetails = ({
           overflow: 'auto',
         }}
       >
-        <h2 style={{ marginTop: 0 }}>Team Settings</h2>
+        <h2 style={{ marginTop: 0 }}>{t("Team Settings")}</h2>
         <DetailHeader
           style={{
             padding: 0,
@@ -103,7 +110,7 @@ const TeamDetails = ({
         <Divider style={{ margin: '10px 0' }} />
 
         <FormLayout>
-          <FormRow label="Team Name">
+          <FormRow label={t("Team Name")}>
             <LockedInput
               value={name}
               disabled={disableName}
@@ -112,7 +119,7 @@ const TeamDetails = ({
               cancelLabel=""
             />
           </FormRow>
-          <h2>Roles</h2>
+          <h2>{t("Roles")}</h2>
           {roles.map((role) => (
             <div
               key={role}

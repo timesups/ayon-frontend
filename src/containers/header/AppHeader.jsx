@@ -187,7 +187,7 @@ const Header = () => {
         <ReleaseInstallerPrompt isAdmin={user.data.isAdmin} />
         {isDeveloper && (
           <DeveloperSwitch $isChecked={developerMode} onClick={handleDeveloperMode}>
-            <span>Developer Mode</span>
+            <span>{t("Developer Mode")}</span>
             <StyledSwitch checked={developerMode} readOnly />
           </DeveloperSwitch>
         )}

@@ -6,7 +6,7 @@ import InstallerProdCard from '@components/InstallerDownload/InstallerProdCard/I
 import WindowsLogo from '@/svg/WindowsLogo'
 import AppleLogo from '@/svg/AppleLogo'
 import LinuxLogo from '@/svg/LinuxLogo'
-
+import { useTranslation } from 'react-i18next'
 export const getPlatformIcon = (platform) => {
   switch (platform) {
     case 'windows':
@@ -40,6 +40,9 @@ export const getPlatformLabel = (platform) => {
 }
 
 const DownloadsPage = () => {
+  // translation
+  const {t} = useTranslation()
+
   //  production installers grouped by platform
   //  non-production installers grouped by version
   const { prodInstallers, allInstallers, platform, handleDownload } = useGetInstallerDownload()
@@ -64,7 +67,7 @@ const DownloadsPage = () => {
             ))}
           </Styled.Header>
           <Panel style={{ overflow: 'auto' }}>
-            <h2>All Versions</h2>
+            <h2>{t("All Versions")}</h2>
             <Styled.All>
               {Object.entries(allInstallers).map(([version, installers]) => (
                 <div key={version}>

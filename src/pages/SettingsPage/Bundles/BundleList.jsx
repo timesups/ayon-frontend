@@ -241,7 +241,7 @@ const BundleList = ({
         className={clsx('bundles-table', { loading: isLoading })}
         rowClassName={(rowData) => ({ archived: rowData?.isArchived, loading: isLoading })}
         resizableColumns
-        emptyMessage={errorMessage ? 'Error: ' + errorMessage : 'No bundles found'}
+        emptyMessage={errorMessage ? 'Error: ' + errorMessage : t("No bundles found")}
       >
         <Column
           field="name"

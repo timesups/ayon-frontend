@@ -8,7 +8,7 @@ import AppNavLinks from '@containers/header/AppNavLinks'
 // import SiteSettings from './SiteSettingsPage'
 import ProfilePage from './ProfilePage'
 import DownloadsPage from './DownloadsPage/DownloadsPage'
-
+import { useTranslation } from 'react-i18next'
 export const PanelButtonsStyled = styled(Panel)`
   flex-direction: row;
 
@@ -18,6 +18,9 @@ export const PanelButtonsStyled = styled(Panel)`
 `
 
 const AccountPage = () => {
+  // translation
+  const {t} = useTranslation()
+
   const { module } = useParams()
 
   // RTK QUERIES
@@ -41,16 +44,16 @@ const AccountPage = () => {
 
   let links = [
     {
-      name: 'Profile',
+      name: t("Profile"),
       path: '/account/profile',
       module: 'profile',
     },
     {
-      name: 'Sessions',
+      name: t("Sessions"),
       path: '/account/sessions',
       module: 'sessions',
     },
-    { name: 'Launchers', path: '/account/downloads', module: 'downloads' },
+    { name: t("Launchers"), path: '/account/downloads', module: 'downloads' },
     // {
     //   name: 'Settings',
     //   path: '/account/settings',

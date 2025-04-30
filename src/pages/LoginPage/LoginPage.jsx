@@ -189,7 +189,7 @@ const LoginPage = ({ isFirstTime = false }) => {
                 <label id="username">{t("Username")}</label>
                 <InputText
                   autoFocus
-                  placeholder="Enter your username"
+                  placeholder={t("Enter your username")}
                   name="username"
                   aria-label="Username"
                   value={name}
@@ -197,14 +197,14 @@ const LoginPage = ({ isFirstTime = false }) => {
                 />
                 <label id="password">{t("Password")}</label>
                 <InputPassword
-                  placeholder="Enter password"
+                  placeholder={t("Enter password")}
                   name="password"
                   aria-label="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button type="submit">
-                  <span className="label">Login with password</span>
+                  <span className="label">{t("Login with password")}</span>
                 </Button>
               </form>
             )}
@@ -236,11 +236,11 @@ const LoginPage = ({ isFirstTime = false }) => {
             }
           </Styled.Methods>
           {info?.passwordRecoveryAvailable && showPasswordLogin && (
-            <a href="/passwordReset">Reset password</a>
+            <a href="/passwordReset">{t("Reset password")}</a>
           )}
           {!showAllProviders && (
             <Button style={{ width: '100%' }} variant="text" onClick={() => setShownProviders([])}>
-              Show all login options
+              {t("Show all login options")}
             </Button>
           )}
         </Panel>

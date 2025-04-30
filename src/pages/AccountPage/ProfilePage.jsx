@@ -20,7 +20,7 @@ import { updateUserAttribs, updateUserPreferences } from '@state/user'
 import { useDispatch } from 'react-redux'
 import { useNotifications } from '@context/notificationsContext'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
 const FormsStyled = styled.section`
   flex: 1;
   overflow-x: clip;
@@ -55,6 +55,8 @@ export const AvatarName = styled.span`
 `
 
 const ProfilePage = ({ user = {}, isLoading }) => {
+  // translation
+  const {t} = useTranslation()
   const dispatch = useDispatch()
   const attributes = ayonClient.getAttribsByScope('user')
   const [showSetPassword, setShowSetPassword] = useState(false)
@@ -247,7 +249,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
             <span className={Type.headlineMedium}>{userName ? userName : 'User FullName'}</span>
           </AvatarName>
           <Panel style={{ background: 'none' }}>
-            <FormRow label="Username" key="Username">
+            <FormRow label={t("Username")} key="Username">
               <InputText value={name} disabled />
             </FormRow>
             <UserAttribForm
@@ -256,7 +258,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               attributes={attributes}
               showAvatarUrl={false}
             />
-            <FormRow label="Password" key="Password">
+            <FormRow label={t("Password")} key="Password">
               <LockedInput
                 label="Password"
                 value={password}
@@ -265,7 +267,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               />
             </FormRow>
 
-            <FormRow label="Desktop Notifications" key="notifications">
+            <FormRow label={t("Desktop Notifications")} key="notifications">
               <div data-tooltip={notificationsTooltip} style={{ width: 'fit-content' }}>
                 <InputSwitch
                   checked={preferencesData.notifications}
@@ -276,7 +278,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               </div>
             </FormRow>
 
-            <FormRow label="Notification Sound" key="notificationSound">
+            <FormRow label={t("Notification Sound")} key="notificationSound">
               <div
                 data-tooltip="Get a little chime sound on new important notifications"
                 style={{ width: 'fit-content' }}
@@ -292,7 +294,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
 
             <SaveButton
               onClick={handleSaveAll}
-              label="Save profile"
+              label={t("Save profile")}
               active={changesMade || preferenceChanges}
               saving={isUpdatingUser || isUpdatingPreferences}
               style={{ padding: '6px 18px', marginLeft: 'auto' }}

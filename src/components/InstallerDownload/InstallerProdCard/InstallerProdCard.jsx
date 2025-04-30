@@ -5,8 +5,11 @@ import AppleLogo from '@/svg/AppleLogo'
 import LinuxLogo from '@/svg/LinuxLogo'
 import WindowsLogo from '@/svg/WindowsLogo'
 import { Button } from '@ynput/ayon-react-components'
-
+import { useTranslation } from 'react-i18next'
 const InstallerProdCard = ({ platform, isFeatured = false, installers = [], onInstall }) => {
+  // translation
+  const {t} = useTranslation()
+
   let title, icon
 
   switch (platform) {
@@ -30,7 +33,7 @@ const InstallerProdCard = ({ platform, isFeatured = false, installers = [], onIn
   return (
     <Styled.Card className={clsx({ featured: isFeatured })}>
       {icon}
-      <h2>{title} Installer</h2>
+      <h2>{title} {t("Installer")}</h2>
       <Styled.DownloadLinks>
         {installers?.length ? (
           installers.map((installer) => (

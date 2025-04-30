@@ -1,8 +1,11 @@
 import UserMenuHeader from './UserMenuHeader'
 import Menu from '../../MenuComponents/Menu'
 import { useLogOutMutation } from '@queries/auth/getAuth'
-
+import { useTranslation } from 'react-i18next'
 export const UserMenu = ({ user, ...props }) => {
+  // translation
+  const {t} = useTranslation()
+
   const fullName = user?.attrib?.fullName
   // const isUser = user?.data?.isUser
 
@@ -18,7 +21,7 @@ export const UserMenu = ({ user, ...props }) => {
     {
       id: 'account',
       link: '/account/profile',
-      label: 'Account',
+      label: t("Account"),
       icon: 'person',
     },
     // {
@@ -30,7 +33,7 @@ export const UserMenu = ({ user, ...props }) => {
     {
       id: 'downloads',
       link: '/account/downloads',
-      label: 'Download Launcher',
+      label: t("Download Launcher"),
       icon: 'install_desktop',
     },
     {
@@ -38,7 +41,7 @@ export const UserMenu = ({ user, ...props }) => {
     },
     {
       id: 'signOut',
-      label: 'Sign out',
+      label: t("Sign out"),
       icon: 'logout',
       onClick: handleLogOut,
     },

@@ -355,11 +355,11 @@ const Inbox = ({ filter }) => {
             disabled={!messages.length}
             shortcut={{ children: 'Shift+C' }}
           >
-            Clear all
+            {t("Clear all")}
           </Button>
         )}
         <Button icon="refresh" onClick={refreshInbox} shortcut={{ children: 'R' }}>
-          Refresh
+          {t("Refresh")}
         </Button>
       </Styled.Tools>
       <Styled.InboxSection direction="row">

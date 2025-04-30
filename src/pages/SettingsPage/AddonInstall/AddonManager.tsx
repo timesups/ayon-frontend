@@ -7,6 +7,9 @@ import FilesTable from './FilesTable/FilesTable'
 import useFetchManagerData from './hooks/useFetchManagerData'
 import { useState } from 'react'
 
+import { useTranslation } from 'react-i18next'
+
+
 const StyledHeader = styled.div`
   display: flex;
   flex-direction: row;
@@ -20,6 +23,10 @@ type Props = {
 }
 
 const AddonManager: React.FC<Props> = ({ manager, setManageMode }) => {
+  
+  const {t} = useTranslation()
+
+
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const [focused, setFocused] = useState<string | null>(null)
   const { deleteInstallers, deletePackages } = useFileManagerMutations()
@@ -31,10 +38,10 @@ const AddonManager: React.FC<Props> = ({ manager, setManageMode }) => {
 
   const handleDeleteInstallers = () => {
     confirmDialog({
-      header: 'Delete selected files',
+      header: t("Delete selected files"),
       message: (
         <>
-          <p>Are you sure you want to delete the following files?</p>
+          <p>{t("Are you sure you want to delete the following files?")}</p>
           <ul>
             {selectedIds.map((filename) => (
               <li key={filename}>{filename}</li>
@@ -58,7 +65,7 @@ const AddonManager: React.FC<Props> = ({ manager, setManageMode }) => {
   return (
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <StyledHeader>
-        <Button onClick={() => setManageMode(false)} label="Upload files" />
+        <Button onClick={() => setManageMode(false)} label={t("Upload files")} />
         <Spacer />
         <Button
           variant="danger"

@@ -12,7 +12,7 @@ import styled from 'styled-components'
 import { useListServicesQuery } from '@queries/services/getServices'
 import { useDeleteServiceMutation, usePatchServiceMutation } from '@queries/services/updateServices'
 import { confirmDialog } from 'primereact/confirmdialog'
-
+import { useTranslation } from 'react-i18next'
 const StatusBadge = styled.span`
   display: inline-block;
   padding: 1px 6px;
@@ -66,6 +66,8 @@ const detailsMaxWidth = '40vw'
 const detailsMaxMaxWidth = 700
 
 const ServicesPage = () => {
+  // translation
+  const {t} = useTranslation()
   const [showServiceDialog, setShowServiceDialog] = useState(false)
   const [editingService, setEditingService] = useState(null)
   const [selectedServices, setSelectedServices] = useState([])
@@ -220,7 +222,7 @@ const ServicesPage = () => {
         <Toolbar>
           <Button
             icon="add"
-            label="New service"
+            label={t("New service")}
             onClick={() => {
               setEditingService(null)
               setShowServiceDialog(true)
@@ -249,19 +251,19 @@ const ServicesPage = () => {
                   if (!selectedServices.includes(e.value.name)) setSelectedServices([e.value.name])
                 }}
               >
-                <Column field="name" header="Service name" sortable />
-                <Column field="addonName" header="Addon name" sortable />
-                <Column field="addonVersion" header="Addon version" sortable />
-                <Column field="service" header="Service" sortable />
-                <Column field="hostname" header="Host" sortable />
+                <Column field="name" header={t("Service name")} sortable />
+                <Column field="addonName" header={t("Addon name" )} sortable />
+                <Column field="addonVersion" header={t("Addon version")} sortable />
+                <Column field="service" header={t("Service")} sortable />
+                <Column field="hostname" header={t("Host")} sortable />
                 <Column
                   field="data.env.AYON_DEFAULT_SETTINGS_VARIANT"
-                  header="Settings variant"
+                  header={t("Settings variant")}
                   sortable
                 />
                 <Column
                   field="isRunning"
-                  header="Status"
+                  header={t("Status")}
                   body={formatStatus}
                   style={{ maxWidth: 130, textAlign: 'center' }}
                   sortable

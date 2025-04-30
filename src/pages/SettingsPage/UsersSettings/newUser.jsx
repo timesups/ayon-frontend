@@ -9,12 +9,15 @@ import UserAccessForm from './UserAccessForm'
 import styled from 'styled-components'
 import useUserMutations from '@containers/Feed/hooks/useUserMutations'
 import callbackOnKeyDown from '@helpers/callbackOnKeyDown'
-
+import { useTranslation } from 'react-i18next'
 const DividerSmallStyled = styled(Divider)`
   margin: 8px 0;
 `
 
 const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
+  // translation
+  const {t} = useTranslation()
+
   const {
     password,
     setPassword,
@@ -136,14 +139,14 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
       footer={
         <>
           <Button
-            label="Create user"
+            label={t("Create user")}
             onClick={() => handleSubmit(false)}
             disabled={!formData.Username}
             data-shortcut="Shift+Enter"
           ></Button>
           <SaveButton
             onClick={() => handleSubmit(true)}
-            label="Create and close"
+            label={t("Create and close")}
             disabled={!formData.Username}
             saving={isCreatingUser}
             data-shortcut="Ctrl/Cmd+Enter"
@@ -158,11 +161,11 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
           attributes={[
             {
               name: 'Username',
-              data: { title: 'Username' },
-              input: { placeholder: 'No spaces allowed', autoFocus: true, ref: usernameRef },
+              data: { title: t("Username") },
+              input: { placeholder: t("No spaces allowed"), autoFocus: true, ref: usernameRef },
             },
-            { name: 'password', data: { title: 'Password' } },
-            { name: 'passwordConfirm', data: { title: 'Password Confirm' } },
+            { name: 'password', data: { title: t("Password") } },
+            { name: 'passwordConfirm', data: { title: t("Password Confirm") } },
             ...attributes,
           ]}
           {...{ password, setPassword, passwordConfirm, setPasswordConfirm }}

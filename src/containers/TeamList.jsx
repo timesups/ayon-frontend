@@ -8,6 +8,8 @@ import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 
+import { useTranslation } from 'react-i18next'
+
 const TeamList = ({
   teams,
   isLoading,
@@ -26,6 +28,10 @@ const TeamList = ({
   onNewTeam,
   onDuplicate,
 }) => {
+
+  // translation
+  const {t} = useTranslation()
+
   // if selection does not exist in data, set selection to null
   useEffect(() => {
     if (isLoading) return
@@ -130,9 +136,9 @@ const TeamList = ({
             onContextMenuSelectionChange={onContextMenuSelectionChange}
             className={clsx({ loading: isLoading })}
             rowClassName={(rowData) => clsx({ loading: rowData.isLoading })}
-            emptyMessage="No teams found"
+            emptyMessage={t("No teams found")}
           >
-            <Column field="name" header="Team" style={{ minWidth: 150, ...style }} />
+            <Column field="name" header={t("Team")} style={{ minWidth: 150, ...style }} />
           </DataTable>
         </TablePanel>
       </Section>

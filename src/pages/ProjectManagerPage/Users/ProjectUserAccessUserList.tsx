@@ -9,6 +9,7 @@ import UserCell from './UserCell'
 import AccessGroupsCell from './AccessGroupsCell'
 import { HoveredUser } from './types'
 
+import { useTranslation } from 'react-i18next'
 type Props = {
   selectedProjects: string[]
   selectedUsers: string[]
@@ -53,6 +54,13 @@ const ProjectUserAccessUserList = ({
   onSelectUsers,
   onHoverRow,
 }: Props) => {
+
+  //translation
+  const {t} = useTranslation()
+  
+
+
+
   const onSelectionChange = (e: $Any) => {
     const result = e.value.map((user: UserNode) => user.name)
 
@@ -131,7 +139,7 @@ const ProjectUserAccessUserList = ({
           />
           {showAccessGroups && (
             <Column
-              header="Project access groups"
+              header={t("Project access groups")}
               body={(data) =>
                 !isLoading && (
                   <AccessGroupsCell

@@ -5,7 +5,10 @@ import { Section } from '@ynput/ayon-react-components'
 
 import AddonUpload from './AddonUpload'
 
+import { useTranslation } from 'react-i18next'
 const AddonInstall = () => {
+
+  const {t} = useTranslation()
   const user = useSelector((state) => state.user)
 
   const abortController = new AbortController()
@@ -14,7 +17,7 @@ const AddonInstall = () => {
   if (!user?.data?.isAdmin) {
     return (
       <Section style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ display: 'block', width: 'auto' }}>Only admins can install addons</p>
+        <p style={{ display: 'block', width: 'auto' }}>{t("Only admins can install addons")}</p>
       </Section>
     )
   }

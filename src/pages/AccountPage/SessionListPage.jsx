@@ -5,8 +5,11 @@ import { TablePanel, Section, Button } from '@ynput/ayon-react-components'
 import { TimestampField } from '@containers/fieldFormat'
 import { useGetUserSessionsQuery } from '@queries/user/getUsers'
 import { useInvalidateUserSessionMutation } from '@queries/user/updateUser'
-
+import { useTranslation } from 'react-i18next'
 const SessionList = ({ userName }) => {
+  // translation
+  const {t} = useTranslation()
+
   const {
     data: sessionList,
     isLoading,
@@ -51,18 +54,18 @@ const SessionList = ({ userName }) => {
             }}
           >
             <Column field="clientInfo.ip" header="IP" />
-            <Column field="clientInfo.agent.platform" header="Platform" style={{ maxWidth: 160 }} />
-            <Column field="clientInfo.agent.client" header="Client" style={{ maxWidth: 160 }} />
-            <Column field="clientInfo.agent.device" header="Device" style={{ maxWidth: 160 }} />
+            <Column field="clientInfo.agent.platform" header={t("Platform")} style={{ maxWidth: 160 }} />
+            <Column field="clientInfo.agent.client" header={t("Client")} style={{ maxWidth: 160 }} />
+            <Column field="clientInfo.agent.device" header={t("Device")} style={{ maxWidth: 160 }} />
             <Column
               field="clientInfo.location.country"
-              header="Country"
+              header={t("Country")}
               style={{ maxWidth: 160 }}
             />
-            <Column field="clientInfo.location.city" header="City" style={{ maxWidth: 160 }} />
+            <Column field="clientInfo.location.city" header={t("City")} style={{ maxWidth: 160 }} />
             <Column
               field="lastUsed"
-              header="Last active"
+              header={t("Last active")}
               body={(rowData) => {
                 if (!rowData?.lastUsed) return ''
                 const date = new Date(rowData.lastUsed * 1000)
@@ -71,11 +74,11 @@ const SessionList = ({ userName }) => {
               style={{ maxWidth: 160 }}
             />
             <Column
-              header="Invalidate"
+              header={t("Invalidate")}
               body={(rowData) => (
                 <Button
                   variant="text"
-                  label="Invalidate"
+                  label={t("Invalidate")}
                   onClick={() => invalidate(rowData.token)}
                 />
               )}

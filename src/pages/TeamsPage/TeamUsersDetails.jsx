@@ -11,7 +11,7 @@ import {
 } from '@ynput/ayon-react-components'
 import addRemoveMembers from './addRemoveMembers'
 import UserSubtitle from './UserSubtitle'
-
+import { useTranslation } from 'react-i18next'
 const getFieldValues = (users, field, selectedTeams) => {
   let values = []
   let isMultiple = false
@@ -68,6 +68,8 @@ const TeamUsersDetails = ({
   onUpdateTeams,
   isFetching,
 }) => {
+  // translation
+  const {t} = useTranslation()
   // STATES
   const [leader, setLeader] = useState(false)
 
@@ -93,7 +95,7 @@ const TeamUsersDetails = ({
   const rolesOptions = useMemo(() => rolesList.map((role) => ({ name: role })), [rolesList])
 
   const formSubtitle = noUsers
-    ? 'No Users Selected'
+    ? t("No Users Selected")
     : usersOnTeams.length
     ? 'Setting On Team' + (usersOnTeams.length > 1 ? 's' : '') + ': ' + usersOnTeams.join(', ')
     : `Not on ${selectedTeams.join(', ')}`
@@ -199,7 +201,7 @@ const TeamUsersDetails = ({
   return (
     <>
       <Panel>
-        <h2 style={{ marginTop: 0 }}>Member Settings</h2>
+        <h2 style={{ marginTop: 0 }}>{t("Member Settings")}</h2>
         <UserDetailsHeader
           users={users}
           style={{ flex: 'unset', padding: 0 }}
@@ -215,7 +217,7 @@ const TeamUsersDetails = ({
         />
         <Divider style={{ margin: '10px 0' }} />
         <FormLayout>
-          <FormRow label="On Teams" style={{ overflow: 'hidden' }}>
+          <FormRow label={t("On Teams")} style={{ overflow: 'hidden' }}>
             <Dropdown
               value={teamsValue}
               options={teams}
@@ -228,7 +230,7 @@ const TeamUsersDetails = ({
             />
           </FormRow>
           <h2>{formSubtitle}</h2>
-          <FormRow label="Roles" style={{ overflow: 'hidden' }}>
+          <FormRow label={t("Roles")} style={{ overflow: 'hidden' }}>
             <Dropdown
               value={rolesValue}
               options={rolesOptions}
@@ -242,10 +244,10 @@ const TeamUsersDetails = ({
               onChange={handleRolesChange}
               valueTemplate={'tags'}
               editable
-              placeholder="Add a Role..."
+              placeholder={t("Add a Role...")}
             />
           </FormRow>
-          <FormRow label="Leader" style={{ overflow: 'hidden' }}>
+          <FormRow label={t("Leader")} style={{ overflow: 'hidden' }}>
             <InputSwitch checked={leader} onChange={handleLeaderChange} disabled={disableForm} />
           </FormRow>
         </FormLayout>
