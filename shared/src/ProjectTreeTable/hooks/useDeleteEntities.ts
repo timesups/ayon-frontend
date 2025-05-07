@@ -6,11 +6,16 @@ import { confirmDelete } from '../../helpers'
 import { useProjectTableContext } from '../context/ProjectTableContext'
 import { OperationModel } from '../types/operations'
 
+
+import { useTranslation } from 'react-i18next'
+
 type UseDeleteEntitiesProps = {
   onSuccess?: () => void
 }
 
 const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
+  const {t} = useTranslation()
+
   const { updateEntities } = useProjectTableQueriesContext()
 
   const { getEntityById } = useProjectTableContext()
@@ -51,8 +56,8 @@ const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
       }
 
       confirmDelete({
-        label: 'folders and tasks',
-        message: `Are you sure you want to delete ${entityIds.length} entities? This action cannot be undone.`,
+        label: t("folders and tasks"),
+        message:t("message for delete entities",{length:entityIds.length}),
         accept: deleteEntities,
         onError: (error: any) => {
           const FOLDER_WITH_CHILDREN_CODE = 'delete-folder-with-children'
@@ -60,14 +65,14 @@ const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
           if (error?.errorCodes?.includes(FOLDER_WITH_CHILDREN_CODE)) {
             // try again but with force
             confirmDelete({
-              label: 'folders and tasks',
-              message: `This folder has child tasks or products that will also be deleted. Are you sure you want to delete ${entityIds.length} entities and all of it's dependencies?`,
+              label: t("folders and tasks"),
+              message:t("message for delete many entities",{length:entityIds.length}),
               accept: () => deleteEntities(true),
-              deleteLabel: 'Delete all (dangerous)',
+              deleteLabel: t("Delete all (dangerous)"),
             })
           }
         },
-        deleteLabel: 'Delete forever',
+        deleteLabel: t("Delete forever"),
       })
     },
     [getEntityById, updateEntities, onSuccess],

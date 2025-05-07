@@ -278,12 +278,12 @@ const NewBundle = ({ initBundle, onSave, addons, installers, isDev, developerMod
                 setDevChanges(false)
               }}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
           </>
         )}
         <SaveButton
-          label={isDev ? 'Save dev bundle' : 'Create new bundle'}
+          label={isDev ? t("Save dev bundle") : t("Create new bundle")}
           onClick={isDev ? handleUpdate : handleSave}
           active={
             isDev

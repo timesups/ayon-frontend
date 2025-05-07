@@ -24,6 +24,9 @@ import { useSettingsPanel } from './context/SettingsPanelContext'
 import ReloadButton from './components/ReloadButton'
 import OverviewActions from './components/OverviewActions'
 
+
+import { useTranslation } from 'react-i18next'
+
 const searchFilterTypes: FilterFieldType[] = [
   'attributes',
   'status',
@@ -44,7 +47,7 @@ const ProjectOverviewPage: FC = () => {
     updateShowHierarchy,
     tasksMap,
   } = useProjectTableContext()
-
+  const {t} = useTranslation()
   const { isPanelOpen } = useSettingsPanel()
 
   // load slicer remote config
@@ -108,7 +111,7 @@ const ProjectOverviewPage: FC = () => {
               <SwitchButton
                 value={showHierarchy}
                 onClick={() => updateShowHierarchy(!showHierarchy)}
-                label="Show hierarchy"
+                label={t("Show hierarchy")}
               />
               <CustomizeButton />
             </Toolbar>

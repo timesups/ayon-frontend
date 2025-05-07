@@ -6,6 +6,8 @@ import { upperFirst } from 'lodash'
 import ActionIcon from '@/containers/Actions/ActionIcon'
 import styled from 'styled-components'
 
+import { useTranslation } from 'react-i18next'
+
 const ActionItemContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -55,6 +57,8 @@ export const ActionsDropdownItem = ({ value, label, icon, header, hasConfig, onC
 }
 
 const ActionsDropdown = ({ options, isLoading, onAction, onConfig }) => {
+  const {t} = useTranslation()
+  
   const dropdownRef = useRef(null)
 
   const handleConfigClick = (e) => {
@@ -74,7 +78,7 @@ const ActionsDropdown = ({ options, isLoading, onAction, onConfig }) => {
       itemTemplate={(option) => <ActionsDropdownItem {...option} onConfig={handleConfigClick} />}
       valueTemplate={() => <DefaultValueTemplate placeholder="" />}
       onChange={(v) => onAction(v[0])}
-      buttonProps={{ ['data-tooltip']: 'All actions' }}
+      buttonProps={{ ['data-tooltip']: t("All actions") }}
     />
   )
 }

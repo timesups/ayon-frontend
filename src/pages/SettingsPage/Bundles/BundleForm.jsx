@@ -107,7 +107,7 @@ const BundleForm = ({
           )}
         </FormRow>
         {developerMode && !isDev && (
-          <FormRow label="Dev bundle">
+          <FormRow label={t("Dev bundle")}>
             <InputSwitch
               checked={formData.isDev}
               onChange={() => setFormData({ ...formData, isDev: !formData.isDev })}
@@ -115,10 +115,10 @@ const BundleForm = ({
           </FormRow>
         )}
         {(isDev || developerMode) && (
-          <FormRow label="Assigned dev" fieldStyle={{ flexDirection: 'row', gap: 8 }}>
+          <FormRow label={t("Assigned dev")} fieldStyle={{ flexDirection: 'row', gap: 8 }}>
             <Styled.DevSelect
               editor
-              emptyMessage={'Assign developer...'}
+              emptyMessage={t("Assign developer...")}
               value={[formData.activeUser]}
               options={devSelectOptions}
               disabled={isLoading || !formData.isDev}
@@ -131,7 +131,7 @@ const BundleForm = ({
               }
             />
             <Styled.BadgeButton
-              label="Assign to me"
+              label={t("Assign to me")}
               $hl={'developer-surface'}
               icon={'person_pin_circle'}
               style={{

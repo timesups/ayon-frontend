@@ -70,7 +70,7 @@ export const confirmDelete = ({
     },
     reject: () => {},
     acceptLabel: upperFirst(deleteLabel),
-    rejectLabel: 'Cancel',
+    rejectLabel: 'Cancelss',
     acceptClassName: 'button-danger',
     style: { minWidth: 400, maxWidth: 600 },
     ...props,

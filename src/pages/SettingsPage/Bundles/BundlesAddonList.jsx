@@ -151,7 +151,7 @@ const BundlesAddonList = React.forwardRef(
     const createContextItems = (selected) => {
       let items = [
         {
-          label: 'View in Market',
+          label: t("View in Market"),
           icon: 'store',
           command: () => navigate(`/market/?selected=${selected.name}`),
         },

@@ -344,13 +344,13 @@ const Bundles = () => {
   let uploadHeader = ''
   switch (uploadOpen) {
     case 'addon':
-      uploadHeader = 'Upload Addons'
+      uploadHeader = t("Upload Addons")
       break
     case 'installer':
-      uploadHeader = 'Upload Launcher'
+      uploadHeader = t("Upload Launcher")
       break
     case 'package':
-      uploadHeader = 'Upload Dependency Package'
+      uploadHeader = t("Upload Dependency Package")
       break
     default:
       break
@@ -445,7 +445,7 @@ const Bundles = () => {
                   <span className="small">{t("Package")}</span>
                 </Button>
                 <span style={{ whiteSpace: 'nowrap' }} className="large">
-                  Show Archived
+                  {t("Show Archived")}
                 </span>
                 <span className="small">{t("Archived")}</span>
                 <InputSwitch

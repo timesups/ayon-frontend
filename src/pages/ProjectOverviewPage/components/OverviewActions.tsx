@@ -5,6 +5,8 @@ import { Button } from '@ynput/ayon-react-components'
 import { FC } from 'react'
 import styled from 'styled-components'
 
+import { useTranslation } from 'react-i18next'
+
 const Container = styled.div`
   display: flex;
   gap: var(--base-gap-small);
@@ -21,6 +23,10 @@ const ActionButton = styled(Button)`
 interface OverviewActionsProps {}
 
 const OverviewActions: FC<OverviewActionsProps> = ({}) => {
+
+  const {t} = useTranslation()
+
+
   const { selectedCells } = useSelectionContext()
   const { canUndo, canRedo, undo, redo } = useCellEditing()
   const deleteEntities = useDeleteEntities({})
@@ -29,21 +35,21 @@ const OverviewActions: FC<OverviewActionsProps> = ({}) => {
     <Container>
       <ActionButton
         icon="undo"
-        data-tooltip="Undo"
+        data-tooltip={t("Undo")}
         data-shortcut={getPlatformShortcutKey('z', [KeyMode.Ctrl])}
         onClick={undo}
         disabled={!canUndo}
       />
       <ActionButton
         icon="redo"
-        data-tooltip="Redo"
+        data-tooltip={t("Redo")}
         data-shortcut={getPlatformShortcutKey('z', [KeyMode.Ctrl], 'Shift')}
         onClick={redo}
         disabled={!canRedo}
       />
       <ActionButton
         icon="delete"
-        data-tooltip="Delete selected"
+        data-tooltip={t("Delete selected")}
         onClick={() => deleteEntities(Array.from(selectedCells))}
         disabled={!selectedCells.size}
       />

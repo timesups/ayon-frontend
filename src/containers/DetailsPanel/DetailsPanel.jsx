@@ -18,7 +18,7 @@ import useGetEntityPath from './hooks/useGetEntityPath'
 import { usePiPWindow } from '@context/pip/PiPProvider'
 import getAllProjectStatuses from './helpers/getAllProjectsStatuses'
 import { FeedProvider } from '@context/FeedContext'
-
+import { useTranslation } from 'react-i18next'
 export const entitiesWithoutFeed = ['product', 'representation']
 
 const DetailsPanel = ({
@@ -44,6 +44,7 @@ const DetailsPanel = ({
   isCompact = false,
   onWatchersUpdate,
 }) => {
+  const {t} = useTranslation()
   let selectedTab = useAppSelector((state) => state.details[statePath][scope].tab)
   const dispatch = useAppDispatch()
 
@@ -177,7 +178,7 @@ const DetailsPanel = ({
             <Button
               icon="picture_in_picture"
               variant={'text'}
-              data-tooltip="Picture in Picture"
+              data-tooltip={t("Picture in Picture")}
               onClick={handleOpenPip}
             />
 

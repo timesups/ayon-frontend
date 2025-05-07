@@ -124,12 +124,12 @@ const Attributes = () => {
 
   const getContextMenu = (selected) => [
     {
-      label: 'Edit',
+      label: t("Edit"),
       icon: 'edit',
       command: () => setShowEditor(true),
     },
     {
-      label: 'Delete',
+      label: t("Delete"),
       icon: 'delete',
       command: () => onDelete(),
       danger: true,

@@ -23,7 +23,7 @@ const UserDashboardNoProjects = () => {
       <NoProducts label={t("No Projects")} error={undefined} />
       {newProjectButtonVisible && (
         <Button
-          label="Create first project"
+          label={t("Create first project")}
           variant="filled"
           icon="create_new_folder"
           onClick={() => setOpenNewProject(true)}

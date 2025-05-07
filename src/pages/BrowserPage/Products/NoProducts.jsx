@@ -2,6 +2,9 @@ import { Icon } from '@ynput/ayon-react-components'
 import React from 'react'
 import styled from 'styled-components'
 
+
+import { useTranslation } from 'react-i18next'
+
 const NoneFound = styled.div`
   position: absolute;
   top: 40%;
@@ -78,6 +81,7 @@ const Error = styled.span`
 `
 
 const NoProducts = ({ label, error }) => {
+  const {t} = useTranslation()
   return (
     <NoneFound className="no-products">
       <StackedGridTiles>
@@ -88,7 +92,7 @@ const NoProducts = ({ label, error }) => {
           <span />
         </GridTile>
       </StackedGridTiles>
-      <Message>{label || 'No products found'}</Message>
+      <Message>{label || t("No products found")}</Message>
       {error && (
         <Error>
           <Icon icon="error" />

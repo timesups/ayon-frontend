@@ -9,6 +9,9 @@ import { useCellEditing } from '../context/CellEditingContext'
 import { InheritFromParentEntity } from './useUpdateOverview'
 import { AttributeWithPermissions } from '../types'
 
+
+import { useTranslation } from 'react-i18next'
+
 type ContextEvent = React.MouseEvent<HTMLTableSectionElement, MouseEvent>
 
 type CellContextMenuProps = {
@@ -17,6 +20,9 @@ type CellContextMenuProps = {
 }
 
 const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
+  const {t} = useTranslation()
+
+
   // context hooks
   const { projectName, showHierarchy, getEntityById, toggleExpandAll } = useProjectTableContext()
   const { copyToClipboard, exportCSV, pasteFromClipboard } = useClipboard()
@@ -91,14 +97,15 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
     const allMenuItems: MenuItem[] = [
       // Clipboard operations
       {
-        label: 'Copy',
+        label: t("Copy"),
         icon: 'content_copy',
         shortcut: getPlatformShortcutKey('c', [KeyMode.Ctrl]),
         command: () => copyToClipboard(selected),
         shouldShow: true, // Always shown
       },
       {
-        label: `Copy row${selectedRowCells.length > 1 ? 's' : ''}`,
+        //label: `Copy row${selectedRowCells.length > 1 ? 's' : ''}`,
+        label: t("Copy row"),
         icon: 'content_copy',
         command: () => copyToClipboard(selectedRowCells, true),
         shouldShow:
@@ -106,7 +113,7 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
           selectedRowCells.some((cellId) => parseCellId(cellId)?.rowId === parseCellId(id)?.rowId),
       },
       {
-        label: 'Paste',
+        label: t("Paste"),
         icon: 'content_paste',
         shortcut: getPlatformShortcutKey('v', [KeyMode.Ctrl]),
         command: () => pasteFromClipboard(selected),
@@ -115,7 +122,7 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
       },
       // Entity operations
       {
-        label: 'Show details',
+        label: t("Show details"),
         icon: 'dock_to_left',
         shortcut: 'Double click',
         command: () => {
@@ -127,14 +134,14 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
 
       // Expand/collapse (all) operations - only for name column
       {
-        label: 'Expand all',
+        label: t("Expand all"),
         icon: 'expand_all',
         shortcut: 'Alt + click',
         command: () => toggleExpandAll(selectedCellRowsArray, true),
         shouldShow: isNameColumn,
       },
       {
-        label: 'Collapse all',
+        label: t("Collapse all"),
         icon: 'collapse_all',
         shortcut: 'Alt + click',
         command: () => toggleExpandAll(selectedCellRowsArray, false),
@@ -143,7 +150,7 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
 
       // Attribute operations
       {
-        label: 'Inherit from parent',
+        label: t("Inherit from parent"),
         icon: 'disabled_by_default',
         command: () => inheritFromParent(entitiesToInherit),
         shouldShow: canInheritFromParent,
@@ -151,7 +158,7 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
 
       // Export operations
       {
-        label: 'Export selection',
+        label: t("Export selection"),
         icon: 'download',
         command: () => exportCSV(selected, projectName),
         shouldShow: true, // Always shown
@@ -159,13 +166,13 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
 
       // Creation operations (only in name column and hierarchy mode)
       {
-        label: 'Create folder',
+        label: t("Create folder"),
         icon: 'create_new_folder',
         command: () => onOpenNew?.('folder'),
         shouldShow: isNameColumn && showHierarchy && !!onOpenNew,
       },
       {
-        label: 'Create root folder',
+        label: t("Create root folder"),
         icon: 'create_new_folder',
         command: () => {
           clearSelection()
@@ -174,7 +181,7 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
         shouldShow: isNameColumn && showHierarchy && !!onOpenNew,
       },
       {
-        label: 'Create task',
+        label: t("Create task"),
         icon: 'add_task',
         command: () => onOpenNew?.('task'),
         shouldShow: isNameColumn && showHierarchy && !!onOpenNew,
@@ -182,7 +189,7 @@ const useCellContextMenu = ({ attribs, onOpenNew }: CellContextMenuProps) => {
 
       // Destructive operations
       {
-        label: 'Delete',
+        label: t("Delete"),
         icon: 'delete',
         danger: true,
         command: () => deleteEntities(selected),

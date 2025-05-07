@@ -16,6 +16,9 @@ import { toggleUpload } from '@state/viewer'
 import ReviewableProgressCard, { ReviewableProgress } from '@components/ReviewableProgressCard'
 import * as Styled from './ReviewablesUpload.styled'
 
+import { useTranslation } from 'react-i18next'
+
+
 interface ReviewableUploadProps {
   projectName: string | null
   versionId: string
@@ -33,6 +36,9 @@ const ReviewableUpload: FC<ReviewableUploadProps> = ({
   children,
   variant = 'normal',
 }) => {
+
+  const {t} = useTranslation()
+
   const dispatch = useDispatch()
 
   const { taskId, folderId } = useSelector((state: $Any) => state.viewer)
@@ -213,7 +219,7 @@ const ReviewableUpload: FC<ReviewableUploadProps> = ({
 
             {/* upload button */}
             <Styled.Upload id="upload" className={clsx('upload', variant)} style={variantStyles}>
-              <span>Drop or click to upload</span>
+              <span>{t("Drop or click to upload")}</span>
               <input type="file" multiple onChange={handleInputChange} ref={inputRef} />
             </Styled.Upload>
           </>

@@ -24,6 +24,11 @@ import { ProjectModel } from '@api/rest/project'
 import useCreateEntityShortcuts from '@hooks/useCreateEntityShortcuts'
 import { useSlicerContext } from '@context/slicerContext'
 
+
+import { useTranslation } from 'react-i18next'
+
+
+
 const ContentStyled = styled.div`
   display: flex;
   align-items: center;
@@ -86,7 +91,7 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
     onCreateNew,
     onOpenNew,
   } = useNewEntityContext()
-
+  const {t} = useTranslation()
   const [createMore, setCreateMore] = useState(false)
   const { selectedCells } = useSelectionContext()
   const { rowSelection: slicerSelection, sliceType } = useSlicerContext()
@@ -137,9 +142,9 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
   const initData: EntityForm = { label: '', subType: '' }
 
   //   format title
-  let title = 'Add New '
-  if (isRoot) title += 'Root '
-  title += capitalize(entityType || '')
+  let title = t("Add New")
+  if (isRoot) title += t("Root")
+  title += t(capitalize(entityType || ''))
 
   //   entityType selector
   const typeOptions =
@@ -300,7 +305,7 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
         valueTemplate={() => (
           <>
             <Icon icon="add" />
-            <span>Create</span>
+            <span>{t("Create")}</span>
           </>
         )}
         itemTemplate={(option) => (
@@ -328,7 +333,7 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
             <Toolbar onFocus={() => setNameFocused(false)} style={{ width: '100%' }}>
               {entityType === 'folder' && (
                 <>
-                  <span>Sequence</span>
+                  <span>{t("Sequence")}</span>
                   <InputSwitch
                     checked={sequenceForm.active}
                     onChange={(e) =>
@@ -341,13 +346,13 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
                 </>
               )}
               <Spacer />
-              <span>Create more</span>
+              <span>{t("Create more")}</span>
               <InputSwitch
                 checked={createMore}
                 onChange={(e) => setCreateMore((e.target as HTMLInputElement).checked)}
               />
               <SaveButton
-                label={`Create ${capitalize(entityType)}`}
+                label={`${t("Create")} ${t(capitalize(entityType))}`}
                 onClick={() => handleSubmit(createMore)}
                 active={!addDisabled || isSubmitting}
                 title="Ctrl/Cmd + Enter"

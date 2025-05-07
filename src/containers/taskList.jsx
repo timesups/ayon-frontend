@@ -19,7 +19,14 @@ import useTableKeyboardNavigation, {
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 
+
+import { useTranslation } from 'react-i18next'
+
 const TaskList = ({ style = {}, autoSelect = false }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const tasksTypes = useSelector((state) => state.project.tasks)
 
   const dispatch = useDispatch()
@@ -304,11 +311,11 @@ const TaskList = ({ style = {}, autoSelect = false }) => {
               },
             }}
           >
-            <Column field="name" header="Task" expander="true" body={nameRenderer} />
+            <Column field="name" header={t("Task")} expander="true" body={nameRenderer} />
             {folderIds.length > 1 && <Column field="folderName" header="Folder" />}
             <Column
               field="taskType"
-              header="Task type"
+              header={t("Task type")}
               style={{ width: 90 }}
               body={renderTaskType}
             />
