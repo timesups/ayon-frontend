@@ -15,6 +15,8 @@ import { camelCase, upperFirst } from 'lodash'
 import MinMaxField from '@components/MinMaxField/MinMaxField'
 import EnumEditor from '@components/EnumEditor/EnumEditor'
 
+import { useTranslation } from 'react-i18next'
+
 const SCOPE_OPTIONS = [
   { value: 'project', label: 'Project' },
   { value: 'folder', label: 'Folder' },
@@ -62,6 +64,9 @@ const TYPE_OPTIONS = {
 }
 
 const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
+  //translation
+  const {t} = useTranslation()
+
   const [formData, setFormData] = useState(null)
 
   useEffect(
@@ -105,7 +110,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
     <div style={{ display: 'flex', width: '100%', flexDirection: 'row' }}>
       <Spacer />
       <Button
-        label={isNew ? 'Create Attribute' : 'Save Attribute'}
+        label={isNew ? t("Create Attribute") : t("Save Attribute")}
         icon={'check'}
         disabled={!!error}
         onClick={() => onEdit(formData)}
@@ -166,10 +171,10 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
     >
       {formData && (
         <FormLayout>
-          <FormRow label={'Title'} key={'title'}>
+          <FormRow label={t("Title")} key={'title'}>
             <InputText value={formData?.data['title']} onChange={handleTitleChange} />
           </FormRow>
-          <FormRow label={'Name'} key={'name'}>
+          <FormRow label={t("Name")} key={'name'}>
             <LockedInput
               value={formData.name}
               disabled={!isNew}
@@ -177,7 +182,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
               label="name"
             />
           </FormRow>
-          <FormRow label="Scope">
+          <FormRow label={t("Scope")}>
             <Dropdown
               options={SCOPE_OPTIONS}
               disabled={formData.builtin}
@@ -187,7 +192,7 @@ const AttributeEditor = ({ attribute, existingNames, onHide, onEdit }) => {
               widthExpand
             />
           </FormRow>
-          <FormRow label="Type">
+          <FormRow label={t("Type")}>
             <Dropdown
               value={[formData?.data?.type]}
               disabled={formData.builtin}

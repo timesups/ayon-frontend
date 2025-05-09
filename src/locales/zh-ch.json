@@ -538,8 +538,8 @@
     "Add to selected teams":"添加到选择的团队中",
     "Add to team named":"添加到团队{{name}}中",
     "Password Confirm":"Password Confirm",
-    "Access":"Access",
-    "No spaces allowed":"No spaces allowed",
+    "Access":"访问",
+    "No spaces allowed":"不允许使用空格",
     "You don't have permission to view this project's roots":"You don't have permission to view this project's roots",
     "Installer":"安装包",
     "All Versions": "所有版本",
@@ -605,5 +605,8 @@
     "message for delete many entities":"此文件夹包含子任务或产品，删除操作将一并移除。您确定要删除 {{length}} 个实体及其所有依赖项吗？",
     "Delete all (dangerous)":"删除所有(危险)",
     "Undo":"撤销",
-    "Redo":"重做"
+    "Redo":"重做",
+    "No_bundle_seted":"警告:没有捆绑包设置为{{variant}}",
+    "Save Attribute":"保存属性",
+    "Create Attribute":"创建属性"
 }

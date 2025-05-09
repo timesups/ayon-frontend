@@ -13,7 +13,6 @@ import {
 import ProjectManagerPageLayout from './ProjectManagerPageLayout'
 import { toast } from 'react-toastify'
 import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
-import { useTranslation } from 'react-i18next'
 const ProjectRootForm = ({ projectName, siteName, siteId, roots }) => {
   const [setCustomRoots, { isLoading }] = useSetCustomRootsMutation()
   const [rootValues, setRootValues] = useState(null)
@@ -71,15 +70,12 @@ const ProjectRootForm = ({ projectName, siteName, siteId, roots }) => {
 }
 
 const ProjectRoots = ({ projectName, projectList, userPermissions }) => {
-  // translation
-  const {t} = useTranslation()
-
   if (userPermissions && !userPermissions.assignedToProject(projectName)) {
     return (
       <ProjectManagerPageLayout {...{ projectList }}>
         <EmptyPlaceholder
           icon="settings_alert"
-          message={t("You don't have permission to view this project's roots")}
+          message="You don't have permission to view this project's roots"
         />
       </ProjectManagerPageLayout>
     )

@@ -161,7 +161,7 @@ const AddonList = ({
           onContextMenu={onContextMenu}
           className={clsx('addon-list-table', { loading: isLoading })}
           rowClassName={rowDataClassNameFormatter}
-          emptyMessage={isError ? `WARNING: No bundle set to ${variant}` : 'No addons found'}
+          emptyMessage={isError ? t("No_bundle_seted",{variant:variant}) : t("No addons found")}
         >
           <Column field="title" header={t("Addon")} />
           <Column field="version" header={t("Version")} style={{ maxWidth: 110 }} />
