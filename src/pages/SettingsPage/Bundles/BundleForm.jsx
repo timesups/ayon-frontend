@@ -16,6 +16,9 @@ import InstallerSelector from './InstallerSelector'
 import { useSelector } from 'react-redux'
 import { useGetUsersQuery } from '@queries/user/getUsers'
 
+import { useTranslation } from 'react-i18next'
+
+
 const StyledColumns = styled.div`
   display: flex;
   flex-direction: row;
@@ -38,6 +41,10 @@ const BundleForm = ({
   addonListRef,
   onAddonAutoUpdate,
 }) => {
+
+  const {t} = useTranslation()
+
+
   const showNameError = formData && !formData?.name && isNew
   const currentUser = useSelector((state) => state.user.name)
   const { data: users = [], isLoading } = useGetUsersQuery({ selfName: currentUser })
@@ -62,7 +69,7 @@ const BundleForm = ({
     <Panel style={{ flexGrow: 1, overflow: 'hidden' }}>
       <FormLayout style={{ gap: 8, paddingTop: 1, maxWidth: 900 }}>
         <Styled.FormRow>
-          <label htmlFor="bundle-name">Bundle name</label>
+          <label htmlFor="bundle-name">{t("Bundle name")}</label>
           <div className="field">
             {isNew ? (
               <InputText
@@ -77,7 +84,7 @@ const BundleForm = ({
             )}
           </div>
         </Styled.FormRow>
-        <FormRow label="Launcher version">
+        <FormRow label={t("Launcher version")}>
           {isNew ? (
             <InstallerSelector
               value={formData?.installerVersion ? [formData?.installerVersion] : []}
@@ -100,7 +107,7 @@ const BundleForm = ({
           )}
         </FormRow>
         {developerMode && !isDev && (
-          <FormRow label="Dev bundle">
+          <FormRow label={t("Dev bundle")}>
             <InputSwitch
               checked={formData.isDev}
               onChange={() => setFormData({ ...formData, isDev: !formData.isDev })}
@@ -108,10 +115,10 @@ const BundleForm = ({
           </FormRow>
         )}
         {(isDev || developerMode) && (
-          <FormRow label="Assigned dev" fieldStyle={{ flexDirection: 'row', gap: 8 }}>
+          <FormRow label={t("Assigned dev")} fieldStyle={{ flexDirection: 'row', gap: 8 }}>
             <Styled.DevSelect
               editor
-              emptyMessage={'Assign developer...'}
+              emptyMessage={t("Assign developer...")}
               value={[formData.activeUser]}
               options={devSelectOptions}
               disabled={isLoading || !formData.isDev}
@@ -124,7 +131,7 @@ const BundleForm = ({
               }
             />
             <Styled.BadgeButton
-              label="Assign to me"
+              label={t("Assign to me")}
               $hl={'developer-surface'}
               icon={'person_pin_circle'}
               style={{

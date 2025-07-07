@@ -11,6 +11,9 @@ import { toast } from 'react-toastify'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 
+import { useTranslation } from 'react-i18next'
+
+
 const BundleList = ({
   selectedBundles = [],
   onBundleSelect,
@@ -22,6 +25,10 @@ const BundleList = ({
   errorMessage,
   developerMode,
 }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const prodBundleName = useMemo(() => bundleList.find((b) => b.isProduction)?.name, [bundleList])
   const stagingBundleName = useMemo(() => bundleList.find((b) => b.isStaging)?.name, [bundleList])
   const hasDevBundles = useMemo(() => bundleList.some((b) => b.isDev), [bundleList])
@@ -234,14 +241,14 @@ const BundleList = ({
         className={clsx('bundles-table', { loading: isLoading })}
         rowClassName={(rowData) => ({ archived: rowData?.isArchived, loading: isLoading })}
         resizableColumns
-        emptyMessage={errorMessage ? 'Error: ' + errorMessage : 'No bundles found'}
+        emptyMessage={errorMessage ? 'Error: ' + errorMessage : t("No bundles found")}
       >
         <Column
           field="name"
-          header="Name"
+          header={t("Name")}
           body={(b) => `${b.name} ${b?.isArchived ? '(archived)' : ''}`}
         />
-        <Column header="Status" body={formatStatus} style={{ maxWidth: 130 }} />
+        <Column header={t("Status")} body={formatStatus} style={{ maxWidth: 130 }} />
       </DataTable>
     </TablePanel>
   )

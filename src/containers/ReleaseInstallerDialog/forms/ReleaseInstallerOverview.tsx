@@ -12,6 +12,9 @@ import { ReleaseForm } from '../hooks/useReleaseForm'
 import { Error } from '../ReleaseInstaller.styled'
 import { Icon } from '@ynput/ayon-react-components'
 
+import { useTranslation } from 'react-i18next'
+
+
 interface ReleaseInstallerOverviewProps {
   releaseForm: ReleaseForm
   release: ReleaseListItemModel | null
@@ -37,24 +40,26 @@ export const ReleaseInstallerOverview: FC<ReleaseInstallerOverviewProps> = ({
   onConfirm,
   error,
 }) => {
+
+  const {t} = useTranslation()
+
   return (
     <>
       <p className="description">
-        Releases are official bundles with the latest tested and stable addons, launchers and their
-        dependencies for your pipeline.
+        {t("Releases are official bundles with the latest tested and stable addons, launchers and their dependencies for your pipeline.")}
       </p>
       <p className="description">
-        Your install is pre-configured here, but you can adjust it if needed.
+        {t("Your install is pre-configured here, but you can adjust it if needed.")}
       </p>
 
       <Card
-        title="Release"
+        title={t("Release")}
         subTitle={createReleaseSubtitle(release)}
         icon="orders"
         isLoading={isLoading}
       />
       <Card
-        title="Addons"
+        title={t("Addons")}
         subTitle={createAddonsSubtitle(release?.addons || [], releaseForm.addons)}
         icon="extension"
         isLoading={isLoading}
@@ -65,7 +70,7 @@ export const ReleaseInstallerOverview: FC<ReleaseInstallerOverviewProps> = ({
         }
       />
       <Card
-        title="AYON launchers"
+        title={t("AYON launchers")}
         subTitle={createInstallersSubtitle(releaseForm.platforms)}
         icon="devices"
         isLoading={isLoading}

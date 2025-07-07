@@ -1,11 +1,14 @@
 import { DefaultValueTemplate, Dropdown } from '@ynput/ayon-react-components'
 
+import { useTranslation } from 'react-i18next'
+
 const ValueTemplate = ({ selected, options = [], ...props }) => {
+  const {t} = useTranslation()
   return (
     <DefaultValueTemplate {...props} valueStyle={{ display: 'flex' }}>
       {selected.length > 0 ? (
         <span>
-          Columns: {selected.length} / {options.length}
+          {t("Columns")}: {selected.length} / {options.length}
         </span>
       ) : (
         <span>Filter columns...</span>

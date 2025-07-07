@@ -58,7 +58,15 @@ const StyledButton = styled(Button)`
   }
 `
 
+import { useTranslation } from 'react-i18next'
+
+
 const ProjectUserAccess = () => {
+
+  const {t} = useTranslation()
+
+
+
   const { data: accessGroupList = [] } = useGetAccessGroupsQuery({
     projectName: '_',
   })
@@ -197,7 +205,7 @@ const ProjectUserAccess = () => {
       {
         id: 'add',
         icon: 'add',
-        label: 'Add access',
+        label: t("Add access"),
         command: () => handleAdd({ users: actionedUsers }),
       },
       {
@@ -209,13 +217,13 @@ const ProjectUserAccess = () => {
       {
         id: 'remove_all',
         icon: 'remove_moderator',
-        label: 'Remove all access',
+        label: t("Remove all access"),
         command: () => onRemove()(actionedUsers),
       },
       {
         id: 'filter_by_user',
         icon: 'person',
-        label: 'Filter by user',
+        label: t("Filter by user"),
         command: () => handleUserFilterUpdate(actionedUsers),
       },
     ]
@@ -345,7 +353,7 @@ const ProjectUserAccess = () => {
 
   const projectsContent = (
     <>
-      <StyledHeader>Projects</StyledHeader>
+      <StyledHeader>{t("Projects")}</StyledHeader>
       <ProjectUserAccessProjectList
         selection={filteredSelectedProjects}
         projects={filteredProjects}
@@ -359,11 +367,11 @@ const ProjectUserAccess = () => {
 
   const usersContent = (
     <>
-      <StyledHeader>All users</StyledHeader>
+      <StyledHeader>{t("All users")}</StyledHeader>
       <ProjectUserAccessUserListWrapper>
         <ProjectUserAccessUserList
-          header="User"
-          emptyMessage="All users assigned"
+          header={t("User")}
+          emptyMessage={t("All users assigned")}
           selectedProjects={filteredSelectedProjects}
           selectedUsers={selectedAccessGroupUsers?.accessGroup ? [] : selectedUsers}
           tableList={filteredUsersWithAccessGroups}
@@ -387,7 +395,7 @@ const ProjectUserAccess = () => {
 
   const accessGroupsContent = (
     <>
-      <StyledHeader>Access groups</StyledHeader>
+      <StyledHeader>{t("Access groups")}</StyledHeader>
       <AccessGroupsWrapper>
         {filteredAccessGroups
           .map((item: { name: string }) => item.name)
@@ -412,7 +420,7 @@ const ProjectUserAccess = () => {
                   showAddMoreButton={filteredAccessGroups.length > 1}
                   hoveredUser={hoveredUser}
                   accessGroup={accessGroup}
-                  emptyMessage="No users assigned"
+                  emptyMessage={t("No users assigned")}
                   onContextMenu={(e: $Any) => handleContextMenu(accessGroup)(e)}
                   tableList={filteredNonManagerUsers.filter(
                     (user: UserNode) =>
@@ -459,7 +467,7 @@ const ProjectUserAccess = () => {
         <StyledButton
           className="action"
           disabled={!addActionEnabled}
-          data-tooltip={false ? 'No project selected' : undefined}
+          data-tooltip={false ? t("No project selected") : undefined}
           icon={'add'}
           onClick={() => handleAddButton()}
         >

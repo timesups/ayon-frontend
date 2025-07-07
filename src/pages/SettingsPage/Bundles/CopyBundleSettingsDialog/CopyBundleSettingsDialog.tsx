@@ -18,6 +18,9 @@ import { toast } from 'react-toastify'
 import * as Styled from './CopyBundleSettingsDialog.styled'
 import CopyBundleSettingsDropdown, { SourceBundle } from './CopyBundleSettingsDropdown'
 
+import { useTranslation } from 'react-i18next'
+
+
 type DialogBodyProps = {
   onCancel: () => void
   onFinish: () => void
@@ -35,6 +38,11 @@ const CopyBundleSettingsDialog = ({
   onFinish,
   devMode,
 }: DialogBodyProps) => {
+
+  //translation
+  const {t} = useTranslation()
+
+
   const [sourceBundle, setSourceBundle] = useState<string | null>(null)
   const [sourceVariant, setSourceVariant] = useState('production')
 
@@ -157,31 +165,30 @@ const CopyBundleSettingsDialog = ({
 
   let title = `Copy addon settings from another bundle's addons?`
   if (envTarget) {
-    title = `Copy addon settings to your new ${envTarget} bundle?`
+    title =t("copy settings bundle",{envTarget:envTarget})
   }
 
   const header = (
     <>
       <span className="title">{title}</span>
       <span className="message">
-        Addons do not share settings between different versions automatically.
+        {t("Addons do not share settings between different versions automatically.")}
       </span>
       <span className="message">
-        Here you can choose to apply all studio, project and site settings from the source to the
-        target bundle automatically.
+        {t("Here you can choose to apply all studio, project and site settings from the source to the target bundle automatically.")}
       </span>
     </>
   )
 
   const confirmActive = !!sourceBundle && !!sourceVariant
-  const cancelLabel = envTarget ? 'Do not copy' : 'Cancel'
+  const cancelLabel = envTarget ? t("Do not copy") : t("Cancel")
 
   const footer = (
     <>
       <Button onClick={handleClose} label={cancelLabel} variant="text" className="cancel" />
       <SaveButton
         onClick={handleConfirm}
-        label="Copy all settings"
+        label={t("Copy all settings")}
         active={confirmActive}
         saving={isLoading}
       />
@@ -224,7 +231,7 @@ const CopyBundleSettingsDialog = ({
       <div className="cards">
         <Styled.BundleCard className="card">
           <Styled.Row>
-            <span>Bundle:</span>
+            <span>{t("Bundle")}:</span>
             <CopyBundleSettingsDropdown
               devMode={devMode}
               bundles={sourceBundles} // all bundles
@@ -242,7 +249,7 @@ const CopyBundleSettingsDialog = ({
         <Icon icon="arrow_right_alt" className="arrow" />
         <Styled.BundleCard className="card">
           <Styled.Row>
-            <span>Bundle:</span>
+            <span>{t("Bundle")}:</span>
             <Styled.TargetBundle>{bundle.name}</Styled.TargetBundle>
             {envTarget ? (
               <BundleBadges
@@ -272,7 +279,7 @@ const CopyBundleSettingsDialog = ({
         </Styled.BundleCard>
       </div>
       <span className="overrides">
-        If you skip this step, you can always copy addon settings selectively later on.
+        {t("If you skip this step, you can always copy addon settings selectively later on.")}
       </span>
     </FriendlyDialog>
   )

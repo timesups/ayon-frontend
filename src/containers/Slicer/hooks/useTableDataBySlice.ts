@@ -10,27 +10,14 @@ interface Props {
   sliceFields: SliceType[]
 }
 
+
+//去除ayon的收费的高级功能
 const defaultSliceOptions: SliceOption[] = [
   {
     label: 'Hierarchy',
     value: 'hierarchy' as SliceType,
     icon: 'table_rows',
-  },
-  {
-    label: 'Assignees',
-    value: 'assignees' as SliceType,
-    icon: 'person',
-  },
-  {
-    label: 'Status',
-    value: 'status' as SliceType,
-    icon: 'arrow_circle_right',
-  },
-  {
-    label: 'Task Type',
-    value: 'taskType' as SliceType,
-    icon: 'check_circle',
-  },
+  }
 ]
 
 const getNoValue = (field: string): TableRow => ({

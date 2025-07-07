@@ -12,7 +12,15 @@ import * as Styled from './DashboardTasksToolbar.styled'
 import sortByOptions from './KanBanSortByOptions'
 import { getGroupByOptions } from './KanBanGroupByOptions'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 const DashboardTasksToolbar = ({ isLoading, view, setView }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const dispatch = useDispatch()
 
   const user = useSelector((state) => state.user)
@@ -70,20 +78,20 @@ const DashboardTasksToolbar = ({ isLoading, view, setView }) => {
   return (
     <Styled.TasksToolbar>
       <SortingDropdown
-        title="Sort by"
+        title={t("Sort by")}
         options={sortByOptions}
         value={sortByValue}
         onChange={setSortByValue}
       />
       <SortingDropdown
-        title="Group by"
+        title={t("Group by")}
         options={groupByOptions}
         value={groupByValue}
         onChange={(v) => handleGroupBy(v[0])}
         multiSelect={false}
       />
       <InputText
-        placeholder="Filter tasks..."
+        placeholder={t("Filter tasks...")}
         value={filterValue}
         onChange={(e) => setFilterValue(e.target.value)}
       />
@@ -93,21 +101,21 @@ const DashboardTasksToolbar = ({ isLoading, view, setView }) => {
           onChange={(state, v) => handleAssigneesChange(state, v)}
           filter={assigneesFilter}
           align={'right'}
-          placeholder="Assignees"
+          placeholder={t("Assignees")}
           buttonStyle={{ outline: '1px solid var(--md-sys-color-outline-variant)' }}
           style={{ zIndex: 20 }}
         />
       )}
       <Spacer />
       <Button
-        label="List"
+        label={t("List")}
         onClick={() => setView('list')}
         selected={view === 'list'}
         icon="format_list_bulleted"
         data-tooltip="List view"
       />
       <Button
-        label="Board"
+        label={t("Board")}
         onClick={() => setView('kanban')}
         selected={view === 'kanban'}
         icon="view_kanban"

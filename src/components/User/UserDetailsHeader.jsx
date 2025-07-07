@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import DetailHeader from '../DetailHeader'
 import { UserImagesStacked } from '@ynput/ayon-react-components'
 import styled from 'styled-components'
-
+import { useTranslation } from 'react-i18next'
 const SubHeader = styled.span`
   white-space: nowrap;
   width: 100%;
@@ -12,12 +12,15 @@ const SubHeader = styled.span`
 `
 
 const UserDetailsHeader = ({ users = [], onClose, subTitle = '', style = {} }) => {
+  // translation
+  const {t} = useTranslation()
   // a single user
   const singleUserEdit = users.length === 1 ? users[0] || ' ' : null
 
   const getUserName = (user) => user?.attrib?.fullName || user?.name
 
-  const title = singleUserEdit ? getUserName(singleUserEdit) : `${users.length} Users Selected`
+  const user_count = t("usercount",{length:users.length})
+  const title = singleUserEdit ? getUserName(singleUserEdit) : user_count
 
   return (
     <DetailHeader onClose={onClose} context={users} dialogTitle="User Context" style={style}>

@@ -7,6 +7,9 @@ import { useState } from 'react'
 import { ReviewableResponse } from '@queries/review/types'
 import ViewerImage from './ViewerImage'
 
+import { useTranslation } from 'react-i18next'
+
+
 interface ViewerProps {
   projectName: string | null
   productId: string | null
@@ -33,6 +36,11 @@ const ViewerComponent = ({
   quickView,
   onUpload,
 }: ViewerProps) => {
+
+  //translation
+  const {t} = useTranslation()
+
+
   const [autoPlay, setAutoPlay] = useState(quickView)
 
   const availability = selectedReviewable?.availability
@@ -68,16 +76,16 @@ const ViewerComponent = ({
   }
 
   if (!isFetchingReviewables && versionReviewableIds?.length === 0) {
-    let message = 'No preview available'
+    let message = t("No preview available")
     let canUploadReviewable = false
 
     if (noVersions) {
-      message = 'This task has published no versions.'
+      message = t("This task has published no versions.")
     } else if (!reviewables.length) {
-      message = 'This version has no online reviewables.'
+      message = t("This version has no online reviewables.")
       canUploadReviewable = true
     } else if (availability === 'conversionRequired') {
-      message = 'File not supported and needs conversion'
+      message = t("File not supported and needs conversion")
     }
     const placeholderStyles = {
       position: 'relative',

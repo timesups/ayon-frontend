@@ -15,6 +15,8 @@ import { useCheckBundleCompatibilityQuery } from '@queries/bundles/getBundles'
 import BundleChecks from './BundleChecks/BundleChecks'
 import usePrevious from '@hooks/usePrevious'
 
+import { useTranslation } from 'react-i18next'
+
 const removeEmptyDevAddons = (addons = {}) => {
   if (!addons) return addons
   const newAddonDevelopment = {}
@@ -27,6 +29,10 @@ const removeEmptyDevAddons = (addons = {}) => {
 }
 
 const NewBundle = ({ initBundle, onSave, addons, installers, isDev, developerMode }) => {
+
+  // translation
+  const {t} = useTranslation()
+
   // when updating a dev bundle, we need to track changes
   const [formData, setFormData] = useState(null)
   const [skipBundleCheck, setSkipBundleCheck] = useState(false)
@@ -272,12 +278,12 @@ const NewBundle = ({ initBundle, onSave, addons, installers, isDev, developerMod
                 setDevChanges(false)
               }}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
           </>
         )}
         <SaveButton
-          label={isDev ? 'Save dev bundle' : 'Create new bundle'}
+          label={isDev ? t("Save dev bundle") : t("Create new bundle")}
           onClick={isDev ? handleUpdate : handleSave}
           active={
             isDev
@@ -303,49 +309,49 @@ const NewBundle = ({ initBundle, onSave, addons, installers, isDev, developerMod
       >
         <Styled.AddonTools>
           <Button
-            label="Select all addons"
+            label={t("Select all addons")}
             icon="select_all"
             onClick={() => setSelectedAddons(addons)}
             data-shortcut={`shift+A`}
             id="select"
           />
           <Button
-            label="Deselect all addons"
+            label={t("Deselect all addons")}
             icon="deselect"
             onClick={() => setSelectedAddons([])}
             data-shortcut={`shift+A`}
             id="deselect"
           />
           <Button
-            label="Select activated"
+            label={t("Select activated")}
             icon="check_circle"
             onClick={() => setSelectedAddons(addons.filter((a) => !!formData?.addons?.[a.name]))}
-            data-tooltip="Select addons that have a version"
+            data-tooltip={t("Select addons that have a version")}
           />
           <Button
-            label="Select deactivated"
+            label={t("Select deactivated")}
             icon="block"
             onClick={() => setSelectedAddons(addons.filter((a) => !formData?.addons?.[a.name]))}
-            data-tooltip="Select addons that have a NONE version"
+            data-tooltip={t("Select addons that have a NONE version")}
           />
           <Button
-            label="Version latest"
+            label={t("Version latest")}
             icon="vertical_align_top"
             disabled={!selectedAddons.length}
             onClick={() => setSelectedVersion(true)}
-            data-tooltip="Set selected addons to latest version"
+            data-tooltip={t("Set selected addons to latest version")}
           />
           <Button
-            label="Version NONE"
+            label={t("Version NONE")}
             icon="vertical_align_bottom"
             disabled={!selectedAddons.length}
             onClick={() => setSelectedVersion(false)}
-            data-tooltip="Set selected addons to NONE"
+            data-tooltip={t("Set selected addons to NONE")}
           />
           {(isDev || formData?.isDev) && (
             <>
               <Styled.BadgeButton
-                label="Enable development"
+                label={t("Enable development")}
                 icon="code"
                 $hl={'developer-surface'}
                 disabled={!selectedAddons.length}
@@ -356,10 +362,10 @@ const NewBundle = ({ initBundle, onSave, addons, installers, isDev, developerMod
                   )
                 }
                 style={{ width: '100%', gap: 8 }}
-                data-tooltip="Enable development for selected addons"
+                data-tooltip={t("Enable development for selected addons")}
               />
               <Styled.BadgeButton
-                label="Disable development"
+                label={t("Disable development")}
                 icon="code_off"
                 $hl={'developer-surface'}
                 disabled={!selectedAddons.length}
@@ -370,7 +376,7 @@ const NewBundle = ({ initBundle, onSave, addons, installers, isDev, developerMod
                   )
                 }
                 style={{ width: '100%', gap: 8 }}
-                data-tooltip="Disable development for selected addons"
+                data-tooltip={t("Disable development for selected addons")}
               />
             </>
           )}

@@ -40,6 +40,9 @@ import { useFiltersWithHierarchy } from '@components/SearchFilter/hooks'
 import useUserFilters from '@hooks/useUserFilters'
 import { SelectionData, SliceType } from '@shared/Slicer'
 
+
+import { useTranslation } from 'react-i18next'
+
 // what to search by
 const searchFilterTypes: FilterFieldType[] = [
   'attributes',
@@ -71,6 +74,10 @@ const TasksProgress: FC<TasksProgressProps> = ({
   priorities = [],
   projectName,
 }) => {
+
+  //translation
+  const {t} = useTranslation()
+
   const dispatch = useAppDispatch()
   const tableRef = useRef<any>(null)
 
@@ -441,7 +448,7 @@ const TasksProgress: FC<TasksProgressProps> = ({
           )
         ) : (
           <EmptyPlaceholder
-            message={'Select a folder to begin.'}
+            message={t("Select a folder to begin.")}
             icon="folder_open"
             error={error}
           />

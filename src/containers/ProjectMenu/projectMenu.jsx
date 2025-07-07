@@ -14,7 +14,11 @@ import { useSetFrontendPreferencesMutation } from '@/services/user/updateUser'
 import useAyonNavigate from '@hooks/useAyonNavigate'
 import { useProjectSelectDispatcher } from './hooks/useProjectSelectDispatcher'
 
+import { useTranslation } from 'react-i18next'
 const ProjectMenu = ({ isOpen, onHide }) => {
+  //translation
+  const {t} = useTranslation()
+
   const navigate = useAyonNavigate()
   const dispatch = useDispatch()
   const menuRef = useRef(null)
@@ -104,7 +108,7 @@ const ProjectMenu = ({ isOpen, onHide }) => {
 
     const userItems = [
       {
-        label: pinnedDisabled ? 'Max 5 pinned' : `${isPinned ? 'Unpin' : 'Pin'} Project`,
+        label: pinnedDisabled ? t("Max 5 pinned") : `${isPinned ? t("Unpin") : t("Pin")} ${t("Project")}`,
         icon: 'push_pin',
         command: (e) => handlePinChange(projectName, e),
         disabled: pinnedDisabled,
@@ -115,7 +119,7 @@ const ProjectMenu = ({ isOpen, onHide }) => {
       userItems.push(
         ...[
           {
-            label: 'Project Settings',
+            label: t("Project Settings"),
             icon: 'settings_applications',
             command: () =>
               setTimeout(
@@ -325,7 +329,7 @@ const ProjectMenu = ({ isOpen, onHide }) => {
             <Styled.Search icon="search" variant="text" onClick={handleSearchClick} />
           ) : (
             <InputText
-              placeholder="Search projects..."
+              placeholder={t("Search projects...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
@@ -334,7 +338,7 @@ const ProjectMenu = ({ isOpen, onHide }) => {
           )}
 
           <Styled.All>
-            <h3>Projects</h3>
+            <h3>{t("Projects")}</h3>
             <MenuList items={filteredMenuItems} handleClick={(e, onClick) => onClick()} level={0} />
           </Styled.All>
         </Section>

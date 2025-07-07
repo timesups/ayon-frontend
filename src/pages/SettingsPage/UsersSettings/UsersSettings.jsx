@@ -23,7 +23,7 @@ import Shortcuts from '@containers/Shortcuts'
 import DeleteUserDialog from './DeleteUserDialog'
 import LicensesDialog from '@components/LicensesDialog/LicensesDialog'
 import { useQueryParam } from 'use-query-params'
-
+import { useTranslation } from 'react-i18next'
 // what to show in the access column
 const formatAccessGroups = (rowData) => {
   let res = {}
@@ -52,6 +52,12 @@ const formatAccessGroups = (rowData) => {
 }
 
 const UsersSettings = () => {
+
+  //translation
+
+  const {t} = useTranslation()
+
+
   // QUERY PARAMS STATE
   const [searchParams] = useSearchParams()
   const queryNames = searchParams.getAll('name')
@@ -223,12 +229,12 @@ const UsersSettings = () => {
       <main>
         <Section>
           <Toolbar>
-            <Button label="Licenses" onClick={() => setShowLicenses(true)} />
+            <Button label={t("Licenses")} onClick={() => setShowLicenses(true)} />
             <UsersOverview users={userList} />
             <form style={{ flex: 1 }} autoComplete="off" onSubmit={(e) => e.preventDefault()}>
               <InputText
                 style={{ width: '100%', minWidth: 150 }}
-                placeholder="Filter users..."
+                placeholder={t("Filter users...")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 autoComplete="search-users"
@@ -236,14 +242,14 @@ const UsersSettings = () => {
             </form>
             <Button
               onClick={() => setShowDeleteUser(selectedUsers)}
-              label="Delete Users"
+              label={t("Delete Users")}
               icon="person_remove"
               disabled={!selectedUsers.length || isSelfSelected || managerDisabled}
             />
-            <Button onClick={openNewServiceUser} label="Add Service User" icon="person_add" />
+            <Button onClick={openNewServiceUser} label={t("Add Service User")} icon="person_add" />
             <Button
               onClick={openNewUser}
-              label="Add New User"
+              label={t("Add New User")}
               icon="person_add"
               data-shortcut="n"
             />

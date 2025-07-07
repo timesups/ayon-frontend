@@ -7,7 +7,12 @@ import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import { Badge, BadgeWrapper } from '@components/Badge'
 import { useURIContext } from '@context/uriContext'
 
+import { useTranslation } from 'react-i18next'
+
 const SettingsChangesTable = ({ changes, unpins, onRevert }) => {
+  //translation
+  const {t} = useTranslation()
+
   const [expandedKeys, setExpandedKeys] = useState({})
   const [selectedKeys, setSelectedKeys] = useState({})
   const [knownAddonKeys, setKnownAddonKeys] = useState({})
@@ -170,11 +175,11 @@ const SettingsChangesTable = ({ changes, unpins, onRevert }) => {
           onSelectionChange={handleSelectionChange}
           onContextMenuSelectionChange={handleSelectionChange}
           onContextMenu={(event) => ctxMenuShow(event.originalEvent)}
-          emptyMessage="No changes"
+          emptyMessage={t("No changes")}
           scrollable="true"
           scrollHeight="100%"
         >
-          <Column header="Name" body={changeNameRenderer} field="key" expander />
+          <Column header={t("Name")} body={changeNameRenderer} field="key" expander />
           <Column header="" body={actionRenderer} style={{ width: 28 }} />
         </TreeTable>
       </TablePanel>

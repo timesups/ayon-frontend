@@ -13,7 +13,6 @@ import {
 import ProjectManagerPageLayout from './ProjectManagerPageLayout'
 import { toast } from 'react-toastify'
 import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
-
 const ProjectRootForm = ({ projectName, siteName, siteId, roots }) => {
   const [setCustomRoots, { isLoading }] = useSetCustomRootsMutation()
   const [rootValues, setRootValues] = useState(null)

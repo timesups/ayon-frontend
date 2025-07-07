@@ -13,7 +13,7 @@ import checkName from '@helpers/checkName'
 import UserListTeams from '../UserListTeams'
 import useSearchFilter from '@hooks/useSearchFilter'
 import * as Styled from './CreateNewTeam.styled'
-
+import { useTranslation } from 'react-i18next'
 const CreateNewTeam = ({
   rolesList,
   onCreate,
@@ -26,6 +26,9 @@ const CreateNewTeam = ({
   isUpdating,
   selectedTeams,
 }) => {
+  const {t} = useTranslation()
+
+
   const [selectedUsers, setSelectedUsers] = useState([])
   const rolesOptions = useMemo(() => rolesList.map((role) => ({ name: role })), [rolesList])
   const [nameForm, setNameForm] = useState('')
@@ -142,7 +145,7 @@ const CreateNewTeam = ({
       onClose={onClose}
       style={{ height: '700px' }}
       isOpen
-      header={'Create New Team'}
+      header={t("Create New Team")}
       size="full"
       onKeyDown={handleKeyDown}
       footer={
@@ -151,14 +154,14 @@ const CreateNewTeam = ({
           <Spacer />
           <Button
             onClick={handleClear}
-            label="Clear"
+            label={t("Clear")}
             icon="clear"
             style={{ flex: 1 }}
             disabled={!nameForm}
           />
           <SaveButton
             onClick={handleSubmit}
-            label="Create New Team"
+            label={t("Create New Team")}
             style={{ flex: 1 }}
             active={!!nameForm}
             saving={isUpdating}
@@ -170,7 +173,7 @@ const CreateNewTeam = ({
         <Styled.Column>
           <InputText
             style={{ width: '100%' }}
-            placeholder="Filter users..."
+            placeholder={t("Filter users...")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoComplete="off"
@@ -190,10 +193,10 @@ const CreateNewTeam = ({
         <Styled.Column>
           <FormLayout>
             {subTitle && <h3>{subTitle}</h3>}
-            <FormRow label="Team Name">
+            <FormRow label={t("Team Name")}>
               <InputText value={nameForm} onChange={(e) => setNameForm(e.target.value)} autoFocus />
             </FormRow>
-            <FormRow label="Team Members">
+            <FormRow label={t("Team Members")}>
               <AssigneeSelect
                 value={selectedUsers}
                 options={usersOptions}
@@ -205,11 +208,11 @@ const CreateNewTeam = ({
                 searchFields={['name']}
                 multiSelect
                 emptyIcon={false}
-                emptyMessage="Add Team Members..."
+                emptyMessage={t("Add Team Members...")}
               />
             </FormRow>
 
-            <FormRow label="Member Roles">
+            <FormRow label={t("Member Roles")}>
               <Dropdown
                 value={rolesForm}
                 options={rolesOptions}
@@ -221,7 +224,7 @@ const CreateNewTeam = ({
                 editable
                 multiSelect
                 widthExpand
-                placeholder={'Add Members Roles...'}
+                placeholder={t("Add Members Roles...")}
                 disabled={selectedUsers.length === 0}
               />
             </FormRow>

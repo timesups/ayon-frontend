@@ -23,7 +23,15 @@ import Shortcuts from '@containers/Shortcuts'
 import CopyBundleSettingsDialog from './CopyBundleSettingsDialog/CopyBundleSettingsDialog'
 import BundleFormLoading from './BundleFormLoading'
 
+
+import { useTranslation } from 'react-i18next'
+
+
+
 const Bundles = () => {
+
+  const {t} = useTranslation()
+
   const userName = useSelector((state) => state.user.name)
   const developerMode = useSelector((state) => state.user.attrib.developerMode)
   const dispatch = useDispatch()
@@ -112,7 +120,6 @@ const Bundles = () => {
     }
 
     // delete
-    searchParams.delete('bundle')
     searchParams.delete('duplicate')
     setSearchParams(searchParams)
   }, [searchParams, isLoading, bundleList])
@@ -337,13 +344,13 @@ const Bundles = () => {
   let uploadHeader = ''
   switch (uploadOpen) {
     case 'addon':
-      uploadHeader = 'Upload Addons'
+      uploadHeader = t("Upload Addons")
       break
     case 'installer':
-      uploadHeader = 'Upload Launcher'
+      uploadHeader = t("Upload Launcher")
       break
     case 'package':
-      uploadHeader = 'Upload Dependency Package'
+      uploadHeader = t("Upload Dependency Package")
       break
     default:
       break
@@ -405,42 +412,42 @@ const Bundles = () => {
                 <Button
                   icon="add"
                   onClick={handleNewBundleStart}
-                  data-tooltip="Add new bundle"
+                  data-tooltip={t("Add new bundle")}
                   data-shortcut="N"
                 >
-                  <span>Add Bundle</span>
+                  <span>{t("Add Bundle")}</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('addon')}
-                  data-tooltip="Upload addon zip files"
+                  data-tooltip={t("Upload addon zip files")}
                   data-shortcut="A"
                 >
-                  <span className="large">Upload Addons</span>
-                  <span className="small">Addons</span>
+                  <span className="large">{t("Upload Addons")}</span>
+                  <span className="small">{t("Addons")}</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('installer')}
-                  data-tooltip="Upload launchers for download"
+                  data-tooltip={t("Upload launchers for download")}
                   data-shortcut="L"
                 >
-                  <span className="large">Upload Launcher</span>
-                  <span className="small">Launcher</span>
+                  <span className="large">{t("Upload Launcher")}</span>
+                  <span className="small">{t("Launcher")}</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('package')}
-                  data-tooltip="Upload dependency packages"
+                  data-tooltip={t("Upload dependency packages")}
                   data-shortcut="P"
                 >
-                  <span className="large">Upload Dependency Package</span>
-                  <span className="small">Package</span>
+                  <span className="large">{t("Upload Dependency Package")}</span>
+                  <span className="small">{t("Package")}</span>
                 </Button>
                 <span style={{ whiteSpace: 'nowrap' }} className="large">
-                  Show Archived
+                  {t("Show Archived")}
                 </span>
-                <span className="small">Archived</span>
+                <span className="small">{t("Archived")}</span>
                 <InputSwitch
                   checked={showArchived}
                   onChange={(e) => setShowArchived(e.target.checked)}

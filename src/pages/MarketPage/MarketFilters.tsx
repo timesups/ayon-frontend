@@ -6,6 +6,10 @@ import clsx from 'clsx'
 import YnputConnector from '@components/YnputCloud/YnputConnector'
 import { $Any } from '@types'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 const StyledSection = styled(Section)`
   height: 100%;
   flex: 0.5;

@@ -7,12 +7,18 @@ import {
   EmptyPlaceholderFlexWrapper,
 } from '@shared/EmptyPlaceholder/EmptyPlaceholderFlex.styled'
 
+
+import { useTranslation } from 'react-i18next'
+
+
 type Props = {
   projectName?: string
   canCreateOrDelete?: boolean
 }
 
 const AccessGroups = ({ projectName, canCreateOrDelete }: Props) => {
+  const {t} = useTranslation()
+
   const [selectedAccessGroup, setSelectedAccessGroup] = useState<AccessGroupObject | null>(null)
 
   return (
@@ -27,7 +33,7 @@ const AccessGroups = ({ projectName, canCreateOrDelete }: Props) => {
       {!selectedAccessGroup && (
         <EmptyPlaceholderFlexWrapper>
           <EmptyPlaceholderFlex
-            message="No access group selected"
+            message={t("No access group selected")}
             icon={'group'}
           ></EmptyPlaceholderFlex>
         </EmptyPlaceholderFlexWrapper>

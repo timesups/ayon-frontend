@@ -22,7 +22,7 @@ import { isFilePreviewable } from '@containers/FileUploadPreview/FileUploadPrevi
 import { useGetKanbanProjectUsersQuery } from '@queries/userDashboard/getUserDashboard'
 import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
 import { useFeed, FEED_NEW_COMMENT } from '@context/FeedContext'
-
+import { useTranslation } from 'react-i18next'
 // number of activities to get
 export const activitiesLast = 30
 
@@ -38,6 +38,7 @@ const Feed = ({
   readOnly,
   statuses = [],
 }) => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
   const { editingId, setEditingId } = useFeed()
   const userName = useSelector((state) => state.user.name)
@@ -295,7 +296,7 @@ const Feed = ({
               ))}
           {/* message when no versions published */}
           {transformedActivitiesData.length === 1 && filter === 'publishes' && !isLoadingNew && (
-            <EmptyPlaceholder message="No versions published yet" icon="layers" />
+            <EmptyPlaceholder message={t("No versions published yet")} icon="layers" />
           )}
           {hasPreviousPage && (
             <InView

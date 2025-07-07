@@ -4,7 +4,7 @@ import { DropdownRef, WatcherSelect, WatcherSelectProps } from '@ynput/ayon-reac
 import { forwardRef } from 'react'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-
+import { useTranslation } from 'react-i18next'
 interface WatchersProps extends Omit<WatcherSelectProps, 'currentUser'> {
   entities: { id: string; projectName: string }[]
   entityType: string
@@ -12,6 +12,7 @@ interface WatchersProps extends Omit<WatcherSelectProps, 'currentUser'> {
 }
 
 export const Watchers = forwardRef<DropdownRef, WatchersProps>(
+  
   ({ entities, entityType, onWatchersUpdate, ...props }, ref) => {
     const user = useSelector((state: $Any) => state.user.name)
 
@@ -20,7 +21,7 @@ export const Watchers = forwardRef<DropdownRef, WatchersProps>(
       entityType,
       projectName: entity.projectName,
     }))
-
+    const {t} = useTranslation()
     const { data: watchers = [] } = useGetEntitiesWatchersQuery(
       {
         entities: entitiesQuery,
@@ -71,7 +72,7 @@ export const Watchers = forwardRef<DropdownRef, WatchersProps>(
         onChange={handleChange}
         ref={ref}
         // @ts-expect-error
-        buttonProps={{ 'data-tooltip': 'Watchers' }}
+        buttonProps={{ 'data-tooltip': t("Watchers") }}
       />
     )
   },

@@ -3,7 +3,7 @@ import { Column } from 'primereact/column'
 import { TablePanel, Section } from '@ynput/ayon-react-components'
 import { ProfileRow } from '@pages/SettingsPage/UsersSettings/UserList'
 import clsx from 'clsx'
-
+import { useTranslation } from 'react-i18next'
 const UsersListTeamsSmall = ({
   handleContext,
   userList,
@@ -12,6 +12,7 @@ const UsersListTeamsSmall = ({
   onContextSelectionChange,
   selection,
 }) => {
+  const {t} = useTranslation()
   return (
     <Section>
       <TablePanel onContextMenu={handleContext}>
@@ -41,7 +42,7 @@ const UsersListTeamsSmall = ({
         >
           <Column
             field="attrib.fullName"
-            header="Full Name"
+            header={t("Full Name")}
             style={{ width: '20%' }}
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
           />

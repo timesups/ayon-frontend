@@ -4,6 +4,9 @@ import ActivityReference from '../ActivityReference/ActivityReference'
 import ActivityDate from '../ActivityDate'
 import { Icon } from '@ynput/ayon-react-components'
 
+import { useTranslation } from 'react-i18next'
+
+
 const ActivityHeader = ({
   name,
   fullName,
@@ -16,12 +19,14 @@ const ActivityHeader = ({
   onReferenceClick,
   onReferenceTooltip,
 }) => {
+
+  const {t} = useTranslation()
   const { referenceType, origin = {}, activityType, versions = [], activityId } = activity
   const isMention = referenceType === 'mention'
 
   const isPublish = activityType === 'version.publish'
   const isMultipleVersions = versions.length > 1
-  const publishedString = isMultipleVersions ? 'published versions' : 'published a version'
+  const publishedString = isMultipleVersions ? t("published versions") : t("published a version")
 
   const boldString = isMention ? `mentioned` : 'commented'
   const entityTypeString = isMention ? ` ${entityType} on` : 'on'

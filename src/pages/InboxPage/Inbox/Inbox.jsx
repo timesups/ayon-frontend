@@ -24,6 +24,9 @@ import useUpdateInboxMessage from '../hooks/useUpdateInboxMessage'
 import useInboxRefresh from '../hooks/useInboxRefresh'
 import { useListProjectsQuery } from '@queries/project/getProject'
 
+
+import { useTranslation } from 'react-i18next'
+
 const placeholderMessages = Array.from({ length: 100 }, (_, i) => ({
   activityId: `placeholder-${i}`,
   folderName: 'Loading...',
@@ -39,6 +42,10 @@ const filters = {
 }
 
 const Inbox = ({ filter }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const dispatch = useDispatch()
 
   // get all project names
@@ -348,11 +355,11 @@ const Inbox = ({ filter }) => {
             disabled={!messages.length}
             shortcut={{ children: 'Shift+C' }}
           >
-            Clear all
+            {t("Clear all")}
           </Button>
         )}
         <Button icon="refresh" onClick={refreshInbox} shortcut={{ children: 'R' }}>
-          Refresh
+          {t("Refresh")}
         </Button>
       </Styled.Tools>
       <Styled.InboxSection direction="row">
@@ -415,7 +422,7 @@ const Inbox = ({ filter }) => {
         {!isLoadingAny && (errorInbox || !messagesData.length) && (
           <EmptyPlaceholder
             icon="done_all"
-            message="All caught up! No messages to show."
+            message={t("All caught up! No messages to show.")}
             error={errorInbox}
           />
         )}

@@ -6,11 +6,15 @@ import { useSettingsPanel } from '../context/SettingsPanelContext'
 import { SettingsPanel, SettingConfig } from './SettingsPanel'
 import ColumnsSettings from './ColumnsSettings'
 
+import { useTranslation } from 'react-i18next'
+
 const StyledCustomizeButton = styled(Button)`
   min-width: 120px;
 `
 
 export const CustomizeButton = () => {
+  const {t} = useTranslation()
+
   const { togglePanel, isPanelOpen } = useSettingsPanel()
 
   return (
@@ -19,7 +23,7 @@ export const CustomizeButton = () => {
       icon="settings"
       selected={isPanelOpen}
     >
-      Customize
+      {t("Customize")}
     </StyledCustomizeButton>
   )
 }

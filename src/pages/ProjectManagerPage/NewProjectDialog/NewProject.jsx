@@ -9,12 +9,20 @@ import { useGetAnatomyPresetQuery, useGetAnatomySchemaQuery } from '@queries/ana
 import { useCreateProjectMutation } from '@queries/project/updateProject'
 import { useGetConfigValueQuery } from '@queries/config/getConfig'
 
+import { useTranslation } from 'react-i18next'
+
+
 // allow only alphanumeric and underscorer,
 // while underscore cannot be the first or last character
 const PROJECT_NAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9]$/
 const PROJECT_CODE_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9]$/
 
 const NewProjectDialog = ({ onHide }) => {
+
+
+  const {t} = useTranslation()
+
+
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
   const [codeSet, setCodeSet] = useState(false)
@@ -128,7 +136,7 @@ const NewProjectDialog = ({ onHide }) => {
 
   const footer = (
     <Toolbar style={{}}>
-      Library project
+      {t("Library project")}
       <InputSwitch
         checked={isLibrary}
         onChange={(e) => setIsLibrary(e.target.checked)}
@@ -136,7 +144,7 @@ const NewProjectDialog = ({ onHide }) => {
       />
       <Spacer />
       <SaveButton
-        label="Create Project"
+        label={t("Create Project")}
         onClick={handleSubmit}
         active={name && code && !isOriginalAnatomyLoading && !isSchemaLoading}
         saving={isLoading}
@@ -167,7 +175,7 @@ const NewProjectDialog = ({ onHide }) => {
 
   return (
     <Dialog
-      header="Create a new project"
+      header={t("Create a new project")}
       footer={footer}
       isOpen={true}
       onClose={() => onHide()}
@@ -186,7 +194,7 @@ const NewProjectDialog = ({ onHide }) => {
       >
         <Toolbar>
           <InputText
-            placeholder="Project Name"
+            placeholder={t("Project Name")}
             style={{ flexGrow: 1 }}
             value={name}
             onChange={handleNameChange}
@@ -195,7 +203,7 @@ const NewProjectDialog = ({ onHide }) => {
             autoFocus
           />
           <InputText
-            placeholder="Project code"
+            placeholder={t("Project code")}
             value={code}
             onChange={handleCodeChange}
             title={codeValidationError}
@@ -205,7 +213,7 @@ const NewProjectDialog = ({ onHide }) => {
           <AnatomyPresetDropdown
             selectedPreset={selectedPreset}
             setSelectedPreset={setSelectedPreset}
-            tooltip="Project anatomy preset"
+            tooltip={t("Project anatomy preset")}
           />
         </Toolbar>
         {anatomyEditor}

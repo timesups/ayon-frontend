@@ -29,6 +29,7 @@ import useInitialValue from './hooks/useInitialValue'
 import useSetCursorEnd from './hooks/useSetCursorEnd'
 import useMentionLink from './hooks/useMentionLink'
 import useAnnotationsSync from './hooks/useAnnotationsSync'
+import { useTranslation } from 'react-i18next'
 
 // State management
 import { useGetMentionSuggestionsQuery } from '@queries/mentions/getMentions'
@@ -67,6 +68,9 @@ const CommentInput = ({
   isLoading,
   scope,
 }) => {
+  //translation
+  const {t} = useTranslation()
+
   const [initHeight, setInitHeight] = useState(88)
   const [editorValue, setEditorValue] = useState('')
   // file uploads
@@ -592,13 +596,13 @@ const CommentInput = ({
               value={editorValue}
               onChange={handleChange}
               readOnly={!isOpen}
-              placeholder={'Comment or mention with @user, @@version, @@@task...'}
+              placeholder={t("Comment or mention with @user, @@version, @@@task...")}
               modules={modules}
               formats={quillFormats}
             />
           ) : (
             <Styled.Placeholder>
-              {disabled ? 'Commenting is disabled across multiple projects.' : 'Add a comment...'}
+              {disabled ? t("Commenting is disabled across multiple projects.") : t("Add a comment...")}
             </Styled.Placeholder>
           )}
 
@@ -609,7 +613,7 @@ const CommentInput = ({
                 icon="person"
                 variant="text"
                 onClick={() => handleMentionButton('@')}
-                data-tooltip={'Mention user'}
+                data-tooltip={t("Mention user")}
                 data-shortcut={'@'}
               />
               {/* mention a version */}
@@ -617,7 +621,7 @@ const CommentInput = ({
                 icon="layers"
                 variant="text"
                 onClick={() => handleMentionButton('@@')}
-                data-tooltip={'Mention version'}
+                data-tooltip={t("Mention version")}
                 data-shortcut={'@@'}
               />
               {/* mention a task */}
@@ -625,7 +629,7 @@ const CommentInput = ({
                 icon="check_circle"
                 variant="text"
                 onClick={() => handleMentionButton('@@@')}
-                data-tooltip={'Mention task'}
+                data-tooltip={t("Mention task")}
                 data-shortcut={'@@@'}
               />
             </Styled.Buttons>
@@ -636,7 +640,7 @@ const CommentInput = ({
                 </Button>
               )}
               <SaveButton
-                label={isEditing ? 'Save' : 'Comment'}
+                label={isEditing ? t("Save") : t("Comment")}
                 className="comment"
                 active={!!editorValue || !!files.length}
                 onClick={handleSubmit}

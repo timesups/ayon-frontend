@@ -21,6 +21,9 @@ import clsx from 'clsx'
 import InboxNotificationIcon from './InboxNotification'
 import ReleaseInstallerPrompt from '@containers/ReleaseInstallerDialog/ReleaseInstallerPrompt/ReleaseInstallerPrompt'
 
+import { useTranslation } from 'react-i18next'
+
+
 const FlexWrapper = styled.div`
   display: flex;
   gap: var(--base-gap-small);
@@ -72,6 +75,10 @@ const StyledSwitch = styled(InputSwitch)`
 `
 
 const Header = () => {
+  //translation
+  const {t} = useTranslation()
+
+
   const dispatch = useAppDispatch()
   const menuOpen = useAppSelector((state) => state.context.menuOpen)
   const handleToggleMenu = (menu) => dispatch(toggleMenuOpen(menu))
@@ -153,7 +160,7 @@ const Header = () => {
         <Link to={'/dashboard/tasks'}>
           <HeaderButton
             icon="home"
-            label="Home"
+            label={t("Home")}
             variant="nav"
             className={clsx({ selected: location.pathname.startsWith('/dashboard') })}
             id="home-button"
@@ -162,7 +169,7 @@ const Header = () => {
 
         <HeaderButton
           icon="event_list"
-          label="Projects"
+          label={t("Projects")}
           variant="nav"
           onClick={() => handleToggleMenu('project')}
           style={{
@@ -180,7 +187,7 @@ const Header = () => {
         <ReleaseInstallerPrompt isAdmin={user.data.isAdmin} />
         {isDeveloper && (
           <DeveloperSwitch $isChecked={developerMode} onClick={handleDeveloperMode}>
-            <span>Developer Mode</span>
+            <span>{t("Developer Mode")}</span>
             <StyledSwitch checked={developerMode} readOnly />
           </DeveloperSwitch>
         )}

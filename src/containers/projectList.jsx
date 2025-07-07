@@ -18,6 +18,8 @@ import { useProjectSelectDispatcher } from './ProjectMenu/hooks/useProjectSelect
 import useAyonNavigate from '@hooks/useAyonNavigate'
 import useUserProjectPermissions from '@hooks/useUserProjectPermissions'
 
+import { useTranslation } from 'react-i18next'
+
 const formatName = (rowData, defaultTitle, field = 'name') => {
   if (rowData[field] === '_') return defaultTitle
   return rowData[field]
@@ -125,6 +127,10 @@ const ProjectList = ({
   isActiveCallable,
   hideAddProjectButton = false,
 }) => {
+  //translation
+  const {t} = useTranslation()
+
+
   const navigate = useAyonNavigate()
   const tableRef = useRef(null)
   const user = useSelector((state) => state.user)
@@ -288,7 +294,7 @@ const ProjectList = ({
   const getContextItems = (sel) => {
     const menuItems = [
       {
-        label: 'Open Project',
+        label: t("Open Project"),
         icon: 'event_list',
         command: () => {
           closeContextMenu()
@@ -300,7 +306,7 @@ const ProjectList = ({
     // toggle pinned status
     // first get if whole selection is pinned or not
     const allPinned = sel.every((project) => pinnedProjects.includes(project))
-    let pinnedLabel = allPinned ? 'Unpin Project' : 'Pin Project'
+    let pinnedLabel = allPinned ? t("Unpin Project") : t("Pin Project")
     if (sel.length > 1) pinnedLabel = pinnedLabel + 's'
     menuItems.push({
       label: pinnedLabel,
@@ -311,7 +317,7 @@ const ProjectList = ({
     // if not on project manager page
     if (!isProjectManager) {
       menuItems.push({
-        label: 'Manage Project',
+        label: t("Manage Project"),
         icon: 'settings_applications',
         command: () => {
           closeContextMenu()
@@ -328,7 +334,7 @@ const ProjectList = ({
 
     const managerMenuItems = [
       {
-        label: 'Create Project',
+        label: t("Create Project"),
         icon: 'create_new_folder',
         command: onNewProject,
       },
@@ -340,8 +346,8 @@ const ProjectList = ({
     // show deactivate button on active projects and activate on inactive projects
     if (onActivateProject) {
       managerMenuItems.push({
-        label: active ? 'Deactivate Project' : 'Activate Project',
-        icon: active ? 'archive' : 'unarchive',
+        label: active ? t("Deactivate Project") : t("Activate Project"),
+        icon: active ? "archive" : "unarchive",
         command: () => onActivateProject(sel[0], !active),
       })
     }
@@ -350,7 +356,7 @@ const ProjectList = ({
     const disableDelete = active || !onDeleteProject || !selObject
 
     managerMenuItems.push({
-      label: disableDelete ? 'Deactivate to Delete' : 'Delete Project',
+      label: disableDelete ? t("Deactivate to Delete") : t("Delete Project"),
       icon: 'delete',
       command: () => onDeleteProject(sel[0]),
       danger: true,
@@ -407,7 +413,7 @@ const ProjectList = ({
     >
       {onSelectAll && (
         <Button
-          label={!collapsed && 'Select all projects'}
+          label={!collapsed && t("Select all projects")}
           onClick={() => onSelectAll(projectNames)}
           icon={collapsed && 'checklist'}
           disabled={onSelectAllDisabled}
@@ -419,7 +425,7 @@ const ProjectList = ({
           {/* <div className="spacer" /> */}
           <div className="content">
             <Icon icon="create_new_folder" />
-            <span className="title">Add New Project</span>
+            <span className="title">{t("Add New Project")}</span>
           </div>
           {/* <div className="spacer" /> */}
         </StyledAddButton>
@@ -459,7 +465,7 @@ const ProjectList = ({
         >
           <Column
             field="name"
-            header="Projects"
+            header={t("Projects")}
             body={(rowData) => {
               const isActiveCallableValue = isActiveCallable ? isActiveCallable(rowData.name) : true
               return (
@@ -479,7 +485,7 @@ const ProjectList = ({
           {!hideCode && !collapsed && (
             <Column
               field="code"
-              header="Code"
+              header={t("Code")}
               style={{ maxWidth: 80 }}
               body={(rowData) => {
                 const isActiveCallableValue = isActiveCallable

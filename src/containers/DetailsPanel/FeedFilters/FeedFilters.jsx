@@ -4,7 +4,7 @@ import { updateDetailsPanelTab, updateFeedFilter } from '@state/details'
 import { Button, Spacer } from '@ynput/ayon-react-components'
 import clsx from 'clsx'
 import { entitiesWithoutFeed } from '../DetailsPanel'
-
+import { useTranslation } from 'react-i18next'
 const FeedFilters = ({
   isLoading,
   entityType,
@@ -14,6 +14,7 @@ const FeedFilters = ({
   statePath,
   ...props
 }) => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
   const setFeedFilter = (value) => dispatch(updateFeedFilter({ value, statePath, scope }))
   const setTab = (tab) => dispatch(updateDetailsPanelTab({ statePath, tab, scope }))
@@ -24,22 +25,22 @@ const FeedFilters = ({
   const filtersLeft = [
     {
       id: 'activity',
-      tooltip: 'All activity',
+      tooltip: t("All activity"),
       icon: 'forum',
     },
     {
       id: 'comments',
-      tooltip: 'Comments',
+      tooltip: t("Comments"),
       icon: 'chat',
     },
     {
       id: 'publishes',
-      tooltip: 'Published versions',
+      tooltip: t("Published versions"),
       icon: 'layers',
     },
     {
       id: 'checklists',
-      tooltip: 'Checklists',
+      tooltip: t("Checklists"),
       icon: 'checklist',
     },
   ]
@@ -74,7 +75,7 @@ const FeedFilters = ({
           icon="order_play"
           onClick={() => setTab('files')}
           selected={selectedTab === 'files'}
-          data-tooltip="Version files"
+          data-tooltip={t("Version files")}
           data-tooltip-delay={0}
         />
       )}
@@ -83,7 +84,7 @@ const FeedFilters = ({
         selected={selectedTab === 'attribs'}
         style={{ padding: '6px 8px' }}
       >
-        Attributes
+        {t("Attributes")}
       </Button>
     </Styled.FiltersToolbar>
   )

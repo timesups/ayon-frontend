@@ -9,7 +9,7 @@ import { useSlicerContext } from '@context/slicerContext'
 import Slicer from '@containers/Slicer'
 
 // arc
-import { Filter, InputSwitch, Section, Toolbar } from '@ynput/ayon-react-components'
+import { Filter, Section, SwitchButton, Toolbar } from '@ynput/ayon-react-components'
 import SearchFilterWrapper from './containers/SearchFilterWrapper'
 import ProjectOverviewTable from './containers/ProjectOverviewTable'
 import { isEmpty } from 'lodash'
@@ -22,6 +22,10 @@ import { useProjectTableContext, useSelectedRowsContext } from '@shared/ProjectT
 import ProjectOverviewSettings, { CustomizeButton } from './components/ProjectOverviewSettings'
 import { useSettingsPanel } from './context/SettingsPanelContext'
 import ReloadButton from './components/ReloadButton'
+import OverviewActions from './components/OverviewActions'
+
+
+import { useTranslation } from 'react-i18next'
 
 const searchFilterTypes: FilterFieldType[] = [
   'attributes',
@@ -43,7 +47,7 @@ const ProjectOverviewPage: FC = () => {
     updateShowHierarchy,
     tasksMap,
   } = useProjectTableContext()
-
+  const {t} = useTranslation()
   const { isPanelOpen } = useSettingsPanel()
 
   // load slicer remote config
@@ -92,7 +96,8 @@ const ProjectOverviewPage: FC = () => {
         <SplitterPanel size={88}>
           <Section wrap direction="column" style={{ height: '100%' }}>
             <Toolbar style={{ gap: 8 }}>
-              <NewEntity />
+              <NewEntity disabled={!showHierarchy} />
+              <OverviewActions />
               <SearchFilterWrapper
                 filters={filtersWithHierarchy}
                 onChange={handleFiltersChange}
@@ -103,13 +108,11 @@ const ProjectOverviewPage: FC = () => {
                 disabledFilters={sliceType ? [sliceType] : []}
               />
               <ReloadButton />
-              <span style={{ whiteSpace: 'nowrap', display: 'flex', gap: 8 }}>
-                Show hierarchy
-                <InputSwitch
-                  checked={showHierarchy}
-                  onChange={(e) => updateShowHierarchy((e.target as HTMLInputElement).checked)}
-                />
-              </span>
+              <SwitchButton
+                value={showHierarchy}
+                onClick={() => updateShowHierarchy(!showHierarchy)}
+                label={t("Show hierarchy")}
+              />
               <CustomizeButton />
             </Toolbar>
             <Splitter

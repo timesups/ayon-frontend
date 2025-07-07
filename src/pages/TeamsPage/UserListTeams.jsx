@@ -9,7 +9,7 @@ import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import UsersListTeamsSmall from './UsersListTeamsSmall'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
+import { useTranslation } from 'react-i18next'
 const UserListTeams = ({
   selectedProjects,
   selectedUsers = [],
@@ -23,6 +23,8 @@ const UserListTeams = ({
   onUpdateTeams,
   isFullSize = true,
 }) => {
+  // translation
+  const {t} = useTranslation()
   // Selection
   const selection = useMemo(
     () => userList.filter((user) => selectedUsers.includes(user.name)),
@@ -76,21 +78,21 @@ const UserListTeams = ({
 
     const items = [
       {
-        label: showAllUsers ? 'Show All Users' : 'Show Members Only',
+        label: showAllUsers ? t("Show All Users") : t("Show Members Only"),
         command: onShowAllUsers,
         icon: showAllUsers ? 'visibility' : 'visibility_off',
       },
       {
         label:
           selectedTeams.length > 1 || addToSelectedDisabled
-            ? 'Add to selected teams'
-            : `Add to ${selectedTeams[0]}`,
+            ? t("Add to selected teams")
+            : t("Add to team named",{name:selectedTeams[0]}),
         icon: 'add_circle',
         disabled: addToSelectedDisabled,
         command: () => handleAddRemoveCommand(selectedTeams, [], users),
       },
       {
-        label: 'Add to team',
+        label: t("Add to team"),
         icon: 'add',
         items: addToList.map((team) => ({
           label: team.name,
@@ -99,7 +101,7 @@ const UserListTeams = ({
         })),
       },
       {
-        label: 'Remove from team',
+        label: t("Remove from team"),
         icon: 'remove',
         items: removeFromList.map((team) => ({
           label: team.name,
@@ -186,7 +188,7 @@ const UserListTeams = ({
         >
           <Column
             field="name"
-            header="Username"
+            header={t("Username")}
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
             style={{
               width: '20%',
@@ -194,13 +196,13 @@ const UserListTeams = ({
           />
           <Column
             field="attrib.fullName"
-            header="Full Name"
+            header={t("Full Name")}
             style={{
               width: '20%',
             }}
           />
           <Column
-            header="Teams"
+            header={t("Teams")}
             body={(rowData) => {
               if (!rowData.teams) return null
               // sort teams by leader and sort teams by if they are selected
@@ -233,7 +235,7 @@ const UserListTeams = ({
             sortField="teamsList"
           />
           <Column
-            header="Roles"
+            header={t("Roles")}
             body={(rowData) => {
               const allRoles = []
               const selectedRoles = []

@@ -7,7 +7,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom'
 import { QueryParamProvider } from 'use-query-params'
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6'
-
+//translation
+import i18n from '@/i18n'
 // pages
 import LoginPage from '@pages/LoginPage'
 import ErrorPage from '@pages/ErrorPage'

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { OverflowField, Button } from '@ynput/ayon-react-components'
-
+import { useTranslation } from 'react-i18next'
 const StyledSubtitle = styled.div`
   display: flex;
   align-items: center;
@@ -17,12 +17,15 @@ const AddButton = styled(Button)`
 `
 
 const UserSubtitle = ({ users, teams, onAddTeam, teamsValue }) => {
+
+  // translation
+  const {t} = useTranslation()
   const subTitle =
     users.length > 1
       ? users.map((user) => user.name).join(', ')
       : teamsValue.length
       ? teamsValue.join(', ')
-      : 'No team'
+      : t("No team")
 
   const teamsUserNotIn = teams.filter((team) => !teamsValue.includes(team))
 

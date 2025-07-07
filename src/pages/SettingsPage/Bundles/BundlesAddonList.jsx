@@ -10,6 +10,9 @@ import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 
+import { useTranslation } from 'react-i18next'
+
+
 const StyledDataTable = styled(DataTable)`
   tr {
     display: flex;
@@ -98,6 +101,10 @@ const BundlesAddonList = React.forwardRef(
     },
     ref,
   ) => {
+
+    //translation
+    const {t} = useTranslation()
+
     const navigate = useNavigate()
 
     const { data: { addons = [] } = {}, refetch } = useListAddonsQuery({})
@@ -144,7 +151,7 @@ const BundlesAddonList = React.forwardRef(
     const createContextItems = (selected) => {
       let items = [
         {
-          label: 'View in Market',
+          label: t("View in Market"),
           icon: 'store',
           command: () => navigate(`/market/?selected=${selected.name}`),
         },
@@ -186,7 +193,7 @@ const BundlesAddonList = React.forwardRef(
         ref={ref}
       >
         <Column
-          header="Title"
+          header={t("Title")}
           field="title"
           pt={{
             root: {
@@ -201,7 +208,7 @@ const BundlesAddonList = React.forwardRef(
         <Column
           sortable
           field="version"
-          header="Version"
+          header={t("Version")}
           className="version-column"
           body={(addon) => {
             const isPipeline = addon.addonType === 'pipeline'
@@ -238,7 +245,7 @@ const BundlesAddonList = React.forwardRef(
         {isDev && (
           <Column
             field="path"
-            header="Addon directory"
+            header={t("Addon directory")}
             className="path-column"
             body={(addon) => (
               <FilePath>

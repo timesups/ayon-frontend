@@ -5,6 +5,9 @@ import { confirmDialog } from 'primereact/confirmdialog'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 
+import { useTranslation } from 'react-i18next'
+
+
 const StyledDialog = styled(Dialog)`
   &:focus-visible {
     outline: none;
@@ -12,6 +15,11 @@ const StyledDialog = styled(Dialog)`
 `
 
 const AddonDialog = ({ uploadOpen, setUploadOpen, uploadHeader, manager }) => {
+  //translation
+
+  const {t} = useTranslation()
+
+
   // keep track is an addon was installed
   const [isUploading, setIsUploading] = useState(false)
   const [restartRequired, setRestartRequired] = useState(false)
@@ -34,8 +42,8 @@ const AddonDialog = ({ uploadOpen, setUploadOpen, uploadHeader, manager }) => {
       header: 'Cancel upload operation',
       message: (
         <>
-          <p>This action will stop the files upload from completing.</p>
-          <p>Are you sure you want to cancel?</p>
+          <p>{t("This action will stop the files upload from completing.")}</p>
+          <p>{t("Are you sure you want to cancel?")}</p>
         </>
       ),
       accept: () => {

@@ -7,7 +7,7 @@ import { $Any } from '@types'
 import { TablePanel } from '@ynput/ayon-react-components'
 import { ProjectNode } from '@api/graphql'
 import { UserPermissions, UserPermissionsEntity } from '@hooks/useUserProjectPermissions'
-
+import { useTranslation } from 'react-i18next'
 
 const StyledProjectName = styled.div`
   /* use grid to stack items on top of each other */
@@ -55,6 +55,9 @@ type Props = {
 }
 
 const ProjectUserAccessProjectList = ({ projects, isLoading, selection, userPermissions, onSelectionChange }: Props) => {
+  //translation
+  const {t} = useTranslation()
+  
   const tableData = useTableLoadingData(projects, isLoading, 10, 'name')
   const selected = tableData.filter((project: ProjectNode) => selection.includes(project.name))
 
@@ -86,7 +89,7 @@ const ProjectUserAccessProjectList = ({ projects, isLoading, selection, userPerm
       >
         <Column
           field="name"
-          header="Project name"
+          header={t("Project name")}
           body={(rowData) => {
             const isActive = rowData.active
             const hasPermissions =

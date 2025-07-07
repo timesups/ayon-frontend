@@ -3,6 +3,9 @@ import { useMemo, useState } from 'react'
 import { useSaveAccessGroupMutation } from '@queries/accessGroups/updateAccessGroups'
 import { toast } from 'react-toastify'
 
+import { useTranslation } from 'react-i18next'
+import { t } from 'i18next'
+
 const NewAccessGroup = ({ onClose, accessGroupList }) => {
   const [accessGroupName, setAccessGroupName] = useState('')
   const [createAccessGroup] = useSaveAccessGroupMutation()
@@ -44,7 +47,7 @@ const NewAccessGroup = ({ onClose, accessGroupList }) => {
     () => (
       <div>
         <SaveButton
-          label="Create access group"
+          label={t("Create access group")}
           icon="group_add"
           active={!error && accessGroupName}
           onClick={() => onSubmit(true)}
@@ -56,7 +59,7 @@ const NewAccessGroup = ({ onClose, accessGroupList }) => {
 
   return (
     <Dialog
-      header="New access group"
+      header={t("New access group")}
       footer={footer}
       onClose={() => onClose()}
       isOpen
@@ -65,7 +68,7 @@ const NewAccessGroup = ({ onClose, accessGroupList }) => {
       style={{ width: 400 }}
     >
       <FormLayout>
-        <FormRow label="Access group name">
+        <FormRow label={t("Access group name")}>
           <InputText
             value={accessGroupName}
             onChange={(e) => setAccessGroupName(e.target.value)}
