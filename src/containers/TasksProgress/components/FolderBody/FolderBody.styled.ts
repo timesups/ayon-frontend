@@ -1,4 +1,4 @@
-import Thumbnail from '@components/Thumbnail'
+import { Thumbnail } from '@shared/components/Thumbnail'
 import { Button, StatusField } from '@ynput/ayon-react-components'
 import styled from 'styled-components'
 
@@ -98,6 +98,12 @@ export const Path = styled.span`
     &:hover {
       background-color: var(--md-sys-color-primary-hover);
     }
+  }
+
+  &.expanded {
+    opacity: 0;
+    width: 0;
+    padding: 0;
   }
 `
 

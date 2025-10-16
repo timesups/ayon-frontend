@@ -1,10 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 
-
-
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 
 import {
   Button,
@@ -17,12 +15,13 @@ import {
 } from '@ynput/ayon-react-components'
 import { Splitter, SplitterPanel } from 'primereact/splitter'
 
-import AddonList from '@containers/AddonList'
+import SettingsAddonList from '@containers/AddonSettings/SettingsAddonList'
 import SiteList from '@containers/SiteList'
 import AddonSettingsPanel from './AddonSettingsPanel'
 import SettingsChangesTable from './SettingsChangesTable'
 import CopyBundleSettingsButton from './CopyBundleSettingsButton'
 import VariantSelector from './VariantSelector'
+import BundlesSelector from './BundlesSelector'
 import CopySettingsDialog from '@containers/CopySettings/CopySettingsDialog'
 import RawSettingsDialog from '@containers/RawSettingsDialog'
 
@@ -30,26 +29,25 @@ import {
   useSetAddonSettingsMutation,
   useDeleteAddonSettingsMutation,
   useModifyAddonOverrideMutation,
+  useGetAddonSettingsListQuery,
 } from '@queries/addonSettings'
 
 import { usePromoteBundleMutation } from '@queries/bundles/updateBundles'
+import { useListBundlesQuery } from '@queries/bundles/getBundles'
 import { confirmDialog } from 'primereact/confirmdialog'
 
 import { getValueByPath, setValueByPath, sameKeysStructure, compareObjects } from './utils'
 import arrayEquals from '@helpers/arrayEquals'
 import { cloneDeep } from 'lodash'
-import { usePaste } from '@context/pasteContext'
+import { usePaste } from '@context/PasteContext'
 import styled from 'styled-components'
 
 import SettingsListHeader from './SettingsListHeader'
-import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
+import EmptyPlaceholder from '@shared/components/EmptyPlaceholder'
 import { attachLabels } from './searchTools'
 import useUserProjectPermissions from '@hooks/useUserProjectPermissions'
 import LoadingPage from '@pages/LoadingPage'
-
-
-import { useTranslation } from 'react-i18next'
-
+import PerProjectBundleConfig from '../../components/PerProjectBundleConfig/PerProjectBundleConfig'
 
 /*
  * key is {addonName}|{addonVersion}|{variant}|{siteId}|{projectKey}
@@ -71,6 +69,25 @@ const StyledEmptyPlaceholder = styled(EmptyPlaceholder)`
   widows: 100%;
 `
 
+const StyledBundleLabel = styled.div`
+  padding: 6px var(--padding-m);
+  background-color: var(--md-sys-color-surface-container-low);
+  border-radius: var(--border-radius-m);
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .label {
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    flex: 1;
+    color: var(--md-sys-color-outline);
+  }
+`
+
 const isChildPath = (childPath, parentPath) => {
   if (childPath.length < parentPath.length) return false
   for (let i = 0; i < parentPath.length; i++) {
@@ -80,12 +97,11 @@ const isChildPath = (childPath, parentPath) => {
 }
 
 const AddonSettings = ({ projectName, showSites = false, bypassPermissions = false }) => {
-  //translation
-  const {t} = useTranslation()
-
-
   const isUser = useSelector((state) => state.user.data.isUser)
   //const navigate = useNavigate()
+  const user = useSelector((state) => state.user)
+  const developerMode = user?.attrib?.developerMode
+
   const [showHelp, setShowHelp] = useState(false)
   const [selectedAddons, setSelectedAddons] = useState([])
   const [originalData, setOriginalData] = useState({})
@@ -94,8 +110,34 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
   const [unpinnedKeys, setUnpinnedKeys] = useState({})
   const [currentSelection, setCurrentSelection] = useState(null)
   const [selectedSites, setSelectedSites] = useState([])
-  const [variant, setVariant] = useState('production')
-  const [bundleName, setBundleName] = useState()
+
+  const siteId = showSites ? selectedSites[0] || '_' : undefined
+
+  const { data: { bundles = [] } = {} } = useListBundlesQuery({ archived: false })
+  const userName = useSelector((state) => state.user.name)
+
+  const [selectedBundle, setSelectedBundle] = useState(() => {
+    // If in developer mode, try to find the user's dev bundle
+    if (developerMode) {
+      const devBundle = bundles.find((bundle) => bundle.isDev && bundle.activeUser === userName)
+      if (devBundle) {
+        return {
+          variant: devBundle.name,
+          bundleName: devBundle.name,
+          projectBundleName: undefined,
+        }
+      }
+    }
+    // Default to production for non-developers or if no dev bundle found
+    return {
+      variant: 'production',
+      bundleName: null,
+      projectBundleName: undefined,
+    }
+  })
+
+  const [loadedBundleName, setLoadedBundleName] = useState('????')
+
   const [addonSchemas, setAddonSchemas] = useState({})
 
   const [showCopySettings, setShowCopySettings] = useState(false)
@@ -133,8 +175,28 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     })
   }
 
-  const user = useSelector((state) => state.user)
-  const developerMode = user?.attrib?.developerMode
+  // Update selectedBundle when developer mode changes
+  useEffect(() => {
+    if (developerMode) {
+      // Switch to dev bundle when entering developer mode
+      const devBundle = bundles.find((bundle) => bundle.isDev && bundle.activeUser === userName)
+      if (devBundle) {
+        setSelectedBundle({
+          variant: devBundle.name,
+          bundleName: devBundle.name,
+          projectBundleName: undefined,
+        })
+      }
+      // If no dev bundle found, stay on current variant (don't switch)
+    } else {
+      // Switch back to production when leaving developer mode
+      setSelectedBundle({
+        variant: 'production',
+        bundleName: null,
+        projectBundleName: undefined,
+      })
+    }
+  }, [developerMode, bundles, userName])
 
   const onSettingsLoad = (addonName, addonVersion, variant, siteId, data) => {
     const key = `${addonName}|${addonVersion}|${variant}|${siteId}|${projectKey}`
@@ -362,8 +424,8 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
 
     const message = (
       <>
-        <p>{t("This action will instantly remove the selected override.")}</p>
-        <p>{t("Are you sure you want to continue?")}</p>
+        <p>This action will instantly remove the selected override.</p>
+        <p>Are you sure you want to continue?</p>
       </>
     )
 
@@ -402,8 +464,8 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     // Remove all overrides for this addon (within current project and variant)
     const message = (
       <>
-        <p>{t("This action will instantly remove all overrides for this addon.")}</p>
-        <p>{t("Are you sure you want to proceed?")}</p>
+        <p>This action will instantly remove all overrides for this addon.</p>
+        <p>Are you sure you want to proceed?</p>
       </>
     )
 
@@ -438,8 +500,8 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
   const onPinOverride = async (addon, siteId, path) => {
     const message = (
       <>
-        <p>{t("This action will instantly pin the current value as an override. ")}</p>
-        <p>{t("Are you sure you want to proceed?")}</p>
+        <p>This action will instantly pin the current value as an override. </p>
+        <p>Are you sure you want to proceed?</p>
       </>
     )
 
@@ -537,24 +599,25 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     const message = (
       <>
         <p>
-          {t("push to production",{name:bundleName})}
+          Are you sure you want to push <strong>{loadedBundleName}</strong> to production?
         </p>
         <p>
-          {t("This will mark the current staging bundle as production and copy all staging studio settings and staging projects overrides to production as well.")}
+          This will mark the current staging bundle as production and copy all staging studio
+          settings and staging projects overrides to production as well.
         </p>
       </>
     )
 
     confirmDialog({
-      header: `Push ${bundleName} to production`,
+      header: `Push ${loadedBundleName} to production`,
       message,
       accept: async () => {
-        await promoteBundle({ name: bundleName }).unwrap()
+        await promoteBundle({ name: loadedBundleName }).unwrap()
         setLocalData({})
         setOriginalData({})
         setSelectedAddons([])
         toast.success('Bundle pushed to production')
-        setVariant('production')
+        setSelectedBundle({ variant: 'production', bundleName: null })
       },
       reject: () => {},
     })
@@ -567,13 +630,13 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     setTimeout(() => {
       const menuItems = [
         {
-          label: t("Copy settings from..."),
+          label: 'Copy settings from...',
           command: () => setShowCopySettings(true),
         },
       ]
       if (user?.data?.isAdmin) {
         menuItems.push({
-          label: t("Low-level editor"),
+          label: 'Low-level editor',
           command: () => setShowRawEdit(true),
           disabled: selectedAddons.length !== 1,
         })
@@ -592,68 +655,61 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     // site settings do not have variants
     if (showSites) return
 
-    const copySettingsButton = (
-      <CopyBundleSettingsButton
-        bundleName={bundleName}
-        variant={variant}
-        disabled={canCommit}
-        localData={localData}
-        changedKeys={changedKeys}
-        unpinnedKeys={unpinnedKeys}
-        setLocalData={setLocalData}
-        setChangedKeys={setChangedKeys}
-        setUnpinnedKeys={setUnpinnedKeys}
-        setSelectedAddons={setSelectedAddons}
-        originalData={originalData}
-        setOriginalData={setOriginalData}
-        projectName={projectName}
-      />
-    )
-
     return (
       <>
         <Toolbar>
-          <VariantSelector variant={variant} setVariant={setVariant} />
-          {developerMode && copySettingsButton}
+          <VariantSelector
+            variant={selectedBundle.variant}
+            setVariant={(v) => setSelectedBundle({ variant: v, bundleName: null })}
+            showDev
+          />
+          <Spacer />
+          {projectName && (
+            <PerProjectBundleConfig projectName={projectName} variant={selectedBundle.variant} />
+          )}
+          <CopyBundleSettingsButton
+            bundleName={loadedBundleName}
+            variant={selectedBundle.variant}
+            disabled={canCommit}
+            localData={localData}
+            changedKeys={changedKeys}
+            unpinnedKeys={unpinnedKeys}
+            setLocalData={setLocalData}
+            setChangedKeys={setChangedKeys}
+            setUnpinnedKeys={setUnpinnedKeys}
+            setSelectedAddons={setSelectedAddons}
+            originalData={originalData}
+            setOriginalData={setOriginalData}
+            projectName={projectName}
+          />
         </Toolbar>
-        {!developerMode && (
-          <Toolbar>
-            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {bundleName}
-            </span>
-            <Spacer />
-            {copySettingsButton}
-            <Button
-              icon="rocket_launch"
-              data-tooltip="Push bundle to production"
-              onClick={onPushToProduction}
-              disabled={variant !== 'staging' || canCommit}
-              style={{ zIndex: 100 }}
-            />
-          </Toolbar>
+        {projectName ? (
+          <div>{loadedBundleName}</div>
+        ) : (
+          <BundlesSelector selected={selectedBundle} onChange={setSelectedBundle} />
         )}
       </>
     )
-  }, [variant, changedKeys, bundleName, projectName, developerMode])
+  }, [selectedBundle, changedKeys, loadedBundleName, projectName, developerMode])
 
   const commitToolbar = useMemo(
     () => (
       <>
         <Spacer />
         <Button
-          label={t("Clear Changes")}
+          label="Clear Changes"
           icon="clear"
           onClick={onRevertAllChanges}
           disabled={!canCommit}
         />
         <SaveButton
-          label={t("Save Changes")}
+          label="Save Changes"
           disabled={
             (!bypassPermissions && !userPermissions.canEditSettings(projectName)) || !canCommit
           }
           data-tooltip={
             !bypassPermissions && !userPermissions.canEditSettings(projectName)
-              ? t("You don't have edit permissions")
+              ? "You don't have edit permissions"
               : undefined
           }
           onClick={onSave}
@@ -670,7 +726,10 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     setCurrentSelection(null)
   }
 
+
   const onUpdateAddonSchema = (addonName, schema) => {
+    // TODO: Rewrite this to not rely on `settings` in addon settings list
+    // as it requires addon list to load the entire payload, which is not optimal
     const settings = selectedAddons.find((el) => el.name == addonName).settings
     const hydratedObject = attachLabels(settings, schema, schema)
     setSearchTree((prev) => {
@@ -695,7 +754,7 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
     return (
       <EmptyPlaceholder
         icon="settings_alert"
-        message={t("You don't have permission to view the addon settings for this project")}
+        message="You don't have permission to view the addon settings for this project"
       />
     )
   }
@@ -708,7 +767,7 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
           {showCopySettings && (
             <CopySettingsDialog
               selectedAddons={selectedAddons}
-              variant={variant}
+              variant={selectedBundle.variant}
               originalData={originalData}
               setOriginalData={setOriginalData}
               localData={localData}
@@ -725,21 +784,23 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
             <RawSettingsDialog
               addonName={selectedAddons[0].name}
               addonVersion={selectedAddons[0].version}
-              variant={variant}
+              variant={selectedBundle.variant}
               reloadAddons={reloadAddons}
               projectName={projectName}
-              siteId={showSites ? selectedSites[0] || '_' : undefined}
+              siteId={siteId}
               onClose={() => {
                 setShowRawEdit(false)
               }}
             />
           )}
-          <AddonList
+          <SettingsAddonList
             selectedAddons={selectedAddons}
             setSelectedAddons={onSelectAddon}
-            variant={variant}
+            setBundleName={setLoadedBundleName}
+            bundleName={selectedBundle.bundleName}
+            projectBundleName={selectedBundle.projectBundleName}
+            variant={selectedBundle.variant}
             onAddonFocus={onAddonFocus}
-            setBundleName={setBundleName}
             changedAddonKeys={Object.keys(changedKeys || {})}
             projectName={projectName}
             siteSettings={showSites}

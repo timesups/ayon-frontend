@@ -49,10 +49,8 @@ const DownloadsPage = () => {
 
   const platforms = ['windows', 'darwin', 'linux']
 
-  console.log(allInstallers)
-
   return (
-    <main style={{ overflow: 'hidden' }}>
+    <main>
       <Section>
         <Styled.Container>
           <Styled.Header>

@@ -1,6 +1,6 @@
 import ayonClient from '@/ayon'
 import { useState, useMemo, useEffect } from 'react'
-import { useGetProjectQuery } from '@queries/project/getProject'
+import { useGetProjectQuery } from '@queries/project/enhancedProject'
 import { useGetCustomRootsQuery, useSetCustomRootsMutation } from '@queries/customRoots'
 import {
   InputText,
@@ -12,7 +12,8 @@ import {
 } from '@ynput/ayon-react-components'
 import ProjectManagerPageLayout from './ProjectManagerPageLayout'
 import { toast } from 'react-toastify'
-import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
+import EmptyPlaceholder from '@shared/components/EmptyPlaceholder'
+
 const ProjectRootForm = ({ projectName, siteName, siteId, roots }) => {
   const [setCustomRoots, { isLoading }] = useSetCustomRootsMutation()
   const [rootValues, setRootValues] = useState(null)

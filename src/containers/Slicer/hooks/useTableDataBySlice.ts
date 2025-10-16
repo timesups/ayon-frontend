@@ -1,26 +1,20 @@
 import { useAppSelector } from '@state/store'
-import { useEffect, useState } from 'react'
-import useHierarchyTable from './useHierarchyTable'
+import { useEffect, useMemo, useState } from 'react'
+import { useHierarchyTable } from '@shared/hooks'
 import useUsersTable from './useUsersTable'
 import useProjectAnatomySlices from './useProjectAnatomySlices'
-import { SliceType, useSlicerContext } from '@context/slicerContext'
-import { Slice, SliceData, SliceOption, TableData, TableRow } from '../types'
+import { Slice, SliceData, SliceOption, TableData } from '../types'
+import { SimpleTableRow } from '@shared/containers/SimpleTable'
+import { SliceType } from '@shared/containers/Slicer'
+import { useSlicerContext } from '@context/SlicerContext'
+import useSlicerAttributesData from './useSlicerAttributesData'
+import { getAttributeIcon } from '@shared/util'
 
 interface Props {
   sliceFields: SliceType[]
 }
 
-
-//去除ayon的收费的高级功能
-const defaultSliceOptions: SliceOption[] = [
-  {
-    label: 'Hierarchy',
-    value: 'hierarchy' as SliceType,
-    icon: 'table_rows',
-  }
-]
-
-const getNoValue = (field: string): TableRow => ({
+const getNoValue = (field: string): SimpleTableRow => ({
   id: 'noValue',
   name: 'noValue',
   label: `No ${field}`,
@@ -31,7 +25,7 @@ const getNoValue = (field: string): TableRow => ({
   },
 })
 
-const getSomeValue = (field: string): TableRow => ({
+const getSomeValue = (field: string): SimpleTableRow => ({
   id: 'hasValue',
   name: 'hasValue',
   label: `Some ${field}`,
@@ -45,10 +39,49 @@ const getSomeValue = (field: string): TableRow => ({
 const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
   const { sliceType, onSliceTypeChange, useExtraSlices } = useSlicerContext()
   const projectName = useAppSelector((state) => state.project.name)
+  const { formatAttribute } = useExtraSlices()
+
+  const defaultSliceOptions: SliceOption[] = [
+    {
+      label: 'Hierarchy',
+      value: 'hierarchy' as SliceType,
+      icon: 'table_rows',
+    },
+    {
+      label: 'Assignees',
+      value: 'assignees' as SliceType,
+      icon: 'person',
+    },
+    {
+      label: 'Status',
+      value: 'status' as SliceType,
+      icon: 'arrow_circle_right',
+    },
+    {
+      label: 'Task Type',
+      value: 'taskType' as SliceType,
+      icon: 'check_circle',
+    },
+  ]
 
   const sliceOptions = defaultSliceOptions.filter(
     (option) => !sliceFields.length || sliceFields.includes(option.value),
   )
+
+  const showAttributes = sliceFields.includes('attributes')
+  const { attributes: slicerAttribs, isLoading: isLoadingAttribs } = useSlicerAttributesData({
+    skip: !showAttributes,
+  })
+
+  if (showAttributes && typeof formatAttribute === 'function') {
+    slicerAttribs.forEach((attr) =>
+      sliceOptions.push({
+        label: attr.data.title || attr.name,
+        value: 'attrib.' + attr.name,
+        icon: getAttributeIcon(attr.name, attr.data.type, Boolean(attr.data.enum)),
+      }),
+    )
+  }
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -58,11 +91,12 @@ const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
     getStatuses,
     getTypes,
     getTaskTypes,
+    getAttribute,
     isLoading: isLoadingProject,
   } = useProjectAnatomySlices({ projectName, useExtraSlices })
 
   //   Hierarchy
-  const { getData: getHierarchyData, isLoading: isLoadingHierarchy } = useHierarchyTable({
+  const { getData: getHierarchyData, isFetching: isLoadingHierarchy } = useHierarchyTable({
     projectName: projectName || '',
     folderTypes: project?.folderTypes || [],
   })
@@ -103,6 +137,15 @@ const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
     },
   }
 
+  for (const attrib of slicerAttribs) {
+    builtInSlices['attrib.' + attrib.name] = {
+      getData: () => getAttribute(attrib),
+      isLoading: isLoadingAttribs,
+      isExpandable: false,
+      isAttribute: true,
+    }
+  }
+
   const initSlice = { data: [], isExpandable: false }
   const [slice, setSlice] = useState<Slice>(initSlice)
   const sliceConfig = builtInSlices[sliceType]
@@ -112,8 +155,14 @@ const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
     leavePersistentSlice: boolean,
     returnToPersistentSlice: boolean,
   ) => {
+    // get slice data object
+    const sliceConfig = builtInSlices[sliceType]
+    if (!sliceConfig) {
+      console.warn(`Slice type ${sliceType} not found`)
+      return
+    }
     // check slice type is enabled
-    if (sliceFields.includes(sliceType)) {
+    if ((sliceConfig.isAttribute && showAttributes) || sliceFields.includes(sliceType)) {
       onSliceTypeChange(sliceType, leavePersistentSlice, returnToPersistentSlice)
     }
   }
@@ -122,13 +171,20 @@ const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
     // wait for hierarchy data to load before fetching slice data
     if (isLoadingData) return
 
-    // check if slice field is enabled
-    if (!sliceFields.includes(sliceType)) return
-
     const fetchData = async () => {
       try {
+        if (!sliceConfig) return
         setIsLoading(true)
         const newData = await sliceConfig.getData()
+
+        if (newData === undefined) {
+          window.alert(
+            'Slice options failed to load. This likely means the PowerFeatures addon is out of date. Please update to the latest version.',
+          )
+          // setSlice type to hierarchy
+          onSliceTypeChange('hierarchy', false, false)
+          throw new Error('Slice data is undefined')
+        }
 
         // add some value option
         if (sliceConfig.hasValue) newData.unshift(getSomeValue(sliceType))
@@ -141,6 +197,7 @@ const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
         })
       } catch (error) {
         console.error('Error fetching slice data:', error)
+        // set to initial empty state
         setSlice(initSlice)
       } finally {
         setIsLoading(false)
@@ -148,12 +205,35 @@ const useTableDataBySlice = ({ sliceFields }: Props): TableData => {
     }
 
     fetchData()
-  }, [sliceType, sliceFields, projectName, isLoadingData])
+  }, [sliceType, getHierarchyData, sliceFields, projectName, isLoadingData])
+
+  // from slice data, flatten into a map of ids to rows
+  const sliceMap = useMemo(() => {
+    const map = new Map<string, SimpleTableRow>()
+    const queue: SimpleTableRow[] = [...slice.data]
+
+    while (queue.length > 0) {
+      const row = queue.shift()
+      if (row) {
+        map.set(row.id, row)
+        if (row.subRows && row.subRows.length > 0) {
+          for (const subRow of row.subRows) {
+            queue.push(subRow)
+          }
+        }
+      }
+    }
+    return map
+  }, [slice.data])
 
   return {
     sliceOptions,
     table: slice,
-    isLoading: builtInSlices[sliceType].isLoading || isLoading || isLoadingData,
+    sliceMap,
+    isLoading:
+      (builtInSlices[sliceType] && builtInSlices[sliceType].isLoading) ||
+      isLoading ||
+      isLoadingData,
     sliceType,
     handleSliceTypeChange,
   }

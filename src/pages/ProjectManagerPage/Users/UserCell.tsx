@@ -1,12 +1,12 @@
 import clsx from 'clsx'
 import { $Any } from '@types'
-import UserImage from '@components/UserImage'
+import UserImage from '@shared/components/UserImage'
+
 import * as Styled from './ProjectUserAccess.styled'
 
 type Props = {
   rowData: $Any
   selected: boolean
-  hovering: boolean
   showButtonsOnHover: boolean
   addButtonDisabled: boolean
   showAddButton: boolean
@@ -20,7 +20,6 @@ export const UserCell = ({
   rowData,
   selected = false,
   showAddButton = false,
-  hovering = false,
   showButtonsOnHover = false,
   addButtonDisabled = false,
   showAddMoreButton = false,
@@ -30,7 +29,7 @@ export const UserCell = ({
 }: Props) => {
   const { attrib, name, self, isMissing } = rowData
   return (
-    <Styled.DataColumn className={clsx({ actionable: showButtonsOnHover, selected, hovering })}>
+    <Styled.DataColumn className={clsx({ actionable: showButtonsOnHover, selected })}>
       {/* @ts-ignore */}
       <UserImage name={name} highlight={self} size={22} />
       <span

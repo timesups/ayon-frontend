@@ -9,7 +9,7 @@ import {
   InputText,
   InputSwitch,
 } from '@ynput/ayon-react-components'
-import { useUpdateUserMutation, useSetFrontendPreferencesMutation } from '@queries/user/updateUser'
+import { useUpdateUserMutation, useSetFrontendPreferencesMutation } from '@shared/api'
 import Avatar from '@components/Avatar/Avatar'
 import styled from 'styled-components'
 import UserAttribForm from '../SettingsPage/UsersSettings/UserAttribForm'
@@ -18,9 +18,9 @@ import ayonClient from '../../ayon'
 import Type from '@/theme/typography.module.css'
 import { updateUserAttribs, updateUserPreferences } from '@state/user'
 import { useDispatch } from 'react-redux'
-import { useNotifications } from '@context/notificationsContext'
+import { useNotifications } from '@context/NotificationsContext'
 import clsx from 'clsx'
-import { useTranslation } from 'react-i18next'
+
 const FormsStyled = styled.section`
   flex: 1;
   overflow-x: clip;
@@ -55,8 +55,6 @@ export const AvatarName = styled.span`
 `
 
 const ProfilePage = ({ user = {}, isLoading }) => {
-  // translation
-  const {t} = useTranslation()
   const dispatch = useDispatch()
   const attributes = ayonClient.getAttribsByScope('user')
   const [showSetPassword, setShowSetPassword] = useState(false)
@@ -133,6 +131,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
       // reset form
       setInitData(formData)
       setChangesMade(false)
+      toast.success('Profile updated')
     } catch (error) {
       console.log(error)
       toast.error('Unable to update profile')
@@ -229,9 +228,6 @@ const ProfilePage = ({ user = {}, isLoading }) => {
   const handleSaveAll = async () => {
     if (changesMade) await onSave()
     if (preferenceChanges) await onSavePreferences()
-
-    // success toast
-    toast.success('Profile updated')
   }
 
   const notificationsDisabled =
@@ -249,7 +245,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
             <span className={Type.headlineMedium}>{userName ? userName : 'User FullName'}</span>
           </AvatarName>
           <Panel style={{ background: 'none' }}>
-            <FormRow label={t("Username")} key="Username">
+            <FormRow label="Username" key="Username">
               <InputText value={name} disabled />
             </FormRow>
             <UserAttribForm
@@ -258,7 +254,9 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               attributes={attributes}
               showAvatarUrl={false}
             />
-            <FormRow label={t("Password")} key="Password">
+
+            {!user?.data?.disablePasswordLogin && (
+            <FormRow label="Password" key="Password">
               <LockedInput
                 label="Password"
                 value={password}
@@ -266,8 +264,9 @@ const ProfilePage = ({ user = {}, isLoading }) => {
                 onEdit={() => setShowSetPassword(true)}
               />
             </FormRow>
+            )}
 
-            <FormRow label={t("Desktop Notifications")} key="notifications">
+            <FormRow label="Desktop Notifications" key="notifications">
               <div data-tooltip={notificationsTooltip} style={{ width: 'fit-content' }}>
                 <InputSwitch
                   checked={preferencesData.notifications}
@@ -278,7 +277,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               </div>
             </FormRow>
 
-            <FormRow label={t("Notification Sound")} key="notificationSound">
+            <FormRow label="Notification Sound" key="notificationSound">
               <div
                 data-tooltip="Get a little chime sound on new important notifications"
                 style={{ width: 'fit-content' }}
@@ -294,7 +293,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
 
             <SaveButton
               onClick={handleSaveAll}
-              label={t("Save profile")}
+              label="Save profile"
               active={changesMade || preferenceChanges}
               saving={isUpdatingUser || isUpdatingPreferences}
               style={{ padding: '6px 18px', marginLeft: 'auto' }}

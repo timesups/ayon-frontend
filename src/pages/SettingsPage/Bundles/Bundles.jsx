@@ -8,13 +8,13 @@ import { useUpdateBundleMutation } from '@queries/bundles/updateBundles'
 import getNewBundleName from './getNewBundleName'
 import NewBundle from './NewBundle'
 import { useListInstallersQuery } from '@queries/installers/getInstallers'
-import { useListAddonsQuery } from '@queries/addons/getAddons'
+import { useListAddonsQuery } from '@shared/api'
 import { upperFirst } from 'lodash'
 import { toast } from 'react-toastify'
 import AddonDialog from '@components/AddonDialog/AddonDialog'
 import { useGetAddonSettingsQuery } from '@queries/addonSettings'
 import getLatestSemver from './getLatestSemver'
-import { api as bundlesApi } from '@api/rest/bundles'
+import { bundlesQueries } from '@queries/bundles/updateBundles'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocalStorage } from '@shared/hooks'
 import { Splitter, SplitterPanel } from 'primereact/splitter'
@@ -23,15 +23,7 @@ import Shortcuts from '@containers/Shortcuts'
 import CopyBundleSettingsDialog from './CopyBundleSettingsDialog/CopyBundleSettingsDialog'
 import BundleFormLoading from './BundleFormLoading'
 
-
-import { useTranslation } from 'react-i18next'
-
-
-
 const Bundles = () => {
-
-  const {t} = useTranslation()
-
   const userName = useSelector((state) => state.user.name)
   const developerMode = useSelector((state) => state.user.attrib.developerMode)
   const dispatch = useDispatch()
@@ -117,11 +109,10 @@ const Bundles = () => {
       if (foundDuplicate) {
         handleDuplicateBundle(foundDuplicate.name)
       }
+      // delete
+      searchParams.delete('duplicate')
+      setSearchParams(searchParams)
     }
-
-    // delete
-    searchParams.delete('duplicate')
-    setSearchParams(searchParams)
   }, [searchParams, isLoading, bundleList])
 
   useEffect(() => {
@@ -306,7 +297,7 @@ const Bundles = () => {
           try {
             const patchOld = { ...oldBundle, [statusKey]: false }
             patchResult = dispatch(
-              bundlesApi.util.updateQueryData('listBundles', { archived: true }, (draft) => {
+              bundlesQueries.util.updateQueryData('listBundles', { archived: true }, (draft) => {
                 const bundleIndex = draft.bundles.findIndex(
                   (bundle) => bundle.name === oldBundle.name,
                 )
@@ -344,13 +335,13 @@ const Bundles = () => {
   let uploadHeader = ''
   switch (uploadOpen) {
     case 'addon':
-      uploadHeader = t("Upload Addons")
+      uploadHeader = 'Upload Addons'
       break
     case 'installer':
-      uploadHeader = t("Upload Launcher")
+      uploadHeader = 'Upload Launcher'
       break
     case 'package':
-      uploadHeader = t("Upload Dependency Package")
+      uploadHeader = 'Upload Dependency Package'
       break
     default:
       break
@@ -404,7 +395,7 @@ const Bundles = () => {
         onCancel={closeCopySettings}
         onFinish={closeCopySettings}
       />
-      <main style={{ overflow: 'hidden' }}>
+      <main>
         <Splitter style={{ width: '100%' }} stateStorage="local" stateKey="bundles-splitter">
           <SplitterPanel style={{ minWidth: 200, width: 400, maxWidth: 800, zIndex: 10 }} size={30}>
             <Section style={{ height: '100%' }}>
@@ -412,42 +403,42 @@ const Bundles = () => {
                 <Button
                   icon="add"
                   onClick={handleNewBundleStart}
-                  data-tooltip={t("Add new bundle")}
+                  data-tooltip="Add new bundle"
                   data-shortcut="N"
                 >
-                  <span>{t("Add Bundle")}</span>
+                  <span>Add Bundle</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('addon')}
-                  data-tooltip={t("Upload addon zip files")}
+                  data-tooltip="Upload addon zip files"
                   data-shortcut="A"
                 >
-                  <span className="large">{t("Upload Addons")}</span>
-                  <span className="small">{t("Addons")}</span>
+                  <span className="large">Upload Addons</span>
+                  <span className="small">Addons</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('installer')}
-                  data-tooltip={t("Upload launchers for download")}
+                  data-tooltip="Upload launchers for download"
                   data-shortcut="L"
                 >
-                  <span className="large">{t("Upload Launcher")}</span>
-                  <span className="small">{t("Launcher")}</span>
+                  <span className="large">Upload Launcher</span>
+                  <span className="small">Launcher</span>
                 </Button>
                 <Button
                   icon="upload"
                   onClick={() => setUploadOpen('package')}
-                  data-tooltip={t("Upload dependency packages")}
+                  data-tooltip="Upload dependency packages"
                   data-shortcut="P"
                 >
-                  <span className="large">{t("Upload Dependency Package")}</span>
-                  <span className="small">{t("Package")}</span>
+                  <span className="large">Upload Dependency Package</span>
+                  <span className="small">Package</span>
                 </Button>
                 <span style={{ whiteSpace: 'nowrap' }} className="large">
-                  {t("Show Archived")}
+                  Show Archived
                 </span>
-                <span className="small">{t("Archived")}</span>
+                <span className="small">Archived</span>
                 <InputSwitch
                   checked={showArchived}
                   onChange={(e) => setShowArchived(e.target.checked)}
@@ -490,7 +481,7 @@ const Bundles = () => {
                   />
                 ) : (
                   <BundleDetail
-                    bundles={bundlesData}
+                    selectedBundles={bundlesData}
                     onDuplicate={handleDuplicateBundle}
                     isLoading={isLoadingInstallers || isLoadingAddons || isFetching}
                     installers={installerVersions}

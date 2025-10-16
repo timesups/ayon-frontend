@@ -1,11 +1,13 @@
-import { FC, useState } from 'react'
-import * as Styled from './Slicer.styled'
-import SlicerTable from './SlicerTable'
+import { FC, useEffect, useState } from 'react'
+import SimpleTable, { Container, Header } from '@shared/containers/SimpleTable'
 
 import useTableDataBySlice from './hooks/useTableDataBySlice'
 import SlicerSearch from './SlicerSearch'
 import clsx from 'clsx'
-import { SliceType, useSlicerContext } from '@context/slicerContext'
+import { SliceType } from '@shared/containers/Slicer'
+import { SimpleTableProvider } from '@shared/containers/SimpleTable'
+import { useSlicerContext } from '@context/SlicerContext'
+import { RowSelectionState } from '@tanstack/react-table'
 
 interface SlicerProps {
   sliceFields: SliceType[]
@@ -14,19 +16,41 @@ interface SlicerProps {
 
 const Slicer: FC<SlicerProps> = ({ sliceFields = [], persistFieldId }) => {
   const [globalFilter, setGlobalFilter] = useState('')
-  const { SlicerDropdown } = useSlicerContext()
+  const {
+    SlicerDropdown,
+    rowSelection,
+    setRowSelection,
+    onRowSelectionChange,
+    expanded,
+    setExpanded,
+    onExpandedChange,
+  } = useSlicerContext()
 
   const {
     sliceOptions,
     sliceType,
     handleSliceTypeChange,
     table: { data: sliceTableData, isExpandable },
+    sliceMap,
     isLoading: isLoadingSliceTableData,
   } = useTableDataBySlice({ sliceFields })
 
+  const handleSelectionChange = (s: RowSelectionState) => {
+    setRowSelection(s)
+    onRowSelectionChange?.(s, sliceMap)
+  }
+
+  // on first mount, check that current sliceType is in sliceFields, if not, change to first option
+  useEffect(() => {
+    const isAttribute = sliceType.startsWith('attrib.')
+    if (!sliceFields.includes(sliceType) && !(isAttribute && sliceFields.includes('attributes'))) {
+      handleSliceTypeChange(sliceFields[0], false, false)
+    }
+  }, [])
+
   return (
-    <Styled.Container>
-      <Styled.Header>
+    <Container>
+      <Header>
         <SlicerDropdown
           options={sliceOptions || []}
           value={[sliceType]}
@@ -42,15 +66,26 @@ const Slicer: FC<SlicerProps> = ({ sliceFields = [], persistFieldId }) => {
           disableOpen={sliceOptions.length === 1}
         />
         <SlicerSearch value={globalFilter} onChange={setGlobalFilter} />
-      </Styled.Header>
-      <SlicerTable
-        data={sliceTableData}
-        isExpandable={isExpandable}
-        isLoading={isLoadingSliceTableData}
-        sliceId={sliceType}
-        globalFilter={globalFilter}
-      />
-    </Styled.Container>
+      </Header>
+      <SimpleTableProvider
+        {...{
+          rowSelection,
+          onRowSelectionChange: handleSelectionChange,
+          expanded,
+          setExpanded,
+          onExpandedChange,
+          data: sliceMap,
+        }}
+      >
+        <SimpleTable
+          data={sliceTableData}
+          isExpandable={isExpandable}
+          isLoading={isLoadingSliceTableData}
+          forceUpdateTable={sliceType}
+          globalFilter={globalFilter}
+        />
+      </SimpleTableProvider>
+    </Container>
   )
 }
 

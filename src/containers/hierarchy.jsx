@@ -6,21 +6,16 @@ import { Column } from 'primereact/column'
 import { TreeTable } from 'primereact/treetable'
 import { MultiSelect } from 'primereact/multiselect'
 import { CellWithIcon } from '@components/icons'
-import EntityDetail from './DetailsDialog'
+import { DetailsDialog } from '@shared/components'
+import { useGetFolderHierarchyQuery } from '@shared/api'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
+import { useTableKeyboardNavigation, extractIdFromClassList } from '@shared/containers/Feed'
 import { setFocusedFolders, setUri, setExpandedFolders, setSelectedVersions } from '@state/context'
-import { useGetFolderHierarchyQuery } from '@queries/getHierarchy'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import HierarchyExpandFolders from './HierarchyExpandFolders'
 import { openViewer } from '@/features/viewer'
-import useTableKeyboardNavigation, {
-  extractIdFromClassList,
-} from './Feed/hooks/useTableKeyboardNavigation'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-
-
-import { useTranslation } from 'react-i18next'
-
+import { useEntityListsContext } from '@pages/ProjectListsPage/context'
 
 const filterHierarchy = (text, folder, folders) => {
   let result = []
@@ -78,9 +73,6 @@ const filterHierarchy = (text, folder, folders) => {
 }
 
 const Hierarchy = (props) => {
-
-  const {t} = useTranslation()
-
   const projectName = useSelector((state) => state.project.name)
   const foldersOrder = useSelector((state) => state.project.foldersOrder || [])
   const folders = useSelector((state) => state.project.folders || {})
@@ -107,7 +99,7 @@ const Hierarchy = (props) => {
       const folder_type_label = option ? option.replace(/[a-z]/g, '') : '??'
       return <span style={{ marginRight: '8px' }}>{folder_type_label}</span>
     }
-    return t("Folder types")
+    return 'Folder types'
   }
 
   //
@@ -329,27 +321,53 @@ const Hierarchy = (props) => {
     handleTableKeyDown(event)
   }
 
+  const {
+    buildAddToListMenu,
+    buildListMenuItem,
+    newListMenuItem,
+    folders: foldersList,
+    buildHierarchicalMenuItems,
+  } = useEntityListsContext()
+
   // Context Menu
   // const {openContext, useCreateContextMenu} = useContextMenu()
   // context items
-  const ctxMenuItems = (selected = []) => [
-    {
-      label: t("Open in viewer"),
-      icon: 'play_circle',
-      shortcut: 'Spacebar',
-      command: () => openInViewer(selected[0], false),
-    },
-    {
-      label: t("Detail"),
-      command: () => setShowDetail(true),
-      icon: 'database',
-    },
-    {
-      label: t("View all versions as latest"),
-      command: () => dispatch(setSelectedVersions({})),
-      icon: 'upgrade',
-    },
-  ]
+  const ctxMenuItems = (selected = []) => {
+    const selectedEntities = selected.map((id) => ({ entityId: id, entityType: 'folder' }))
+    return [
+      {
+        label: 'Open in viewer',
+        icon: 'play_circle',
+        shortcut: 'Spacebar',
+        command: () => openInViewer(selected[0], false),
+      },
+      {
+        label: 'Upload version',
+        icon: 'upload',
+        command: () => props.onOpenVersionUpload?.({ folderId: selected[0] }),
+        disabled: selected.length !== 1,
+        hidden: !props.onOpenVersionUpload,
+      },
+      buildAddToListMenu([
+        ...buildHierarchicalMenuItems(
+          foldersList.data,
+          selectedEntities,
+          () => false, // no icon needed in hierarchy tree
+        ),
+        newListMenuItem('folder', selectedEntities),
+      ]),
+      {
+        label: 'Detail',
+        command: () => setShowDetail(true),
+        icon: 'database',
+      },
+      {
+        label: 'View all versions as latest',
+        command: () => dispatch(setSelectedVersions({})),
+        icon: 'upgrade',
+      },
+    ]
+  }
   // create the ref and model
   const [ctxMenuShow] = useCreateContextMenu()
 
@@ -401,7 +419,7 @@ const Hierarchy = (props) => {
           },
         }}
       >
-        <Column header={t("Hierarchy")} field="body" expander={true} style={{ width: '100%' }} />
+        <Column header="Hierarchy" field="body" expander={true} style={{ width: '100%' }} />
       </TreeTable>
     )
   }, [treeData, selectedFolders, expandedFolders, isFetching, ctxMenuShow])
@@ -416,7 +434,7 @@ const Hierarchy = (props) => {
         <Toolbar>
           <InputText
             style={{ flexGrow: 1, minWidth: 100 }}
-            placeholder={t("Filter folders...")}
+            placeholder="Filter folders..."
             disabled={!projectName || isFetching}
             value={query}
             onChange={(evt) => setQuery(evt.target.value)}
@@ -426,7 +444,7 @@ const Hierarchy = (props) => {
           <MultiSelect
             value={selectedFolderTypes}
             options={folderTypeList}
-            placeholder={t("Select folder types")}
+            placeholder="Select folder types"
             showClear={true}
             optionLabel="label"
             disabled={!projectName || isFetching}
@@ -437,7 +455,7 @@ const Hierarchy = (props) => {
         </Toolbar>
 
         <TablePanel>
-          <EntityDetail
+          <DetailsDialog
             projectName={projectName}
             entityType="folder"
             entityIds={focusedFolders}

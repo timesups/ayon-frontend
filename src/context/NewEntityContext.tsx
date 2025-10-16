@@ -1,14 +1,19 @@
 import React, { createContext, useState, ReactNode, useContext } from 'react'
-import { OperationModel } from '@api/rest/operations'
-import { v1 as uuid1 } from 'uuid'
+import { getEntityId } from '@shared/util'
 import { toast } from 'react-toastify'
 import getSequence from '@helpers/getSequence'
 import { generateLabel } from '@components/NewEntity/NewEntity'
-import { PatchOperation, useUpdateOverviewEntitiesMutation } from '@queries/overview/updateOverview'
-import { useProjectTableContext } from '@shared/ProjectTreeTable'
-import { EditorTaskNode, MatchingFolder } from '@shared/ProjectTreeTable'
-import checkName from '@helpers/checkName'
-import { useSlicerContext } from './slicerContext'
+import {
+  PatchOperation,
+  useUpdateOverviewEntitiesMutation,
+  OperationModel,
+  OperationResponseModel,
+  EntityNaming,
+} from '@shared/api'
+import { useProjectDataContext, useProjectTableContext } from '@shared/containers/ProjectTreeTable'
+import { EditorTaskNode, MatchingFolder } from '@shared/containers/ProjectTreeTable'
+import { parseAndFormatName } from '@shared/util'
+import { useSlicerContext } from './SlicerContext'
 import { isEmpty } from 'lodash'
 
 export type NewEntityType = 'folder' | 'task'
@@ -16,6 +21,7 @@ export type NewEntityType = 'folder' | 'task'
 export interface EntityForm {
   label: string
   subType: string
+  name: string
 }
 
 interface SequenceForm {
@@ -27,13 +33,14 @@ interface SequenceForm {
 }
 
 interface NewEntityContextProps {
+  config: EntityNaming
   entityType: NewEntityType | null
   setEntityType: React.Dispatch<React.SetStateAction<NewEntityType | null>>
   entityForm: EntityForm
   setEntityForm: React.Dispatch<React.SetStateAction<EntityForm>>
   sequenceForm: SequenceForm
   setSequenceForm: React.Dispatch<React.SetStateAction<SequenceForm>>
-  onCreateNew: (selectedFolderIds: string[]) => Promise<void>
+  onCreateNew: (selectedFolderIds: string[]) => Promise<OperationResponseModel[]>
   onOpenNew: (type: NewEntityType, config?: { isSequence?: boolean }) => void
 }
 
@@ -48,6 +55,11 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
     useProjectTableContext()
   const { attrib: projectAttrib = {}, statuses } = projectInfo || {}
 
+  const { anatomy } = useProjectDataContext()
+  const { entity_naming: config = { capitalization: 'lower', separator: '_' } } = anatomy as {
+    entity_naming?: EntityNaming
+  }
+
   const { rowSelection, sliceType } = useSlicerContext()
 
   const firstStatusForTask =
@@ -61,7 +73,7 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
 
   const [entityType, setEntityType] = useState<NewEntityType | null>(null)
 
-  const initData: EntityForm = { label: '', subType: '' }
+  const initData: EntityForm = { label: '', subType: '', name: '' }
   const [entityForm, setEntityForm] = useState<EntityForm>(initData)
   const [sequenceForm, setSequenceForm] = useState<SequenceForm>({
     active: false,
@@ -75,7 +87,7 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
   const createEntityOperation = (
     entityType: NewEntityType,
     subType: string,
-    name: string,
+    entity: { name: string; label?: string },
     parentId?: string,
   ): NewEntityOperation => {
     // add extra data from slicer
@@ -101,8 +113,9 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
       entityType: entityType,
       data: {
         [`${entityType}Type`]: subType,
-        id: uuid1().replace(/-/g, ''),
-        name: checkName(name),
+        id: getEntityId(),
+        label: entity.label || entity.name,
+        name: entity.name,
         ...(parentId && { [entityType === 'folder' ? 'parentId' : 'folderId']: parentId }),
         ...slicerData,
       },
@@ -113,18 +126,21 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
     entityType: NewEntityType,
     subType: string,
     sequence: string[],
-    folderIds: string[],
+    folders: { id: string; name: string; label?: string }[],
+    prefix?: boolean,
   ): NewEntityOperation[] => {
     // For root folders
-    if (folderIds.length === 0 && entityType === 'folder') {
-      return sequence.map((name) => createEntityOperation(entityType, subType, name))
+    if (folders.length === 0 && entityType === 'folder') {
+      return sequence.map((name) => createEntityOperation(entityType, subType, { name }))
     }
 
     // For folders or tasks with parent references
     const operations: NewEntityOperation[] = []
-    for (const folderId of folderIds) {
+    for (const folder of folders) {
       for (const name of sequence) {
-        operations.push(createEntityOperation(entityType, subType, name, folderId))
+        // add the prefix if needed
+        const newName = prefix ? (folder.label || folder.name) + name : name
+        operations.push(createEntityOperation(entityType, subType, { name: newName }, folder.id))
       }
     }
     return operations
@@ -135,14 +151,17 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
     subType: string,
     label: string,
     folderIds: string[],
+    name: string,
   ): NewEntityOperation[] => {
     // For root folders
     if (folderIds.length === 0 && entityType === 'folder') {
-      return [createEntityOperation(entityType, subType, label)]
+      return [createEntityOperation(entityType, subType, { name, label })]
     }
 
     // For folders or tasks with parent references
-    return folderIds.map((folderId) => createEntityOperation(entityType, subType, label, folderId))
+    return folderIds.map((folderId) =>
+      createEntityOperation(entityType, subType, { name, label }, folderId),
+    )
   }
 
   type PatchNewTaskOperation = PatchOperation & {
@@ -171,16 +190,23 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
     const folderIds = new Set<string>()
     for (const operation of operations) {
       if (operation.entityType === 'folder') {
-        // @ts-ignore
-        folderIds.add(operation.data?.parentId)
+        if (!operation.data?.parentId) {
+          console.warn('Folder operation without parentId:', operation)
+          continue // Skip folders without parentId
+        }
+        folderIds.add(operation.data.parentId)
       } else if (operation.entityType === 'task') {
-        // @ts-ignore
-        folderIds.add(operation.data?.folderId)
+        if (!operation.data?.folderId) {
+          console.warn('Task operation without folderId:', operation)
+          continue // Skip tasks without folderId
+        }
+        folderIds.add(operation.data.folderId)
       }
     }
 
     const attribsByParentId = new Map<string, any>()
     for (const folderId of folderIds) {
+      if (!folderId) continue // Skip if no folderId
       const nonInheritedValues = findNonInheritedValues(
         folderId,
         attribFields.map((field) => field.name),
@@ -239,19 +265,22 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
           const folderPatch: PatchNewFolderOperation = {
             type: 'create',
             entityType: 'folder',
-            entityId: (operation.data as any).id,
+            entityId: operation.data.id,
             data: {
               ...operation.data,
+              entityId: operation.data.id,
               entityType: 'folder',
               projectName,
-              folderType: (operation.data as any).folderType,
+              folderType: operation.data.folderType,
               parents: [],
               updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
               status: firstStatusForFolder,
               ownAttrib: [],
               path: path,
               tags: [],
               attrib: filteredAttribs,
+              links: [], // Add empty links object
             } as MatchingFolder,
           }
           patchOperations.push(folderPatch)
@@ -259,12 +288,13 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
           const taskPatch: PatchNewTaskOperation = {
             type: 'create',
             entityType: 'task',
-            entityId: (operation.data as any).id,
+            entityId: operation.data.id,
             data: {
               ...operation.data,
+              entityId: operation.data.id,
               entityType: 'task',
-              taskType: (operation.data as any).taskType,
-              folderId: (operation.data as any).folderId,
+              taskType: operation.data.taskType,
+              folderId: operation.data.folderId,
               active: true,
               assignees: operation.data.assignees || [],
               projectName,
@@ -276,8 +306,12 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
               ownAttrib: [],
               path: '',
               updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
               attrib: filteredAttribs,
+              hasReviewables: false, // Add required field
+              links: [], // Add empty links object
               allAttrib: JSON.stringify(filteredAttribs),
+              parents: [],
             } as EditorTaskNode,
           }
           patchOperations.push(taskPatch)
@@ -303,24 +337,39 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
 
   const onCreateNew: NewEntityContextProps['onCreateNew'] = async (selectedFolderIds) => {
     // first check name and entityType valid
-    if (!entityType || !entityForm.label) return
+    if (!entityType || !entityForm.label || !entityForm.name) {
+      toast.error('Please provide a valid name and select an entity type')
+      throw new Error('Invalid entity type or label')
+    }
 
     // If we're creating a task and there are no selected folders, show error
     if (entityType === 'task' && selectedFolderIds.length === 0) {
       toast.error('Cannot create a task without selecting a folder')
-      return
+      throw new Error('No folder selected for task creation')
     }
 
     let operations: NewEntityOperation[]
 
     if (sequenceForm.active) {
+      const selectedFolders = []
+      for (const folderId of selectedFolderIds) {
+        const entity = getEntityById(folderId)
+        if (entity?.entityType === 'folder') {
+          selectedFolders.push({
+            id: entity.id,
+            name: entity.name,
+            label: entity.label || entity.name, // Use label if available
+          })
+        }
+      }
       // Generate the sequence
       const sequence = getSequence(entityForm.label, sequenceForm.increment, sequenceForm.length)
       operations = createSequenceOperations(
         entityType,
         entityForm.subType,
         sequence,
-        selectedFolderIds,
+        selectedFolders,
+        sequenceForm.prefix,
       )
     } else {
       operations = createSingleOperations(
@@ -328,6 +377,7 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
         entityForm.subType,
         entityForm.label,
         selectedFolderIds,
+        entityForm.name,
       )
     }
 
@@ -336,24 +386,31 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
     for (const folderId of selectedFolderIds) {
       const entity = getEntityById(folderId)
       if (entity?.entityType === 'folder') {
-        paths[folderId] = entity.path
+        paths[entity.id] = entity.path
       }
     }
 
     const patchOperations = createPatchOperations(operations, paths)
 
     try {
-      await createEntities({
+      const res = await createEntities({
         operationsRequestModel: { operations },
         projectName: projectName,
         patchOperations,
       }).unwrap()
-    } catch (error) {
+
+      if (res?.success && res.operations) {
+        return res.operations
+      } else {
+        throw { data: { details: 'Failed to create new entity' } }
+      }
+    } catch (error: any) {
       toast.error('Failed to create new entity')
+      throw new Error(error?.data?.details)
     }
   }
 
-  const onOpenNew: NewEntityContextProps['onOpenNew'] = (type, config) => {
+  const onOpenNew: NewEntityContextProps['onOpenNew'] = (type, c) => {
     // set entityType
     setEntityType(type)
     // set any default values
@@ -361,17 +418,17 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
       (type === 'folder' ? projectInfo?.folderTypes : projectInfo?.taskTypes) || []
     const firstType = typeOptions[0]
     const firstName = firstType.name || ''
+    const label = generateLabel(type, firstName, projectInfo)
 
     // Use the helper function to generate the label
     const initData = {
       subType: firstName,
-      label: generateLabel(type, firstName, projectInfo),
+      label: label,
+      name: parseAndFormatName(label, config),
     }
 
-    console.log(config)
-
     // if sequence, set sequenceForm active
-    if (config?.isSequence) {
+    if (c?.isSequence) {
       setSequenceForm((prev) => ({
         ...prev,
         active: true,
@@ -382,6 +439,7 @@ export const NewEntityProvider: React.FC<NewEntityProviderProps> = ({ children }
   }
 
   const value: NewEntityContextProps = {
+    config,
     entityType,
     setEntityType,
     entityForm,

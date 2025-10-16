@@ -1,6 +1,7 @@
 import Markdown from 'react-markdown'
 import styled from 'styled-components'
 import { markdownStyle } from './markdown'
+import { theme } from '@ynput/ayon-react-components'
 
 export const LoginForm = styled.div`
   display: flex;
@@ -108,10 +109,19 @@ export const BG = styled.img`
   height: 100vh;
 `
 
-export const MessageMarkdown = styled(Markdown)`
+export const MessageMarkdown = styled.div`
   max-width: 100%;
   height: 100%;
   overflow: auto;
 
   ${markdownStyle}
+`
+
+export const TandCs = styled.p`
+  color: var(--md-sys-color-outline);
+  &,
+  a {
+    color: var(--md-sys-color-outline);
+    ${theme.bodySmall}
+  }
 `

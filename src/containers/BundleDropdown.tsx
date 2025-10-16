@@ -4,7 +4,7 @@ import { DefaultValueTemplate, Dropdown, DropdownProps } from '@ynput/ayon-react
 
 import { useListBundlesQuery } from '@queries/bundles/getBundles'
 import styled from 'styled-components'
-import { BundleModel } from '@api/rest/bundles'
+import { BundleModel } from '@shared/api'
 import { $Any } from '@types'
 import clsx from 'clsx'
 
@@ -152,6 +152,7 @@ interface BundleDropdownProps extends Omit<DropdownProps, 'value' | 'options'> {
   setVariant?: (variant: string) => void
   exclude?: string[]
   activeOnly?: boolean // only show production, staging, and dev bundles
+  devOnly?: boolean // only show dev bundles
 }
 
 const BundleDropdown = ({
@@ -162,6 +163,7 @@ const BundleDropdown = ({
   setVariant,
   exclude,
   activeOnly,
+  devOnly,
   ...props
 }: BundleDropdownProps) => {
   const { data: { bundles = [] } = {}, isLoading, isError } = useListBundlesQuery({})
@@ -171,6 +173,7 @@ const BundleDropdown = ({
     if (exclude?.length && exclude.includes(b.name)) return false
     if (b.isDev && !devMode) return false
     if (activeOnly && !b.isProduction && !b.isStaging && !b.isDev) return false
+    if (devOnly && !b.isDev) return false
     return true
   }
 
@@ -184,7 +187,7 @@ const BundleDropdown = ({
       isDev: bundle.isDev,
       activeUser: bundle.activeUser,
     }))
-  }, [bundles])
+  }, [bundles, activeOnly, devOnly])
 
   const handleChange = (v: string[]) => {
     const selectedBundle = bundleOptions.find((b) => b.value === v[0])

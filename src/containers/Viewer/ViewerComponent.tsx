@@ -1,14 +1,11 @@
-import ReviewableUpload from '@containers/ReviewablesList/ReviewablesUpload'
-import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
+import { ReviewableUpload, EmptyPlaceholder } from '@shared/components'
+import type { ReviewableResponse } from '@shared/api'
 
 import ViewerPlayer from './ViewerPlayer'
 import * as Styled from './Viewer.styled'
 import { useState } from 'react'
-import { ReviewableResponse } from '@queries/review/types'
 import ViewerImage from './ViewerImage'
-
-import { useTranslation } from 'react-i18next'
-
+import { useDetailsPanelContext } from '@shared/context'
 
 interface ViewerProps {
   projectName: string | null
@@ -36,10 +33,7 @@ const ViewerComponent = ({
   quickView,
   onUpload,
 }: ViewerProps) => {
-
-  //translation
-  const {t} = useTranslation()
-
+  const { viewer, dispatch } = useDetailsPanelContext()
 
   const [autoPlay, setAutoPlay] = useState(quickView)
 
@@ -76,16 +70,16 @@ const ViewerComponent = ({
   }
 
   if (!isFetchingReviewables && versionReviewableIds?.length === 0) {
-    let message = t("No preview available")
+    let message = 'No preview available'
     let canUploadReviewable = false
 
     if (noVersions) {
-      message = t("This task has published no versions.")
+      message = 'This task has published no versions.'
     } else if (!reviewables.length) {
-      message = t("This version has no online reviewables.")
+      message = 'This version has no online reviewables.'
       canUploadReviewable = true
     } else if (availability === 'conversionRequired') {
-      message = t("File not supported and needs conversion")
+      message = 'File not supported and needs conversion'
     }
     const placeholderStyles = {
       position: 'relative',
@@ -106,10 +100,13 @@ const ViewerComponent = ({
     return (
       <ReviewableUpload
         projectName={projectName}
+        folderId={viewer?.folderId}
+        taskId={viewer?.taskId}
         versionId={versionIds[0]}
         productId={productId}
         variant="large"
         onUpload={onUpload(false)}
+        dispatch={dispatch}
       >
         <EmptyPlaceholder icon="hide_image" message={message} style={placeholderStyles} />
       </ReviewableUpload>

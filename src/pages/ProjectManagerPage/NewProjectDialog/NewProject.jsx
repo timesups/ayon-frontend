@@ -6,8 +6,9 @@ import { Spacer, InputText, Toolbar, SaveButton, InputSwitch } from '@ynput/ayon
 import SettingsEditor from '@containers/SettingsEditor'
 import AnatomyPresetDropdown from './AnatomyPresetDropdown'
 import { useGetAnatomyPresetQuery, useGetAnatomySchemaQuery } from '@queries/anatomy/getAnatomy'
-import { useCreateProjectMutation } from '@queries/project/updateProject'
+import { useDeployProjectMutation } from '@shared/api'
 import { useGetConfigValueQuery } from '@queries/config/getConfig'
+import { camelCase } from 'lodash'
 
 import { useTranslation } from 'react-i18next'
 
@@ -47,14 +48,16 @@ const NewProjectDialog = ({ onHide }) => {
 
   // Logic
   //
-  const [createProject, { isLoading }] = useCreateProjectMutation()
+  const [deployProject, { isLoading }] = useDeployProjectMutation()
 
   const handleSubmit = () => {
-    createProject({
-      name,
-      code,
-      anatomy: formData,
-      library: isLibrary,
+    deployProject({
+      deployProjectRequestModel: {
+        name,
+        code,
+        anatomy: formData,
+        library: isLibrary,
+      },
     })
       .unwrap()
       .then(() => {
@@ -82,10 +85,16 @@ const NewProjectDialog = ({ onHide }) => {
       // Check if the regex has capture groups
       if (matches[0].length > 1) {
         // Extract the first capture group from each match
-        return matches.map((match) => match[1]).join('')
+        return matches
+          .map((match) => match[1])
+          .join('')
+          .replaceAll(' ', '')
       } else {
         // If no capture groups, use the full match
-        return matches.map((match) => match[0]).join('')
+        return matches
+          .map((match) => match[0])
+          .join('')
+          .replaceAll(' ', '')
       }
     } catch (error) {
       console.warn('Invalid regex pattern for project code', error)

@@ -1,12 +1,17 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { InputText, TablePanel, Section, Toolbar, Spacer } from '@ynput/ayon-react-components'
-import EntityDetail from '@containers/DetailsDialog'
 import { CellWithIcon } from '@components/icons'
 import { TimestampField } from '@containers/fieldFormat'
 import usePubSub from '@hooks/usePubSub'
-import groupResult from '@helpers/groupResult'
-import { useLocalStorage } from '@shared/hooks'
+// shared
+import { DetailsDialog } from '@shared/components'
+import { useLocalStorage, useScopedStatuses } from '@shared/hooks'
+import api, { useUpdateEntitiesMutation } from '@shared/api'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
+import { productTypes, groupResult, confirmDelete } from '@shared/util'
+import { extractIdFromClassList } from '@shared/containers/Feed'
+
 import {
   setFocusedVersions,
   setFocusedProducts,
@@ -25,19 +30,17 @@ import {
 import usePatchProductsListWithVersions from '@hooks/usePatchProductsListWithVersions'
 import useSearchFilter, { filterByFieldsAndValues } from '@hooks/useSearchFilter'
 import useColumnResize from '@hooks/useColumnResize'
-import { useUpdateEntitiesMutation } from '@queries/entity/updateEntity'
-import api from '@api'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import ViewModeToggle from './ViewModeToggle'
 import ProductsList from './ProductsList'
 import ProductsGrid from './ProductsGrid'
 import NoProducts from './NoProducts'
 import { toast } from 'react-toastify'
-import { productTypes } from '@state/project'
 import * as Styled from './Products.styled'
 import { openViewer } from '@state/viewer'
-import { extractIdFromClassList } from '@containers/Feed/hooks/useTableKeyboardNavigation'
-import useScopedStatuses from '@hooks/useScopedStatuses'
+import { useEntityListsContext } from '@pages/ProjectListsPage/context'
+import { useVersionUploadContext } from '@shared/components'
+import { useDeleteVersionMutation } from '@shared/api'
+import { useDeleteProductMutation } from '@queries/product/updateProduct'
 
 import { useTranslation } from 'react-i18next'
 
@@ -46,6 +49,8 @@ const Products = () => {
   const {t} = useTranslation()
 
   const dispatch = useDispatch()
+
+  const { onOpenVersionUpload } = useVersionUploadContext()
 
   // context
   // project redux
@@ -572,14 +577,6 @@ const Products = () => {
     dispatch(productSelected({ products, versions }))
   }
 
-  const onContextMenuSelectionChange = (event) => {
-    if (focusedProducts.includes(event.value)) return
-    const productId = event.value
-    const versionId = listData.find((s) => s.id === productId).versionId
-    dispatch(setFocusedProducts([productId]))
-    dispatch(setFocusedVersions([versionId]))
-  }
-
   // viewer open
   const viewerIsOpen = useSelector((state) => state.viewer.isOpen)
 
@@ -602,30 +599,119 @@ const Products = () => {
       )
     }
   }
+  const [deleteProduct] = useDeleteProductMutation()
+  const handleDeleteProduct = async (productId, productName) => {
+    confirmDelete({
+      label: `product ${productName}`,
+      accept: async () => {
+        await deleteProduct({ productId, projectName }).unwrap()
+        // refetch the product list to update the UI
+        refetch()
+        // also clear the focused products and versions
+        dispatch(setFocusedProducts([]))
+        dispatch(setFocusedVersions([]))
+        dispatch(setSelectedVersions({}))
+        dispatch(setUri(`ayon+entity://${projectName}/`))
+        dispatch(onFocusChanged(null))
+      },
+    })
+  }
 
-  const ctxMenuItems = (id) => [
-    {
-      label: 'Open in viewer',
-      command: () => handleOpenViewer(id),
-      icon: 'play_circle',
-      shortcut: 'Spacebar',
-    },
-    {
-      label: 'Product detail',
-      command: () => setShowDetail('product'),
-      icon: 'database',
-    },
-    {
-      label: 'Version detail',
-      command: () => setShowDetail('version'),
-      icon: 'database',
-    },
-  ]
+  const [deleteVersion] = useDeleteVersionMutation()
+  const handleDeleteVersion = async (product) => {
+    confirmDelete({
+      label: `version ${product.versionName}`,
+      accept: async () => {
+        await deleteVersion({ versionId: product.versionId, projectName }).unwrap()
+        // refetch the product list to update the UI
+        refetch()
+        dispatch(setSelectedVersions({}))
+
+        // if it;s the last version, ask to delete the product
+        if (product.versionList.length === 1) {
+          handleDeleteProduct(product.id, product.name)
+        }
+      },
+    })
+  }
+
+  const {
+    buildAddToListMenu,
+    buildListMenuItem,
+    newListMenuItem,
+    versions: versionsLists,
+    reviews: reviewsLists,
+    buildHierarchicalMenuItems,
+  } = useEntityListsContext()
+
+  const ctxMenuItems = (id, selectedProducts, selectedVersions) => {
+    const selectedEntities = selectedVersions.map((id) => ({ entityId: id, entityType: 'version' }))
+    const selectedProductsData = productsData.filter((p) => selectedProducts.includes(p.id))
+    const firstProductData = selectedProductsData[0] || {}
+
+    return [
+      {
+        label: 'Open in viewer',
+        command: () => handleOpenViewer(id),
+        icon: 'play_circle',
+        shortcut: 'Spacebar',
+      },
+      {
+        label: 'Upload version',
+        command: () => onOpenVersionUpload({ productId: selectedProducts[0] }),
+        icon: 'upload',
+        disabled: selectedProducts.length !== 1,
+      },
+      buildAddToListMenu(
+        [
+          ...buildHierarchicalMenuItems(
+            [...versionsLists.data, ...reviewsLists.data],
+            selectedEntities,
+            (l) => (l.entityListType === 'review-session' ? true : !!reviewsLists.data.length),
+          ),
+          newListMenuItem('version', selectedEntities),
+        ],
+        { label: 'Add to list (version)' },
+      ),
+      {
+        label: 'Product detail',
+        command: () => setShowDetail('product'),
+        icon: 'database',
+      },
+      {
+        label: 'Version detail',
+        command: () => setShowDetail('version'),
+        icon: 'database',
+      },
+      {
+        label: `Delete version (${firstProductData?.versionName})`,
+        icon: 'delete',
+        danger: true,
+        hidden: !firstProductData?.versionId || selectedProducts.length !== 1,
+        command: () => handleDeleteVersion(firstProductData),
+      },
+    ]
+  }
 
   const [ctxMenuShow] = useCreateContextMenu([])
 
   const handleContextMenu = (e, id) => {
-    ctxMenuShow(e, ctxMenuItems(id))
+    // If the product isn't in the current selection, update selection to just this product
+    let selectedProducts = [...focusedProducts],
+      selectedVersions = [...focusedVersions]
+    if (!selectedProducts.includes(id)) {
+      const productId = id
+      const versionId = listData.find((s) => s.id === productId).versionId
+      dispatch(setFocusedProducts([productId]))
+      dispatch(setFocusedVersions([versionId]))
+
+      selectedProducts = [productId]
+      selectedVersions = [versionId]
+    }
+
+    // Use the full selection (either the existing selection if id was part of it,
+    // or just the single item that was just selected)
+    ctxMenuShow(e, ctxMenuItems(id, selectedProducts, selectedVersions))
   }
 
   const handleKeyDown = (e) => {
@@ -685,7 +771,7 @@ const Products = () => {
         onContextMenu={handleTablePanelContext}
         onKeyDown={handleKeyDown}
       >
-        <EntityDetail
+        <DetailsDialog
           projectName={projectName}
           entityType={showDetail || 'product'}
           entityIds={showDetail === 'product' ? focusedProducts : focusedVersions}
@@ -699,7 +785,6 @@ const Products = () => {
             onItemClick={updateUri}
             onSelectionChange={onSelectionChange}
             onContext={handleContextMenu}
-            onContextMenuSelectionChange={onContextMenuSelectionChange}
             selection={selection}
             productTypes={productTypes}
             statuses={statusesObject}
@@ -716,7 +801,6 @@ const Products = () => {
             onSelectionChange={onSelectionChange}
             onFocus={onRowFocusChange}
             ctxMenuShow={handleContextMenu}
-            onContextMenuSelectionChange={onContextMenuSelectionChange}
             setColumnWidths={setColumnWidths}
             columns={columns}
             columnsWidths={columnsWidths}

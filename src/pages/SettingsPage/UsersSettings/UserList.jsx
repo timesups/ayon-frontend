@@ -1,19 +1,17 @@
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { TablePanel, Section } from '@ynput/ayon-react-components'
-import UserImage from '@components/UserImage'
+import UserImage from '@shared/components/UserImage'
 
 import './users.scss'
 
 import { useMemo } from 'react'
 import styled from 'styled-components'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
-import { useGetUserPoolsQuery } from '@queries/auth/getAuth'
+import { useGetUserPoolsQuery } from '@shared/api'
 import { accessGroupsSortFunction, userPoolSortFunction } from './tableSorting'
-import { useTranslation } from 'react-i18next'
-
 
 const StyledProfileRow = styled.div`
   display: flex;
@@ -73,11 +71,6 @@ const UserList = ({
   onSelectUsers,
   isSelfSelected,
 }) => {
-
-
-  //translation
-  const {t} = useTranslation()
-
   // GET LICENSE USER POOLS
   const { data: userPools = [] } = useGetUserPoolsQuery()
 
@@ -106,19 +99,19 @@ const UserList = ({
   const ctxMenuItems = (newSelectedUsers) => {
     return [
       {
-        label: t("Set username"),
+        label: 'Set username',
         disabled: selection.length !== 1,
         command: () => setShowRenameUser(true),
         icon: 'edit',
       },
       {
-        label: t("Set password"),
+        label: 'Set password',
         disabled: selection.length !== 1,
         command: () => setShowSetPassword(true),
         icon: 'key',
       },
       {
-        label: t("Delete selected"),
+        label: 'Delete selected',
         disabled: !selection.length || isSelfSelected,
         command: () => setShowDeleteUser(newSelectedUsers),
         icon: 'delete',
@@ -157,13 +150,13 @@ const UserList = ({
         >
           <Column
             field="name"
-            header={t("Username")}
+            header="Username"
             sortable
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
             resizeable
           />
-          <Column field="attrib.fullName" header={t("Full name")} sortable resizeable />
-          <Column field="attrib.email" header={t("Email")} sortable />
+          <Column field="attrib.fullName" header="Full name" sortable resizeable />
+          <Column field="attrib.email" header="Email" sortable />
           {!!userPools.length && (
             <Column
               field="userPool"
@@ -183,7 +176,7 @@ const UserList = ({
           )}
           <Column
             field={'accessLevel'}
-            header={t("Access level")}
+            header="Access level"
             body={(rowData) => getUserRole(rowData)}
             sortFunction={accessGroupsSortFunction}
             sortable
@@ -191,27 +184,27 @@ const UserList = ({
           />
           <Column
             field="defaultAccessGroups"
-            header={t("Default projects access")}
+            header="Default projects access"
             sortable
             resizeable
             body={(rowData) => rowData.defaultAccessGroups?.join(', ')}
           />
           <Column
-            header={t("Has password")}
+            header="Has password"
             body={(rowData) => (rowData.hasPassword ? 'yes' : 'no')}
             field="hasPassword"
             sortable
             resizeable
           />
           <Column
-            header={t("Guest")}
+            header="Guest (legacy)"
             body={(rowData) => (rowData.isGuest ? 'yes' : '')}
             field="isGuest"
             sortable
             resizeable
           />
           <Column
-            header={t("Active")}
+            header="Active"
             body={(rowData) => (rowData.active ? 'yes' : '')}
             field="active"
             sortable

@@ -1,18 +1,18 @@
 import * as Styled from './projectMenu.styled'
 import { useDispatch, useSelector } from 'react-redux'
 import MenuList from '@components/Menu/MenuComponents/MenuList'
-import { useListProjectsQuery } from '@queries/project/getProject'
+import { useListProjectsQuery, useSetFrontendPreferencesMutation } from '@shared/api'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { InputText, Section } from '@ynput/ayon-react-components'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 import { useLocalStorage } from '@shared/hooks'
 import ProjectButton from '@components/ProjectButton/ProjectButton'
 import { createPortal } from 'react-dom'
-import { useShortcutsContext } from '@context/shortcutsContext'
+import { useShortcutsContext } from '@context/ShortcutsContext'
 import clsx from 'clsx'
-import { useSetFrontendPreferencesMutation } from '@/services/user/updateUser'
 import useAyonNavigate from '@hooks/useAyonNavigate'
 import { useProjectSelectDispatcher } from './hooks/useProjectSelectDispatcher'
+import { updateUserPreferences as updateUserPreferencesAction } from '@state/user'
 
 import { useTranslation } from 'react-i18next'
 const ProjectMenu = ({ isOpen, onHide }) => {
@@ -67,6 +67,9 @@ const ProjectMenu = ({ isOpen, onHide }) => {
 
   const updatePinned = async (pinnedProjects) => {
     try {
+      // update in local redux state
+      dispatch(updateUserPreferencesAction({ pinnedProjects }))
+
       // update user preferences
       await updateUserPreferences({
         userName: username,

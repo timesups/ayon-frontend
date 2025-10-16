@@ -11,7 +11,7 @@ import * as Styled from './ReleaseInstaller.styled'
 import ReleaseInstaller from './ReleaseInstaller'
 import { useGetYnputConnectionsQuery } from '@queries/ynputConnect'
 import ConnectDialog from '@pages/MarketPage/ConnectDialog/ConnectDialog'
-import { useLocation } from 'react-router'
+import { useLocation } from 'react-router-dom'
 
 const ReleaseInstallerDialog: FC = () => {
   const location = useLocation()
@@ -33,8 +33,7 @@ const ReleaseInstallerDialog: FC = () => {
   return (
     <Styled.FriendlyDialog
       isOpen
-      onClose={() => {}}
-      hideCancelButton
+      onClose={closeDialog}
       header={<Styled.Header>Install pipeline release</Styled.Header>}
       size="md"
     >

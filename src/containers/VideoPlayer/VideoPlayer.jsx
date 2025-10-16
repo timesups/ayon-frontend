@@ -4,10 +4,12 @@ import styled from 'styled-components'
 import VideoOverlay from './VideoOverlay'
 import Trackbar from './Trackbar'
 import VideoPlayerControls from './VideoPlayerControls'
-import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
+import EmptyPlaceholder from '@shared/components/EmptyPlaceholder'
 import clsx from 'clsx'
 import useGoToFrame from './hooks/useGoToFrame'
-import { useViewer } from '@context/viewerContext'
+import { useViewer } from '@context/ViewerContext'
+
+import './utils/videoFrameCallbackPolyfill'
 
 const VideoPlayerContainer = styled.div`
   position: absolute;
@@ -198,7 +200,10 @@ const VideoPlayer = ({ src, frameRate, aspectRatio, autoplay, onPlay, reviewable
       videoRef.current.muted = false
       setIsPlaying(false)
     }
-    setCurrentTime(0)
+    if (videoRef.current?.duration < currentTime) {
+      console.log('resetting current time to 0')
+      setCurrentTime(0)
+    }
     setBufferedRanges([])
     setLoadError(null)
     seekedToInitialPosition.current = false
@@ -239,19 +244,71 @@ const VideoPlayer = ({ src, frameRate, aspectRatio, autoplay, onPlay, reviewable
     setIsPlaying(true)
   }
 
-  // Track the current frame
+  const frameCallbackRef = useRef(null)
 
   const updateCurrentTime = (now, metadataInfo) => {
     setCurrentTime(metadataInfo.mediaTime)
     const video = videoRef.current
     if (!video) return
-    video.requestVideoFrameCallback(updateCurrentTime)
+    
+    // Cancel previous callback if it exists and is a function
+    if (frameCallbackRef.current && typeof frameCallbackRef.current === 'function') {
+      try {
+        frameCallbackRef.current()
+      } catch (error) {
+        console.warn('Error canceling previous video frame callback:', error)
+      }
+    }
+    
+    try {
+      const cancelCallback = video.requestVideoFrameCallback(updateCurrentTime)
+      if (typeof cancelCallback === 'function') {
+        frameCallbackRef.current = cancelCallback
+      } else {
+        console.warn('requestVideoFrameCallback did not return a cancel function')
+        frameCallbackRef.current = null
+      }
+    } catch (error) {
+      console.error('Error setting up video frame callback:', error)
+      frameCallbackRef.current = null
+    }
   }
 
   useEffect(() => {
     if (!videoRef.current) return
     const video = videoRef.current
-    video.requestVideoFrameCallback(updateCurrentTime)
+    
+    if (frameCallbackRef.current && typeof frameCallbackRef.current === 'function') {
+      try {
+        frameCallbackRef.current()
+      } catch (error) {
+        console.warn('Error canceling previous video frame callback:', error)
+      }
+    }
+    
+    try {
+      const cancelCallback = video.requestVideoFrameCallback(updateCurrentTime)
+      if (typeof cancelCallback === 'function') {
+        frameCallbackRef.current = cancelCallback
+      } else {
+        console.warn('requestVideoFrameCallback did not return a cancel function')
+        frameCallbackRef.current = null
+      }
+    } catch (error) {
+      console.error('Error setting up video frame callback:', error)
+      frameCallbackRef.current = null
+    }
+    
+    return () => {
+      if (frameCallbackRef.current && typeof frameCallbackRef.current === 'function') {
+        try {
+          frameCallbackRef.current()
+        } catch (error) {
+          console.warn('Error canceling video frame callback on cleanup:', error)
+        }
+        frameCallbackRef.current = null
+      }
+    }
   }, [videoRef.current])
 
   // I guess using useMemo here would cause much higher overhead :)

@@ -19,29 +19,29 @@ import { Body } from '../FolderBody/FolderBody.styled'
 
 // State management
 import { useAppDispatch, useAppSelector } from '@state/store'
-import { selectProgress, toggleDetailsOpen } from '@state/progress'
+import { selectProgress } from '@state/progress'
 import { setFocusedTasks } from '@state/context'
 
 // Types
-import type { Status, TaskType } from '@api/rest/project'
 import type {
   FolderRow,
   TaskTypeRow,
   TaskTypeStatusBar,
 } from '../../helpers/formatTaskProgressForTable'
-import type { Assignees } from '@queries/user/getUsers'
-import { AttributeEnumItem } from '@api/rest/attributes'
+import type { Assignees, Status, TaskType, AttributeEnumItem } from '@shared/api'
 
 // Hooks
 import { useEffect, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { InView } from 'react-intersection-observer'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
-import { useLocalStorage } from '@shared/hooks'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
+import { useTaskProgressViewSettings } from '@shared/containers'
 
 // Helpers
 import { useFolderSort } from '../../hooks'
 import { taskStatusSortFunction } from '@containers/TasksProgress/helpers/taskStatusSortFunction'
 import clsx from 'clsx'
+import { useEntityListsContext } from '@pages/ProjectListsPage/context'
+import { useScopedDetailsPanel } from '@shared/context'
 
 export const Cells = styled.div`
   display: flex;
@@ -62,7 +62,8 @@ interface TasksProgressTableProps
   isLoading: boolean
   activeTask: string | null
   selectedAssignees: string[]
-  statuses: Status[]
+  taskStatuses: Status[]
+  folderStatuses: Status[]
   taskTypes: TaskType[]
   priorities: AttributeEnumItem[]
   users: Assignees
@@ -92,7 +93,8 @@ export const TasksProgressTable = ({
   isLoading,
   activeTask,
   selectedAssignees = [],
-  statuses = [], // project statuses schema
+  taskStatuses = [], // project task statuses schema
+  folderStatuses = [], // project folder statuses schema
   taskTypes = [], // project task types schema
   priorities = [], // project priorities schema
   users = [], // users in the project
@@ -109,7 +111,7 @@ export const TasksProgressTable = ({
 }: TasksProgressTableProps) => {
   const selectedTasks = useAppSelector((state) => state.context.focused.tasks) as string[]
   const progressSelected = useAppSelector((state) => state.progress.selected)
-  const detailsOpen = useAppSelector((state) => state.details.open)
+  const { isOpen: detailsOpen, setOpen } = useScopedDetailsPanel('progress')
   const dispatch = useAppDispatch()
 
   // HACK: this forces a complete rerender of the table
@@ -192,10 +194,18 @@ export const TasksProgressTable = ({
   const sortFolderFunction = useFolderSort(tableData)
 
   const togglePanel = (open: boolean = true) => {
-    dispatch(toggleDetailsOpen(open))
+    setOpen(open)
   }
 
-  const buildContextMenu = (_selection: string[], taskId: string) => {
+  const {
+    buildAddToListMenu,
+    newListMenuItem,
+    tasks: tasksLists,
+    buildHierarchicalMenuItems,
+  } = useEntityListsContext()
+
+  const buildContextMenu = (selection: string[], taskId: string) => {
+    const selectedEntities = selection.map((id) => ({ entityId: id, entityType: 'task' }))
     return [
       {
         label: detailsOpen ? 'Hide details' : 'Show details',
@@ -209,6 +219,14 @@ export const TasksProgressTable = ({
         shortcut: 'Spacebar',
         command: () => onOpenViewer({ taskId, quickView: true }),
       },
+      buildAddToListMenu([
+        ...buildHierarchicalMenuItems(
+          tasksLists.data,
+          selectedEntities,
+          () => false, // no icon needed
+        ),
+        newListMenuItem('task', selectedEntities),
+      ]),
     ]
   }
 
@@ -229,10 +247,7 @@ export const TasksProgressTable = ({
     ctxMenuShow(e, buildContextMenu(selection, taskId))
   }
 
-  type SavedWidths = { [task: string]: number | null }
-
-  const localStorageKey = `tasks-progress-table-${projectName}`
-  const [savedWidths, setSavedWidths] = useLocalStorage<SavedWidths | null>(localStorageKey, null)
+  const { columns, onUpdateColumns } = useTaskProgressViewSettings()
 
   const resolveColumnWidth = (taskType: string, useDefault?: boolean) => {
     const screenWidthMultiple = (min: number, max: number, target: number): number => {
@@ -242,7 +257,8 @@ export const TasksProgressTable = ({
       return Math.round(Math.min(max, Math.max(min, width)))
     }
 
-    const savedWidth = savedWidths?.[taskType]
+    const column = columns.find((col) => col.name === taskType)
+    const savedWidth = column?.width
     const fullWidth = screenWidthMultiple(180, 250, 13)
     const compactWidth = screenWidthMultiple(80, 150, 10)
     const minWidthPerTask = detailsOpen ? compactWidth : fullWidth
@@ -254,25 +270,43 @@ export const TasksProgressTable = ({
   const handleColumnResize = (e: DataTableColumnResizeEndEvent) => {
     const taskType = e.column.props?.field
     if (!taskType) return console.error('Resize error: No task type found')
-    // const newWidth = Math.round(e.element.clientWidth)
+
     const currentWidth = resolveColumnWidth(taskType)
+
     const delta = e.delta
     const newWidth = currentWidth + delta
 
-    // set the new width to local storage
-    setSavedWidths({
-      ...savedWidths,
-      [taskType]: newWidth,
-    })
+    // Update the columns array
+    const updatedColumns = [...columns]
+    const existingColumnIndex = updatedColumns.findIndex((col) => col.name === taskType)
+
+    if (existingColumnIndex >= 0) {
+      updatedColumns[existingColumnIndex] = {
+        ...updatedColumns[existingColumnIndex],
+        width: newWidth,
+      }
+    } else {
+      updatedColumns.push({
+        name: taskType,
+        visible: true,
+        width: newWidth,
+      })
+    }
+
+    onUpdateColumns(updatedColumns)
   }
 
   const resetColumnWidth = (taskType?: string) => {
     if (!taskType) return console.error('Width reset error: No task type found')
-    // remove taskType from column widths
-    const newWidths = { ...savedWidths }
-    delete newWidths[taskType]
-    taskType && setSavedWidths(newWidths)
 
+    // Remove width from the specific column
+    const updatedColumns = columns
+      .map((col) => (col.name === taskType ? { ...col, width: undefined } : col))
+      .filter(
+        (col) => col.name !== taskType || col.visible !== undefined || col.pinned !== undefined,
+      )
+
+    onUpdateColumns(updatedColumns)
     forceReloadTable()
   }
 
@@ -362,7 +396,7 @@ export const TasksProgressTable = ({
                 id: row.__folderId,
                 name: row._folder,
                 icon: row.__folderIcon,
-                status: statuses.find((s) => s.name === row.__folderStatus),
+                status: folderStatuses.find((s) => s.name === row.__folderStatus),
                 updatedAt: row.__folderUpdatedAt,
               }}
               isSelected={
@@ -399,7 +433,7 @@ export const TasksProgressTable = ({
           resizeable
           header={<TaskColumnHeader taskType={taskTypeKey} />}
           sortable
-          sortFunction={(e) => sortFolderFunction(e, taskStatusSortFunction(statuses))}
+          sortFunction={(e) => sortFolderFunction(e, taskStatusSortFunction(taskStatuses))}
           pt={{
             bodyCell: { style: { padding: 0 } },
             headerCell: { onContextMenu: (e) => handleColumnHeaderContextMenu(e, taskTypeKey) },
@@ -412,7 +446,7 @@ export const TasksProgressTable = ({
             if (rowData.__isParent) {
               const taskCellData = rowData[taskTypeKey] as TaskTypeStatusBar
 
-              return <TaskStatusBar statuses={statuses} statusCounts={taskCellData} />
+              return <TaskStatusBar statuses={taskStatuses} statusCounts={taskCellData} />
             }
 
             const taskCellData = rowData[taskTypeKey] as TaskTypeRow
@@ -494,7 +528,7 @@ export const TasksProgressTable = ({
                               assigneeOptions={assigneeOptions}
                               isExpanded={isExpanded}
                               taskIcon={taskType?.icon || ''}
-                              statuses={statuses}
+                              statuses={taskStatuses}
                               priorities={priorities}
                               onChange={onChange}
                             />

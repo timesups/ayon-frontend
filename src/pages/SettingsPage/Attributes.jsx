@@ -11,11 +11,10 @@ import {
   Spacer,
   SaveButton,
 } from '@ynput/ayon-react-components'
-import AttributeEditor from '@containers/attributes/attributeEditor'
-import { useGetAttributeListQuery } from '@queries/attributes/getAttributes'
-import { useSetAttributeListMutation } from '@queries/attributes/updateAttributes'
+import { AttributeEditor } from '@shared/components'
+import { useGetAttributeListQuery, useSetAttributeListMutation } from '@shared/api'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 import useSearchFilter from '@hooks/useSearchFilter'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
 import { isEqual } from 'lodash'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
@@ -104,10 +103,10 @@ const Attributes = () => {
     setShowEditor(true)
   }
 
-  const onDelete = () => {
-    if (!selectedAttribute?.name || Array.isArray(selectedAttribute)) return
+  const onDelete = (selected) => {
+    if (!selected?.name || Array.isArray(selected)) return
     setAttributes((attrs) => {
-      return attrs.filter((attr) => attr.name !== selectedAttribute.name)
+      return attrs.filter((attr) => attr.name !== selected.name)
     })
   }
 
@@ -131,7 +130,7 @@ const Attributes = () => {
     {
       label: t("Delete"),
       icon: 'delete',
-      command: () => onDelete(),
+      command: () => onDelete(selected),
       danger: true,
       disabled: selected?.builtin,
     },

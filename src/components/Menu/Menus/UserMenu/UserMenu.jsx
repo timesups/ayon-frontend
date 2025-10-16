@@ -1,51 +1,45 @@
 import UserMenuHeader from './UserMenuHeader'
 import Menu from '../../MenuComponents/Menu'
-import { useLogOutMutation } from '@queries/auth/getAuth'
-import { useTranslation } from 'react-i18next'
-export const UserMenu = ({ user, ...props }) => {
-  // translation
-  const {t} = useTranslation()
+import { useLogoutMutation } from '@queries/auth/logout'
 
+export const UserMenu = ({ user, ...props }) => {
   const fullName = user?.attrib?.fullName
   // const isUser = user?.data?.isUser
 
   // sign out
-  const [logout] = useLogOutMutation()
+  const [logout] = useLogoutMutation()
 
   const handleLogOut = () => {
     // onClose && onClose()
     logout()
   }
 
-  const items = [
-    {
+  const items = []
+  if (!user.data.isGuest) {
+    items.push({
       id: 'account',
       link: '/account/profile',
-      label: t("Account"),
+      label: 'Account',
       icon: 'person',
-    },
-    // {
-    //   id: 'settings',
-    //   link: '/account/settings',
-    //   label: 'Settings',
-    //   icon: 'settings',
-    // },
-    {
+    })
+    items.push({
       id: 'downloads',
       link: '/account/downloads',
-      label: t("Download Launcher"),
+      label: 'Download Launcher',
       icon: 'install_desktop',
-    },
-    {
-      id: 'divider',
-    },
+    })
+    items.push({ id: 'divider' })
+  }
+
+
+  items.push(
     {
       id: 'signOut',
-      label: t("Sign out"),
+      label: 'Sign out',
       icon: 'logout',
       onClick: handleLogOut,
     },
-  ]
+  )
 
   return (
     <>

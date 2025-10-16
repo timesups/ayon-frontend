@@ -2,6 +2,7 @@ import { Section } from '@ynput/ayon-react-components'
 import MarketFilters, { getMarketFilter } from './MarketFilters'
 import { useEffect, useMemo, useState } from 'react'
 import { StringParam, useQueryParam, withDefault } from 'use-query-params'
+import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
 
 import {
   useMarketAddonListQuery,
@@ -12,12 +13,12 @@ import {
 import MarketAddonsList from './MarketAddonsList'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import AddonDetails from './MarketDetails/AddonDetails'
-import { useListAddonsQuery } from '@queries/addons/getAddons'
+import { useListAddonsQuery } from '@shared/api'
 import { mergeAddonWithDownloaded } from './mergeAddonsData'
 import { throttle } from 'lodash'
 import useDownload from './MarketDetails/useDownload'
 import ConnectDialog from './ConnectDialog/ConnectDialog'
-import { useRestart } from '@context/restartContext'
+import { useRestart } from '@context/RestartContext'
 import { toast } from 'react-toastify'
 import { useGetReleasesQuery } from '@queries/releases/getReleases'
 import { filterItems, transformReleasesToTable } from './helpers'
@@ -39,6 +40,7 @@ const placeholders = [...Array(20)].map((_, i) => ({
 }))
 
 const MarketPage = () => {
+  
   const dispatch = useAppDispatch()
   // GET ALL ADDONS IN MARKET
   const {
@@ -392,12 +394,13 @@ const MarketPage = () => {
 
   return (
     <>
+      <DocumentTitle title="Market • AYON" />
       <ConnectDialog
         visible={showConnectDialog}
         onHide={() => setShowConnectDialog(false)}
         redirect={`/market?addon=${selectedItemId}`}
       />
-      <main style={{ flexDirection: 'column', overflow: 'hidden' }}>
+      <main style={{ flexDirection: 'column' }}>
         <Section style={{ overflow: 'hidden', flexDirection: 'row', justifyContent: 'center' }}>
           <MarketFilters
             filterType={filterType}

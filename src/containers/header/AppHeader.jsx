@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { InputSwitch } from '@ynput/ayon-react-components'
-import UserImage from '@components/UserImage'
+import { UserImage } from '@shared/components'
+import { useUpdateUserMutation } from '@shared/api'
 
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs'
 import HeaderButton from './HeaderButton'
@@ -9,17 +10,17 @@ import AppMenu from '@components/Menu/Menus/AppMenu'
 import ProjectMenu from '../ProjectMenu/projectMenu'
 import { useAppDispatch, useAppSelector } from '@state/store'
 import InstallerDownloadPrompt from '@components/InstallerDownload/InstallerDownloadPrompt'
-import { toggleMenuOpen, setMenuOpen } from '@state/context'
+import { useMenuContext } from '@shared/context/MenuContext'
 import { HelpMenu, UserMenu } from '@components/Menu'
 import MenuContainer from '@components/Menu/MenuComponents/MenuContainer'
-import { useUpdateUserMutation } from '@queries/user/updateUser'
 import { toast } from 'react-toastify'
 import { toggleDevMode } from '@state/user'
 import styled from 'styled-components'
-import { useRestart } from '@context/restartContext'
+import { useRestart } from '@context/RestartContext'
 import clsx from 'clsx'
 import InboxNotificationIcon from './InboxNotification'
 import ReleaseInstallerPrompt from '@containers/ReleaseInstallerDialog/ReleaseInstallerPrompt/ReleaseInstallerPrompt'
+import ChatBubbleButton from './ChatBubbleButton'
 
 import { useTranslation } from 'react-i18next'
 
@@ -80,13 +81,14 @@ const Header = () => {
 
 
   const dispatch = useAppDispatch()
-  const menuOpen = useAppSelector((state) => state.context.menuOpen)
-  const handleToggleMenu = (menu) => dispatch(toggleMenuOpen(menu))
-  const handleSetMenu = (menu) => dispatch(setMenuOpen(menu))
+  const { menuOpen, toggleMenuOpen, setMenuOpen } = useMenuContext()
+  const handleToggleMenu = (menu) => toggleMenuOpen(menu)
+  const handleSetMenu = (menu) => setMenuOpen(menu)
   const location = useLocation()
   const navigate = useNavigate()
   // get user from redux store
   const user = useAppSelector((state) => state.user)
+  const avatarKey = useAppSelector((state) => state.user.avatarKey)
 
   // restart server notification
   const { isSnoozing } = useRestart()
@@ -192,33 +194,40 @@ const Header = () => {
           </DeveloperSwitch>
         )}
 
-        {/* help icon and menu vvv */}
-        <HeaderButton
-          icon="help"
-          ref={helpButtonRef}
-          onClick={() => handleToggleMenu('help')}
-          className={clsx({ active: menuOpen === 'help' })}
-          variant="nav"
-        />
-        <MenuContainer id="help" target={helpButtonRef.current}>
-          <HelpMenu user={user} />
-        </MenuContainer>
-        {/* help icon and menu ^^^ */}
+        {!user.data.isGuest && (
+          <>
+            <ChatBubbleButton />
 
-        {/* Inbox icon */}
-        <InboxNotificationIcon />
+            {/* help icon and menu vvv */}
+            <HeaderButton
+              icon="help"
+              ref={helpButtonRef}
+              onClick={() => handleToggleMenu('help')}
+              className={clsx({ active: menuOpen === 'help' })}
+              variant="nav"
+            />
+            <MenuContainer id="help" target={helpButtonRef.current}>
+              <HelpMenu user={user} />
+            </MenuContainer>
+            {/* help icon and menu ^^^ */}
 
-        {/* App icon and menu vvv */}
-        <HeaderButton
-          icon="apps"
-          onClick={() => handleToggleMenu('app')}
-          ref={appButtonRef}
-          variant="nav"
-          className={clsx({ active: menuOpen === 'app', notification: isSnoozing })}
-        />
-        <MenuContainer id="app" target={appButtonRef.current}>
-          <AppMenu user={user} />
-        </MenuContainer>
+            {/* Inbox icon */}
+            <InboxNotificationIcon />
+
+            {/* App icon and menu vvv */}
+            <HeaderButton
+              icon="apps"
+              onClick={() => handleToggleMenu('app')}
+              ref={appButtonRef}
+              variant="nav"
+              className={clsx({ active: menuOpen === 'app', notification: isSnoozing })}
+            />
+
+            <MenuContainer id="app" target={appButtonRef.current}>
+              <AppMenu user={user} />
+            </MenuContainer>
+          </>
+        )}
         {/* App icon and menu ^^^ */}
 
         {/* User icon and menu vvv */}
@@ -230,7 +239,7 @@ const Header = () => {
           variant="nav"
           style={{ padding: 6 }}
         >
-          <UserImage size={26} name={user?.name} />
+          <UserImage size={26} name={user?.name} imageKey={avatarKey} />
         </HeaderButton>
         <MenuContainer id="user" target={userButtonRef.current}>
           <UserMenu user={user} />

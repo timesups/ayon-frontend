@@ -1,10 +1,13 @@
 import { useMemo, useEffect, lazy } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { useGetSettingsAddonsQuery } from '@queries/addons/getAddons'
+import { useGetSettingsAddonsQuery } from '@shared/api'
 
 import SettingsAddon from './SettingsAddon'
 import AppNavLinks from '@containers/header/AppNavLinks'
 import { useSelector } from 'react-redux'
+import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
+import useTitle from '@hooks/useTitle'
+import HelpButton from '@components/HelpButton/HelpButton'
 
 import { useTranslation } from 'react-i18next'
 
@@ -167,12 +170,23 @@ const SettingsPage = () => {
         accessLevels: ['manager'],
       })
     }
-
+      result.push({ node: 'spacer' })
+      
+      const addonTitle = addonName && addonsData
+         ? addonsData.find(addon => addon.name === addonName)?.title
+         : undefined
+      
+      result.push({
+          node: <HelpButton module={addonName || module} pageName={addonTitle} />,
+      })
     return result
   }, [addonsData, isManager])
 
+  const title = useTitle(addonName || module, links, '', '')
+  const revertedTitle = title === 'Studio settings' ? title : title + ' • Studio settings'
   return (
     <>
+      <DocumentTitle title={revertedTitle} />
       <AppNavLinks links={links} />
       {moduleComponent}
     </>

@@ -1,23 +1,21 @@
 import { useRef } from 'react'
 import { toast } from 'react-toastify'
 import { Button, Divider, SaveButton, Section, Dialog } from '@ynput/ayon-react-components'
-import { useAddUserMutation } from '@queries/user/updateUser'
+import { useAddUserMutation } from '@shared/api'
 import ayonClient from '@/ayon'
 import UserAttribForm from './UserAttribForm'
 import UserAccessForm from './UserAccessForm'
 
 import styled from 'styled-components'
-import useUserMutations from '@containers/Feed/hooks/useUserMutations'
+import useUserMutations from '@pages/SettingsPage/UsersSettings/useUserMutations'
 import callbackOnKeyDown from '@helpers/callbackOnKeyDown'
-import { useTranslation } from 'react-i18next'
+import { getPlatformShortcutKey, KeyMode } from '@shared/util/platform'
+
 const DividerSmallStyled = styled(Divider)`
   margin: 8px 0;
 `
 
 const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
-  // translation
-  const {t} = useTranslation()
-
   const {
     password,
     setPassword,
@@ -59,7 +57,6 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
       attrib: {},
       name: formData.Username,
       password: password ? password : undefined,
-      isGuest: formData.isGuest ? true : undefined,
     }
 
     attributes.forEach(({ name }) => {
@@ -139,17 +136,17 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
       footer={
         <>
           <Button
-            label={t("Create user")}
+            label="Create user"
             onClick={() => handleSubmit(false)}
             disabled={!formData.Username}
-            data-shortcut="Shift+Enter"
+            data-shortcut={getPlatformShortcutKey('Enter', [KeyMode.Shift])}
           ></Button>
           <SaveButton
             onClick={() => handleSubmit(true)}
-            label={t("Create and close")}
+            label="Create and close"
             disabled={!formData.Username}
             saving={isCreatingUser}
-            data-shortcut="Ctrl/Cmd+Enter"
+            data-shortcut={getPlatformShortcutKey('Enter', [KeyMode.Ctrl])}
           />
         </>
       }
@@ -161,11 +158,11 @@ const NewUser = ({ onHide, open, onSuccess, accessGroupsData }) => {
           attributes={[
             {
               name: 'Username',
-              data: { title: t("Username") },
-              input: { placeholder: t("No spaces allowed"), autoFocus: true, ref: usernameRef },
+              data: { title: 'Username' },
+              input: { placeholder: 'No spaces allowed', autoFocus: true, ref: usernameRef },
             },
-            { name: 'password', data: { title: t("Password") } },
-            { name: 'passwordConfirm', data: { title: t("Password Confirm") } },
+            { name: 'password', data: { title: 'Password' } },
+            { name: 'passwordConfirm', data: { title: 'Password Confirm' } },
             ...attributes,
           ]}
           {...{ password, setPassword, passwordConfirm, setPasswordConfirm }}

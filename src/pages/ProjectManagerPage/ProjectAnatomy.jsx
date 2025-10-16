@@ -1,15 +1,15 @@
 import { toast } from 'react-toastify'
 import { useState } from 'react'
 import { ScrollPanel, SaveButton, Spacer, Button } from '@ynput/ayon-react-components'
-import { useUpdateProjectAnatomyMutation } from '@queries/project/updateProject'
 import ProjectManagerPageLayout from './ProjectManagerPageLayout'
 import AnatomyEditor from '@containers/AnatomyEditor'
-
-import copyToClipboard from '@helpers/copyToClipboard'
-import { usePaste } from '@context/pasteContext'
+import { usePaste } from '@context/PasteContext'
 import useUserProjectPermissions, { PermissionLevel } from '@hooks/useUserProjectPermissions'
-import EmptyPlaceholder from '@shared/EmptyPlaceholder/EmptyPlaceholder'
 import { useSelector } from 'react-redux'
+// shared
+import { useSetProjectAnatomyMutation } from '@shared/api'
+import { copyToClipboard } from '@shared/util'
+import { EmptyPlaceholder } from '@shared/components'
 
 
 import { useTranslation } from 'react-i18next'
@@ -19,7 +19,7 @@ const ProjectAnatomy = ({ projectName, projectList }) => {
   const {t} = useTranslation()
 
   const isUser = useSelector((state) => state.user.data.isUser)
-  const [updateProjectAnatomy, { isLoading: isUpdating }] = useUpdateProjectAnatomyMutation()
+  const [updateProjectAnatomy, { isLoading: isUpdating }] = useSetProjectAnatomyMutation()
   const { requestPaste } = usePaste()
 
   const { isLoading, permissions: userPermissions } = useUserProjectPermissions(isUser)

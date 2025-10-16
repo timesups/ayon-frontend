@@ -1,43 +1,44 @@
 import React from 'react'
 import Menu from '../MenuComponents/Menu'
-import { useFeedback } from '@/feedback/FeedbackContext'
-
-import { useTranslation } from 'react-i18next'
-
+import { useFeedback } from '@shared/components'
 
 export const HelpMenu = ({ user, ...props }) => {
-  //translation
-  const {t} = useTranslation()
-
   const isUser = user.data.isUser
-  const { openChangelog, openFeedback, openPortal, loaded } = useFeedback()
+  const { openSupport, openFeedback, openPortal, loaded } = useFeedback()
 
   const items = [
     {
-      id: 'documentation',
-      label: t("Documentation"),
-      link: 'https://ayon.ynput.io/',
-      icon: 'description',
-      target: '_blank',
-    },
-    {
       id: 'forum',
-      label: t("Community Forum"),
+      label: 'Community Forum',
       link: 'https://community.ynput.io/',
       icon: 'forum',
       target: '_blank',
     },
+    {
+      id: 'discord',
+      label: 'Discord Server',
+      link: 'https://discord.gg/ynput',
+      img: '/Discord-Symbol-White.svg',
+      target: '_blank',
+    },
     { id: 'divider' },
     {
+      id: 'documentation',
+      label: 'Dev Portal',
+      link: 'https://docs.ayon.dev/',
+      icon: 'code',
+      target: '_blank',
+    },
+    {
       id: 'api',
-      label: t("REST API"),
+      label: 'REST API',
       link: '/doc/api',
       icon: 'api',
       target: '_blank',
     },
     {
       id: 'graphql',
-      label: t("GraphQL Explorer"),
+      label: 'GraphQL Explorer',
       link: '/explorer',
       icon: 'hub',
       target: '_blank',
@@ -47,48 +48,26 @@ export const HelpMenu = ({ user, ...props }) => {
   const feedback = [
     {
       id: 'help',
-      label: t("Help center"),
-      onClick: () => openPortal('HelpView'),
+      label: 'Help center',
       icon: 'help',
+      onClick: () => openPortal('MainView'),
+    },
+    {
+      id: 'changelog',
+      label: 'Latest changes',
+      icon: 'track_changes',
+      onClick: () => openSupport('Changelog'),
     },
     {
       id: 'feedback',
-      label: t("Submit Feedback"),
-      onClick: openFeedback,
+      label: 'Submit Feedback',
       icon: 'feedback',
-    },
-    {
-      id: 'changelog',
-      label: t("Latest changes"),
-      link: 'https://feedback.ayon.app/changelog',
-      icon: 'track_changes',
-      target: '_blank',
-    },
-    {
-      id: 'changelog',
-      label: t("Upcoming features"),
-      onClick: () => openPortal('RoadmapView'),
-      icon: 'construction',
+      onClick: () => openFeedback(),
     },
     { id: 'divider' },
   ]
 
   if (loaded) items.unshift(...feedback)
-
-  const managers = [
-    {
-      id: 'divider',
-    },
-    {
-      id: 'support',
-      label: t("Get Support"),
-      link: 'https://ynput.io/services',
-      icon: 'support_agent',
-      target: '_blank',
-    },
-  ]
-
-  if (!isUser) items.push(...managers)
 
   return <Menu menu={items} {...props} />
 }

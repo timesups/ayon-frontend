@@ -9,7 +9,7 @@ import {
   LockedInput,
   SaveButton,
 } from '@ynput/ayon-react-components'
-import { useUpdateUsersMutation } from '@queries/user/updateUser'
+import { useUpdateUsersMutation } from '@shared/api'
 import { updateUserData, updateUserAttribs } from '@state/user'
 import styled from 'styled-components'
 import ayonClient from '@/ayon'
@@ -67,17 +67,17 @@ const fields = [
     },
   },
   {
+    name: 'disablePasswordLogin',
+    label: 'Disable Password Login',
+    data: {
+      type: 'boolean',
+    },
+  },
+  {
     name: 'userLevel',
     label: 'User Level',
     data: {
       type: 'string',
-    },
-  },
-  {
-    name: 'isGuest',
-    label: 'Guest',
-    data: {
-      type: 'boolean',
     },
   },
   {
@@ -115,6 +115,11 @@ const mergeMultipleUsers = (users = [], defaultForm = {}, initForm = {}) => {
     if (index !== 0 && initForm.userActive !== user.active)
       initForm.userActive = defaultForm.userActive
     else initForm.userActive = user.active
+
+    // disablePasswordLogin
+    if (index !== 0 && initForm.disablePasswordLogin !== user.disablePasswordLogin)
+      initForm.disablePasswordLogin = defaultForm.disablePasswordLogin
+    else initForm.disablePasswordLogin = user.disablePasswordLogin
 
     // userPool
     if (index !== 0 && initForm.userPool !== user.userPool) {
@@ -312,6 +317,8 @@ const UserDetail = ({
           data.isDeveloper = formData.isDeveloper && formData.userLevel === 'admin'
         } else if (singleUserEdit && attributes.find((a) => a.name === field)) {
           attrib[field] = formData[field]
+        } else if (field === 'disablePasswordLogin') {
+          data.disablePasswordLogin = formData.disablePasswordLogin
         }
       }
 

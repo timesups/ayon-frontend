@@ -1,31 +1,47 @@
-import useBuildFilterOptions, { BuildFilterOptions } from '@hooks/useBuildFilterOptions'
-import { FC, useEffect, useMemo, useState } from 'react'
-import { Filter, Icon, SearchFilter, SearchFilterProps } from '@ynput/ayon-react-components'
-import { ProjectModel } from '@api/rest/project'
-import { EditorTaskNode, TaskNodeMap } from '@shared/ProjectTreeTable'
-import { usePower } from '@/remote/context/PowerLicenseContext'
+import { BuildFilterOptions, useBuildFilterOptions } from '@shared/components'
+import { FC, useMemo, useState, useEffect } from 'react'
+import {
+  Filter,
+  Icon,
+  SearchFilter,
+  SearchFilterProps,
+  SEARCH_FILTER_ID,
+} from '@ynput/ayon-react-components'
+import type { ProjectModel } from '@shared/api'
+import { EditorTaskNode, TaskNodeMap } from '@shared/containers/ProjectTreeTable'
 import AdvancedFiltersPlaceholder from '@components/SearchFilter/AdvancedFiltersPlaceholder'
-import { usePowerpack } from '@context/powerpackContext'
-import { useColumnSettings } from '@shared/ProjectTreeTable'
+import { usePowerpack } from '@shared/context'
+import { useColumnSettingsContext } from '@shared/containers/ProjectTreeTable'
+import { QueryFilter } from '@shared/containers/ProjectTreeTable/types/operations'
+import {
+  queryFilterToClientFilter,
+  clientFilterToQueryFilter,
+} from '@shared/containers/ProjectTreeTable/utils'
 
-interface SearchFilterWrapperProps extends Omit<BuildFilterOptions, 'scope' | 'data' | 'power'> {
-  filters: SearchFilterProps['filters']
-  onChange: SearchFilterProps['onChange']
-  disabledFilters?: string[]
+interface SearchFilterWrapperProps
+  extends Omit<BuildFilterOptions, 'scope' | 'data' | 'power'>,
+    Omit<SearchFilterProps, 'options' | 'onFinish' | 'filters' | 'onChange'> {
   projectInfo?: ProjectModel
   tasksMap?: TaskNodeMap
+  scope: BuildFilterOptions['scope']
+  queryFilters?: QueryFilter
+  onChange?: (queryFilters: QueryFilter) => void
 }
 
 const SearchFilterWrapper: FC<SearchFilterWrapperProps> = ({
-  filters: _filters,
+  queryFilters,
   onChange,
   filterTypes,
   projectNames,
   disabledFilters,
   projectInfo,
   tasksMap,
+  scope = 'task',
+  config,
+  pt,
+  ...props
 }) => {
-  const { columnOrder } = useColumnSettings()
+  const { columnOrder } = useColumnSettingsContext()
 
   // create a flat list of all the assignees (string[]) on all tasks (duplicated)
   // this is used to rank what assignees are shown in the filter first
@@ -44,53 +60,94 @@ const SearchFilterWrapper: FC<SearchFilterWrapperProps> = ({
     // TODO: find a way of getting all attribute values when all tasks are not loaded
   }
 
-  const { setPowerpackDialog } = usePowerpack()
+  const { setPowerpackDialog, powerLicense } = usePowerpack()
   const handlePowerClick = () => {
     setPowerpackDialog('advancedFilters')
     return false
   }
-  const power = usePower()
 
   const options = useBuildFilterOptions({
     filterTypes,
     projectNames,
-    scope: 'task',
+    scope,
     data,
     columnOrder,
-    config: { enableExcludes: power, enableOperatorChange: power, enableRelativeValues: true },
-    power,
+    config: {
+      enableExcludes: powerLicense,
+      enableOperatorChange: powerLicense,
+      enableRelativeValues: true,
+      prefixes: { attributes: 'attrib.' },
+      ...config,
+    },
+    power: powerLicense,
   })
 
-  // keeps track of the filters whilst adding/removing filters
-  const [filters, setFilters] = useState<Filter[]>(_filters)
+  // Convert QueryFilter to Filter[] for internal use
+  const filters = queryFilterToClientFilter(queryFilters, options)
 
-  // update filters when it changes
+  // keeps track of the filters whilst adding/removing filters
+  const [localFilters, setLocalFilters] = useState<Filter[]>(filters)
+
   useEffect(() => {
-    setFilters(
-      _filters.filter((filter, index, self) => self.findIndex((f) => f.id === filter.id) === index),
-    )
-  }, [_filters, setFilters])
+    setLocalFilters(filters)
+  }, [JSON.stringify(filters)]) // Update filters when filters change
+
+  const validateFilters = (filters: Filter[], callback: (filters: Filter[]) => void) => {
+    // if a filter is a date then check we have power features
+    const invalidFilters = filters.filter((f) => f.type === 'datetime' && !powerLicense)
+    let validFilters = filters.filter((f) => f.type !== 'datetime' || powerLicense)
+    if (invalidFilters.length) {
+      setPowerpackDialog('advancedFilters')
+    }
+
+    // Merge multiple text search filters (SEARCH_FILTER_ID) into one filter
+    const searchFilters = validFilters.filter((f) => f.id.startsWith(SEARCH_FILTER_ID))
+    if (searchFilters.length > 1) {
+      // Collect all values and dedupe by id
+      const mergedValuesRaw = searchFilters.flatMap((f) => f.values || [])
+      const mergedValues = Array.from(
+        new Map(mergedValuesRaw.map((v) => [String((v as any).id), v])).values(),
+      )
+
+      // Create merged filter; set id to the canonical SEARCH_FILTER_ID so downstream logic treats it as the search filter
+      const mergedFilter = { ...searchFilters[0], id: SEARCH_FILTER_ID, values: mergedValues }
+
+      // keep all non-search filters (match any variant that startsWith SEARCH_FILTER_ID) and append the merged search filter
+      const nonSearch = validFilters.filter((f) => !f.id.startsWith(SEARCH_FILTER_ID))
+      validFilters = [...nonSearch, mergedFilter]
+    }
+
+    callback(validFilters)
+  }
+
+  const handleFinish = (filters: Filter[]) => {
+    validateFilters(filters, (validFilters) => {
+      // Convert Filter[] back to QueryFilter and call onChange
+      const queryFilter = clientFilterToQueryFilter(validFilters)
+      onChange?.(queryFilter)
+    })
+  }
+
+  const { dropdown, searchBar, ...ptRest } = pt || {}
 
   return (
     <SearchFilter
       options={options}
-      filters={filters}
-      onChange={setFilters}
-      onFinish={(v) => onChange(v)} // when changes are applied
+      filters={localFilters}
+      onChange={(v) => validateFilters(v, setLocalFilters)} // when filters are changed
+      onFinish={handleFinish} // when changes are applied
       enableMultipleSameFilters={false}
       enableGlobalSearch={true}
-      globalSearchConfig={{
-        label: 'Folder / Task',
-      }}
       disabledFilters={disabledFilters}
       pt={{
         searchBar: {
           style: {
             paddingRight: 28,
           },
+          ...searchBar,
         },
         dropdown: {
-          operationsTemplate: power ? undefined : (
+          operationsTemplate: powerLicense ? undefined : (
             <AdvancedFiltersPlaceholder onClick={handlePowerClick} />
           ),
           pt: {
@@ -103,14 +160,17 @@ const SearchFilterWrapper: FC<SearchFilterWrapperProps> = ({
               },
             },
             hasNoOption: {
-              contentAfter: power ? undefined : <Icon icon="bolt" />,
+              contentAfter: powerLicense ? undefined : <Icon icon="bolt" />,
             },
             hasSomeOption: {
-              contentAfter: power ? undefined : <Icon icon="bolt" />,
+              contentAfter: powerLicense ? undefined : <Icon icon="bolt" />,
             },
           },
+          ...dropdown,
         },
+        ...ptRest,
       }}
+      {...props}
     />
   )
 }

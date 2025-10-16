@@ -1,74 +1,40 @@
-import { createContext, ReactNode, useContext, useMemo } from 'react'
-import {
-  ExpandedState,
-  functionalUpdate,
-  OnChangeFn,
-  RowSelectionState,
-  SortingState,
-} from '@tanstack/react-table'
-import { useLocalStorage } from '@shared/hooks'
-import useFetchOverviewData from '../hooks/useFetchOverviewData'
-import { useSlicerContext } from '@context/slicerContext'
+// React imports
+import { createContext, useContext } from 'react'
+
+// Third-party libraries
+import { ExpandedState } from '@tanstack/react-table'
 import { isEmpty } from 'lodash'
-import useFilterBySlice from '@containers/TasksProgress/hooks/useFilterBySlice'
-import { Filter } from '@ynput/ayon-react-components'
-import type { FolderNodeMap, TaskNodeMap, TasksByFolderMap } from '@shared/ProjectTreeTable/utils'
-import { clientFilterToQueryFilter } from '@shared/ProjectTreeTable/utils'
-import { QueryTasksFoldersApiArg } from '@api/rest/folders'
-import { ProjectDataContextProps, useProjectDataContext } from './ProjectDataContext'
-import { LoadingTasks } from '@shared/ProjectTreeTable'
 
-export interface ProjectOverviewContextProps {
-  isInitialized: boolean
-  // Project Info
-  projectInfo?: ProjectDataContextProps['projectInfo']
-  projectName: string
-  users: ProjectDataContextProps['users']
-  // Attributes
-  attribFields: ProjectDataContextProps['attribFields']
+// Shared components and hooks
+import { useLocalStorage } from '@shared/hooks'
 
-  // loading
-  isLoading: boolean
-  isLoadingMore: boolean
-  loadingTasks: LoadingTasks
-  // Data
-  tasksMap: TaskNodeMap
-  foldersMap: FolderNodeMap
-  tasksByFolderMap: TasksByFolderMap
-  fetchNextPage: () => void
-  reloadTableData: () => void
+// Shared ProjectTreeTable
+import {
+  useProjectDataContext,
+  useFetchOverviewData,
+  useQueryFilters,
+  useEntitiesMap,
+  useSelectedFolders,
+  useScopedAttributeFields,
+  useExpandedState,
+  createLocalStorageKey,
+  extractErrorMessage,
+  useGetTaskGroups,
+  ProjectOverviewContextType,
+  ProjectOverviewProviderProps,
+  useColumnSettingsContext,
+} from '@shared/containers/ProjectTreeTable'
 
-  // Filters
-  filters: Filter[]
-  setFilters: (filters: Filter[]) => void
-  queryFilters: {
-    filter: QueryTasksFoldersApiArg['tasksFoldersQuery']['filter']
-    filterString?: string
-    search: QueryTasksFoldersApiArg['tasksFoldersQuery']['search']
-  }
+// Views hooks
+import { createFilterFromSlicer, useOverviewViewSettings } from '@shared/containers'
 
-  // Hierarchy
-  showHierarchy: boolean
-  updateShowHierarchy: (showHierarchy: boolean) => void
+// Local context and hooks
+import { useSlicerContext } from '@context/SlicerContext'
+import useOverviewContextMenu from '../hooks/useOverviewContextMenu'
 
-  // Expanded state
-  expanded: ExpandedState
-  toggleExpanded: (id: string) => void
-  updateExpanded: OnChangeFn<ExpandedState>
-  setExpanded: (expanded: ExpandedState) => void
+const ProjectOverviewContext = createContext<ProjectOverviewContextType | undefined>(undefined)
 
-  // Sorting
-  sorting: SortingState
-  updateSorting: OnChangeFn<SortingState>
-}
-
-const ProjectOverviewContext = createContext<ProjectOverviewContextProps | undefined>(undefined)
-
-interface ProjectOverviewProviderProps {
-  children: ReactNode
-}
-
-export const ProjectOverviewProvider = ({ children }: ProjectOverviewProviderProps) => {
+export const ProjectOverviewProvider = ({ children, modules }: ProjectOverviewProviderProps) => {
   // Get project data from the new context
   const {
     projectName,
@@ -77,84 +43,67 @@ export const ProjectOverviewProvider = ({ children }: ProjectOverviewProviderPro
     users,
     isInitialized,
     isLoading: isLoadingData,
-    columnSorting,
-    setColumnSorting,
   } = useProjectDataContext()
 
-  const getLocalKey = (page: string, key: string) => `${page}-${key}-${projectName}`
+  const { rowSelection, rowSelectionData, sliceType, persistentRowSelectionData } =
+    useSlicerContext()
+
+  const { groupBy, sorting } = useColumnSettingsContext()
+
+  const sliceFilter = createFilterFromSlicer({
+    type: sliceType,
+    selection: rowSelectionData,
+    attribFields: attribFields,
+  })
+
+  // filter out attribFields by scope
+  const scopedAttribFields = useScopedAttributeFields({
+    attribFields,
+    allowedScopes: ['task', 'folder'],
+  })
+
+  const contextMenuItems = useOverviewContextMenu({})
 
   const page = 'overview'
 
-  const [expanded, setExpanded] = useLocalStorage<ExpandedState>(getLocalKey(page, 'expanded'), {})
-  const updateExpanded: OnChangeFn<ExpandedState> = (expandedUpdater) => {
-    setExpanded(functionalUpdate(expandedUpdater, expanded))
-  }
-
-  const toggleExpanded = (id: string) => {
-    if (typeof expanded === 'boolean') return
-    setExpanded({
-      ...expanded,
-      [id]: !expanded[id],
-    })
-  }
-
-  const [filters, setFilters] = useLocalStorage<Filter[]>(getLocalKey(page, 'filters'), [])
-  const [showHierarchy, updateShowHierarchy] = useLocalStorage<boolean>(
-    getLocalKey(page, 'showHierarchy'),
-    true,
+  const [expanded, setExpanded] = useLocalStorage<ExpandedState>(
+    createLocalStorageKey(page, 'expanded', projectName),
+    {},
   )
+  const { updateExpanded, toggleExpanded, expandedIds } = useExpandedState({
+    expanded,
+    setExpanded,
+  })
 
-  const { filter: sliceFilter } = useFilterBySlice()
+  const {
+    showHierarchy,
+    onUpdateHierarchy: updateShowHierarchy,
+    filters: queryFilters,
+    onUpdateFilters: setQueryFilters,
+  } = useOverviewViewSettings()
 
-  // merge the slice filter with the user filters
-  let combinedFilters = [...filters]
-  if (sliceFilter?.values?.length) {
-    combinedFilters.push(sliceFilter as Filter)
-  }
+  // GET GROUPING
+  const { taskGroups, error: groupingError } = useGetTaskGroups({
+    groupBy,
+    projectName,
+  })
 
-  // transform the task bar filters to the query format
-  // TODO: filters bar just uses the same schema as the server
-  const queryFilter = clientFilterToQueryFilter(combinedFilters)
-  const queryFilterString = combinedFilters.length ? JSON.stringify(queryFilter) : ''
-  // extract the fuzzy search from the filters
-  const fuzzySearchFilter = combinedFilters.find((filter) => filter.id.includes('text'))
-    ?.values?.[0]?.id
-
-  const queryFilters = {
-    filterString: queryFilterString,
-    filter: queryFilter,
-    search: fuzzySearchFilter,
-  }
-
-  // update in user preferences
-  const updateSorting: OnChangeFn<SortingState> = (sortingUpdater) => {
-    setColumnSorting(functionalUpdate(sortingUpdater, columnSorting))
-  }
-
-  const { rowSelection, sliceType, persistentRowSelectionData } = useSlicerContext()
+  // Use the shared hook to handle filter logic
+  const queryFiltersResult = useQueryFilters({
+    queryFilters,
+    sliceFilter,
+  })
 
   // filter out by slice
   const persistedHierarchySelection = isEmpty(persistentRowSelectionData)
     ? null
     : persistentRowSelectionData
 
-  const selectedFolders = useMemo(() => {
-    let selection: RowSelectionState = {}
-
-    if (sliceType === 'hierarchy') {
-      selection = rowSelection
-    } else if (persistedHierarchySelection) {
-      selection = Object.values(persistedHierarchySelection).reduce((acc: any, item) => {
-        acc[item.id] = !!item
-        return acc
-      }, {})
-    }
-
-    // Process the selection inside useMemo
-    return Object.entries(selection)
-      .filter(([, value]) => value)
-      .map(([id]) => id)
-  }, [rowSelection, persistedHierarchySelection, sliceType])
+  const selectedFolders = useSelectedFolders({
+    rowSelection,
+    sliceType,
+    persistentRowSelectionData: persistedHierarchySelection,
+  })
 
   // DATA FETCHING
   const {
@@ -169,43 +118,65 @@ export const ProjectOverviewProvider = ({ children }: ProjectOverviewProviderPro
   } = useFetchOverviewData({
     projectName,
     selectedFolders,
-    queryFilters,
+    queryFilters: {
+      filter: queryFiltersResult.filter,
+      filterString: queryFiltersResult.filterString,
+      search: queryFiltersResult.search,
+    },
     expanded,
-    sorting: columnSorting,
+    sorting: sorting,
+    groupBy,
+    taskGroups,
     showHierarchy,
+    attribFields,
+    modules,
   })
+
+  // combine foldersMap and tasksMap into a single map
+  const entitiesMap = useEntitiesMap({ foldersMap, tasksMap })
+
+  const error = extractErrorMessage(groupingError)
 
   return (
     <ProjectOverviewContext.Provider
       value={{
-        isInitialized,
+        isInitialized: isInitialized,
         isLoading: isLoadingAll || isLoadingData,
         isLoadingMore,
         loadingTasks,
+        error,
         projectInfo,
-        attribFields,
+        attribFields: scopedAttribFields,
         users,
         projectName,
         tasksMap,
         foldersMap,
+        entitiesMap,
         tasksByFolderMap,
         fetchNextPage,
         reloadTableData,
-        // filters
-        filters,
-        setFilters,
-        queryFilters,
+        taskGroups,
+        // query filters
+        queryFilters: {
+          filter: queryFiltersResult.filter,
+          filterString: queryFiltersResult.filterString,
+          search: queryFiltersResult.search,
+        },
+        setQueryFilters,
+        // Additional filter contexts for dual filtering system
+        combinedFilters: queryFiltersResult.combinedFilters,
+        displayFilters: queryFiltersResult.displayFilters,
         // hierarchy
         showHierarchy,
         updateShowHierarchy,
         // expanded state
         expanded,
+        expandedIds,
         toggleExpanded,
         updateExpanded,
         setExpanded,
-        // sorting
-        sorting: columnSorting,
-        updateSorting,
+        // context menu item
+        contextMenuItems,
       }}
     >
       {children}

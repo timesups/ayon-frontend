@@ -10,9 +10,10 @@ import { InView, useInView } from 'react-intersection-observer'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import KanBanColumnDropzone from './KanBanColumnDropzone'
 import clsx from 'clsx'
-import { toggleDetailsPanel } from '@state/details'
-import { useURIContext } from '@context/uriContext'
+import { useURIContext } from '@context/UriContext'
 import { getTaskRoute } from '@helpers/routes'
+import { useScopedDetailsPanel } from '@shared/context'
+import { useNavigate } from 'react-router'
 
 const KanBanColumn = forwardRef(
   (
@@ -37,6 +38,7 @@ const KanBanColumn = forwardRef(
     ref,
   ) => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const tasksCount = tasks.length
 
@@ -81,7 +83,15 @@ const KanBanColumn = forwardRef(
     const handlePrefetch = usePrefetchEntity(dispatch, projectsInfo, 500, 'dashboard')
 
     const { navigate: navigateToUri } = useURIContext()
-    const openInBrowser = (task) => navigateToUri(getTaskRoute(task))
+    const openInBrowser = async (task) => {
+      const taskUri = getTaskRoute(task)
+      navigateToUri(taskUri)
+
+      // // navigate to browser page with uri as query param
+      if (taskUri) {
+        navigate(`/projects/${task.projectName}/browser?uri=${encodeURIComponent(taskUri)}`)
+      }
+    }
 
     // CONTEXT MENU
     const { handleContextMenu, closeContext } = useGetTaskContextMenu(tasks, dispatch, {
@@ -100,9 +110,11 @@ const KanBanColumn = forwardRef(
       }
     }
 
+    const { setOpen } = useScopedDetailsPanel('dashboard')
+
     // OPEN DETAILS PANEL
     const onTogglePanel = (open) => {
-      dispatch(toggleDetailsPanel(open))
+      setOpen(open)
     }
 
     // return 5 fake loading events if loading

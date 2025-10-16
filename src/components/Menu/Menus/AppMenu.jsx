@@ -3,7 +3,7 @@ import YnputConnector from '@components/YnputCloud/YnputConnector'
 import { useRestartOnBoardingMutation } from '@queries/onBoarding/onBoarding'
 import { toast } from 'react-toastify'
 import ayonClient from '@/ayon'
-import { useRestart } from '@context/restartContext'
+import { useRestart } from '@context/RestartContext'
 import { useAppDispatch } from '@state/store'
 import { toggleReleaseInstaller } from '@state/releaseInstaller'
 
@@ -53,6 +53,17 @@ export const AppMenu = ({ user, ...props }) => {
       shortcut: 'P+P',
     },
   ]
+
+  if (isUser)
+    items.unshift(
+      {
+        id: 'siteSettings',
+        link: '/settings/site',
+        label: 'Site Settings',
+        icon: 'computer',
+        shortcut: 'S+S',
+      },
+    )
 
   if (!isUser)
     items.unshift({

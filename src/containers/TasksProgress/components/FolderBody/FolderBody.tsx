@@ -2,8 +2,8 @@ import { FC } from 'react'
 import * as Styled from './FolderBody.styled'
 import clsx from 'clsx'
 import { EntityCard } from '@ynput/ayon-react-components'
-import getEntityTypeIcon from '@helpers/getEntityTypeIcon'
-import { Status } from '@api/rest/project'
+import { getEntityTypeIcon } from '@shared/util'
+import type { Status } from '@shared/api'
 
 interface FolderBodyProps {
   folder: {
@@ -77,7 +77,7 @@ export const FolderBody: FC<FolderBodyProps> = ({
         </Styled.ThumbnailCard>
         <Styled.Path
           onClick={() => onFolderOpen?.(folder.id)}
-          className={clsx({ selected: isSelected })}
+          className={clsx({ selected: isSelected, expanded: isExpanded })}
         >
           <span className="small-title">{folder.name}</span>
         </Styled.Path>

@@ -1,21 +1,20 @@
 import Slicer from '@containers/Slicer'
 import TasksProgress from '@containers/TasksProgress'
-import { useGetProjectQuery } from '@queries/project/getProject'
-import { $Any } from '@types'
+import { useGetProjectQuery } from '@queries/project/enhancedProject'
 import { Section } from '@ynput/ayon-react-components'
 import { Splitter, SplitterPanel } from 'primereact/splitter'
 import { FC } from 'react'
 import { useAppSelector } from '@state/store'
 import TaskProgressDetailsPanel from './TaskProgressDetailsPanel'
-import { useGetAttributeConfigQuery } from '@queries/attributes/getAttributes'
-import { getPriorityOptions } from './helpers'
-import useScopedStatuses from '@hooks/useScopedStatuses'
-import { useSlicerContext } from '@context/slicerContext'
+import { useGetAttributeConfigQuery } from '@shared/api'
+import { getPriorityOptions } from '@shared/util'
+import { useScopedStatuses } from '@shared/hooks'
+import { useSlicerContext } from '@context/SlicerContext'
+import { useScopedDetailsPanel } from '@shared/context'
 
 const TasksProgressPage: FC = () => {
-  const projectName = useAppSelector((state: $Any) => state.project.name) as string
-  const progressState = useAppSelector((state) => state.progress)
-  const detailsOpen = progressState.detailsOpen && progressState.selected.ids.length > 0
+  const projectName = useAppSelector((state: any) => state.project.name) as string
+  const { isOpen: detailsOpen } = useScopedDetailsPanel('progress')
 
   // load slicer remote config
   const { config } = useSlicerContext()
@@ -26,10 +25,11 @@ const TasksProgressPage: FC = () => {
   // Get attributes so we can use priority
   const { data: priorityAttrib } = useGetAttributeConfigQuery({ attributeName: 'priority' })
   const priorities = getPriorityOptions(priorityAttrib, 'task')
-  const statuses = useScopedStatuses([projectName], ['task'])
+  const taskStatuses = useScopedStatuses([projectName], ['task'])
+  const folderStatuses = useScopedStatuses([projectName], ['folder'])
 
   return (
-    <main style={{ overflow: 'hidden' }}>
+    <main>
       <Splitter layout="horizontal" style={{ width: '100%', height: '100%' }}>
         <SplitterPanel size={detailsOpen ? 12 : 18} style={{ minWidth: 100, maxWidth: 500 }}>
           <Section wrap>
@@ -44,7 +44,8 @@ const TasksProgressPage: FC = () => {
           >
             <SplitterPanel size={60} style={{ overflow: 'hidden' }}>
               <TasksProgress
-                statuses={statuses}
+                taskStatuses={taskStatuses}
+                folderStatuses={folderStatuses}
                 taskTypes={projectInfo?.taskTypes}
                 folderTypes={projectInfo?.folderTypes}
                 priorities={priorities}

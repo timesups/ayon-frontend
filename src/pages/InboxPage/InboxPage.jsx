@@ -1,20 +1,22 @@
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import AppNavLinks from '@containers/header/AppNavLinks'
 import Inbox from './Inbox/Inbox'
 import { useGetInboxUnreadCountQuery } from '@queries/inbox/getInbox'
 import { UnreadCount } from './Inbox/Inbox.styled'
-import { useTranslation } from 'react-i18next'
+import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
+import useTitle from '@hooks/useTitle'
+import HelpButton from '@components/HelpButton/HelpButton'
+
 const InboxPage = () => {
-  //translation
-  const {t} = useTranslation()
   const { module } = useParams()
+  
 
   const { data: importantUnreadCount } = useGetInboxUnreadCountQuery({ important: true })
   const { data: otherUnreadCount } = useGetInboxUnreadCountQuery({ important: false })
 
   let links = [
     {
-      name: t("Important"),
+      name: 'Important',
       path: '/inbox/important',
       module: 'important',
       endContent: !!importantUnreadCount && (
@@ -26,7 +28,7 @@ const InboxPage = () => {
       shortcut: 'I+I',
     },
     {
-      name: t("Other"),
+      name: 'Other',
       path: '/inbox/other',
       module: 'other',
       endContent: !!otherUnreadCount && (
@@ -35,14 +37,21 @@ const InboxPage = () => {
       tooltip: 'Changes to tasks assigned to you or authored by you',
     },
     {
-      name: t("Cleared"),
+      name: 'Cleared',
       path: '/inbox/cleared',
       module: 'cleared',
     },
   ]
-
-  return (
+    
+    links.push({ node: 'spacer' })
+    links.push({
+        node: <HelpButton module={`inbox`} />,
+    })
+  const title = useTitle(module, links, 'AYON', 'Inbox')
+    
+    return (
     <>
+      <DocumentTitle title={title} />
       <AppNavLinks links={links} />
       <Inbox filter={module} />
     </>

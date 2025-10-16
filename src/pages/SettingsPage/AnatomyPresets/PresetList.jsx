@@ -4,7 +4,7 @@ import { Column } from 'primereact/column'
 
 import { Icon, TablePanel } from '@ynput/ayon-react-components'
 
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 import styled from 'styled-components'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
@@ -31,6 +31,7 @@ const PresetList = ({
   setSelectedPreset,
   onSetPrimary,
   onDelete,
+  onRename,
   presetList,
   isLoading,
 }) => {
@@ -42,20 +43,26 @@ const PresetList = ({
     (data = {}) => {
       // empty string is default preset
       const isDefault = !('primary' in data)
-      const primarySelected = data.primary === 'PRIMARY'
+      const isBuiltIn = data.name === '_'
 
       const items = [
         {
           label: t("Set as primary"),
           icon: 'flag',
           command: () => onSetPrimary(isDefault ? '_' : data.name),
-          disabled: primarySelected || isDefault,
+          disabled: data.primary || isDefault || isBuiltIn,
+        },
+        {
+          label: 'Rename',
+          icon: 'edit',
+          disabled: isDefault || isBuiltIn,
+          command: () => onRename(data.name),
         },
         {
           label: t("Delete"),
           icon: 'delete',
-          disabled: isDefault,
-          command: () => onDelete(data.name, primarySelected),
+          disabled: isDefault || isBuiltIn,
+          command: () => onDelete(data.name, data.primary),
           danger: true,
         },
       ]

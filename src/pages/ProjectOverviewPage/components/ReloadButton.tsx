@@ -1,4 +1,4 @@
-import { useProjectTableContext } from '@shared/ProjectTreeTable'
+import { useProjectTableContext } from '@shared/containers/ProjectTreeTable'
 import { Button } from '@ynput/ayon-react-components'
 import clsx from 'clsx'
 import { FC } from 'react'
@@ -9,7 +9,7 @@ const StyledButton = styled(Button)`
   margin-right: -32px;
   position: relative;
   left: -36px;
-  z-index: 1000;
+  z-index: 900;
   padding: 2px !important;
 
   /* spin icon */

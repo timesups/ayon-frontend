@@ -6,13 +6,14 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 import { TablePanel, Button, Spacer, Section, Toolbar } from '@ynput/ayon-react-components'
 import ServiceDialog from './NewServiceDialog'
 import ServiceDetailsPanel from './ServiceDetailsPanel'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
-import { confirmDelete } from '@shared/helpers'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
+import { confirmDelete } from '@shared/util'
 import styled from 'styled-components'
 import { useListServicesQuery } from '@queries/services/getServices'
 import { useDeleteServiceMutation, usePatchServiceMutation } from '@queries/services/updateServices'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { useTranslation } from 'react-i18next'
+import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
+
 const StatusBadge = styled.span`
   display: inline-block;
   padding: 1px 6px;
@@ -66,8 +67,7 @@ const detailsMaxWidth = '40vw'
 const detailsMaxMaxWidth = 700
 
 const ServicesPage = () => {
-  // translation
-  const {t} = useTranslation()
+  
   const [showServiceDialog, setShowServiceDialog] = useState(false)
   const [editingService, setEditingService] = useState(null)
   const [selectedServices, setSelectedServices] = useState([])
@@ -213,8 +213,18 @@ const ServicesPage = () => {
 
   const [ctxMenuShow] = useCreateContextMenu([])
 
+  // Generate dynamic title based on selected service
+  const pageTitle = useMemo(() => {
+    if (selectedService && selectedService.addonName) {
+      return `Services • ${selectedService.addonName} • AYON`
+    }
+    return 'Services • AYON'
+  }, [selectedService])
+
   return (
-    <main style={{ overflow: 'hidden' }}>
+    <>
+      <DocumentTitle title={pageTitle} />
+      <main>
       {showServiceDialog && (
         <ServiceDialog onHide={handleCloseDialog} editService={editingService} />
       )}
@@ -222,7 +232,7 @@ const ServicesPage = () => {
         <Toolbar>
           <Button
             icon="add"
-            label={t("New service")}
+            label="New service"
             onClick={() => {
               setEditingService(null)
               setShowServiceDialog(true)
@@ -251,19 +261,19 @@ const ServicesPage = () => {
                   if (!selectedServices.includes(e.value.name)) setSelectedServices([e.value.name])
                 }}
               >
-                <Column field="name" header={t("Service name")} sortable />
-                <Column field="addonName" header={t("Addon name" )} sortable />
-                <Column field="addonVersion" header={t("Addon version")} sortable />
-                <Column field="service" header={t("Service")} sortable />
-                <Column field="hostname" header={t("Host")} sortable />
+                <Column field="name" header="Service name" sortable />
+                <Column field="addonName" header="Addon name" sortable />
+                <Column field="addonVersion" header="Addon version" sortable />
+                <Column field="service" header="Service" sortable />
+                <Column field="hostname" header="Host" sortable />
                 <Column
                   field="data.env.AYON_DEFAULT_SETTINGS_VARIANT"
-                  header={t("Settings variant")}
+                  header="Settings variant"
                   sortable
                 />
                 <Column
                   field="isRunning"
-                  header={t("Status")}
+                  header="Status"
                   body={formatStatus}
                   style={{ maxWidth: 130, textAlign: 'center' }}
                   sortable
@@ -285,6 +295,7 @@ const ServicesPage = () => {
         </Splitter>
       </Section>
     </main>
+    </>
   )
 }
 

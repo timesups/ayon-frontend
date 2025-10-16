@@ -13,7 +13,7 @@ import {
 } from '@ynput/ayon-react-components'
 import ProjectManagerPageLayout from '../ProjectManagerPage/ProjectManagerPageLayout'
 import UserListTeams from './UserListTeams'
-import { useGetUsersQuery } from '@queries/user/getUsers'
+import { useGetUsersQuery } from '@shared/api'
 import TeamUsersDetails from './TeamUsersDetails'
 import TeamDetails from './TeamDetails'
 import { useDeleteTeamMutation, useUpdateTeamsMutation } from '@queries/team/updateTeams'
@@ -22,8 +22,9 @@ import CreateNewTeam from './CreateNewTeam/CreateNewTeam'
 import styled from 'styled-components'
 import useSearchFilter from '@hooks/useSearchFilter'
 import { useSearchParams } from 'react-router-dom'
-import { confirmDelete } from '@shared/helpers'
-import { useTranslation } from 'react-i18next'
+import { confirmDelete } from '@shared/util'
+import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
+
 const SectionStyled = styled(Section)`
   align-items: start;
   height: 100%;
@@ -44,10 +45,6 @@ const SectionStyled = styled(Section)`
 `
 
 const TeamsPage = ({ projectName, projectList, isUser }) => {
-  // translation
-  const {t} = useTranslation()
-
-
   // QUERY PARAMS STATE
   const [searchParams] = useSearchParams()
   const queryNames = searchParams.getAll('name')
@@ -141,9 +138,9 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
           ? 'On A Selected Team'
           : teamsList.filter((t) => !selectedTeams.includes(t)).length
           ? selectedTeams.length
-            ? t("On Other Teams")
-            : t("On Teams")
-          : t("On No Teams")
+            ? 'On Other Teams'
+            : 'On Teams'
+          : 'On No Teams'
 
         // Include any other user data in the merged object
         usersObject[user.name] = {
@@ -418,12 +415,15 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
 
   const isLoading = isLoadingUsers || isLoadingTeams || isUpdating
 
+  const pageTitle = projectName ? `Teams • ${projectName}` : 'Teams • AYON'
+
   return (
     <>
+      <DocumentTitle title={pageTitle} />
       <Dialog
         isOpen={duplicateTeamNameVisible}
         onClose={onCancelDuplicate}
-        header={<span>{t("Duplicate Team")} - {selectedTeams[0]}</span>}
+        header={<span>Duplicate Team - {selectedTeams[0]}</span>}
         style={{ minWidth: 300 }}
         size="sm"
       >
@@ -433,7 +433,7 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
             value={duplicateTeamName}
             onChange={(e) => setDuplicateTeamName(e.target.value)}
             autoFocus
-            placeholder={t("New team name...")}
+            placeholder="New team name..."
             style={{ width: '100%' }}
           />
           <span style={{ height: 18, display: 'block' }}>
@@ -457,13 +457,13 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
               <>
                 <Button
                   icon={'group_add'}
-                  label={t("Add New Team")}
+                  label="Add New Team"
                   onClick={() => setCreateTeamOpen(true)}
                   style={{ width: 200 }}
                 />
                 <InputText
                   style={{ width: '200px' }}
-                  placeholder={t("Filter users...")}
+                  placeholder="Filter users..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   autoComplete="off"
@@ -472,7 +472,7 @@ const TeamsPage = ({ projectName, projectList, isUser }) => {
                   checked={showTeamUsersOnly}
                   onChange={() => setShowTeamUsersOnly(!showTeamUsersOnly)}
                 />
-                {t("Hide Other Team Members")}
+                Hide Other Team Members
                 <Spacer />
               </>
             )}

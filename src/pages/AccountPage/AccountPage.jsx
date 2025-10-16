@@ -2,13 +2,15 @@ import { useMemo } from 'react'
 import SessionList from './SessionListPage'
 import { Panel } from '@ynput/ayon-react-components'
 import { Navigate, useParams } from 'react-router-dom'
-import { useGetCurrentUserQuery } from '@queries/auth/getAuth'
+import { useGetCurrentUserQuery } from '@shared/api'
 import styled from 'styled-components'
 import AppNavLinks from '@containers/header/AppNavLinks'
 // import SiteSettings from './SiteSettingsPage'
 import ProfilePage from './ProfilePage'
 import DownloadsPage from './DownloadsPage/DownloadsPage'
-import { useTranslation } from 'react-i18next'
+import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
+import useTitle from '@hooks/useTitle'
+
 export const PanelButtonsStyled = styled(Panel)`
   flex-direction: row;
 
@@ -18,10 +20,8 @@ export const PanelButtonsStyled = styled(Panel)`
 `
 
 const AccountPage = () => {
-  // translation
-  const {t} = useTranslation()
-
   const { module } = useParams()
+  
 
   // RTK QUERIES
   // GET USER DATA
@@ -44,25 +44,28 @@ const AccountPage = () => {
 
   let links = [
     {
-      name: t("Profile"),
+      name: 'Profile',
       path: '/account/profile',
       module: 'profile',
     },
     {
-      name: t("Sessions"),
+      name: 'Sessions',
       path: '/account/sessions',
       module: 'sessions',
     },
-    { name: t("Launchers"), path: '/account/downloads', module: 'downloads' },
+    { name: 'Launchers', path: '/account/downloads', module: 'downloads' },
     // {
     //   name: 'Settings',
     //   path: '/account/settings',
     //   module: 'settings',
     // },
   ]
-
+  
+  const title = useTitle(module, links, 'AYON')
+  
   return (
     <>
+      <DocumentTitle title={title} />
       <AppNavLinks links={links} />
       {moduleComponent}
     </>

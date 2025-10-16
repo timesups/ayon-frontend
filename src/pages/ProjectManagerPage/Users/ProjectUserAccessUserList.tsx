@@ -3,11 +3,10 @@ import { Section } from '@ynput/ayon-react-components'
 
 import clsx from 'clsx'
 import { $Any } from '@types'
-import { UserNode } from '@api/graphql'
+import { UserNode } from '@shared/api'
 import { CompactPlaceholder, DataTable } from './ProjectUserAccess.styled'
 import UserCell from './UserCell'
 import AccessGroupsCell from './AccessGroupsCell'
-import { HoveredUser } from './types'
 
 import { useTranslation } from 'react-i18next'
 type Props = {
@@ -15,7 +14,6 @@ type Props = {
   selectedUsers: string[]
   tableList: $Any
   accessGroup?: string
-  hoveredUser?: HoveredUser
   isLoading: boolean
   readOnly: boolean
   header?: string
@@ -27,7 +25,6 @@ type Props = {
   showAccessGroups?: boolean
   shimmerEnabled?: boolean
   onContextMenu?: $Any
-  onHoverRow: $Any
   onSelectUsers?: (selectedUsers: string[]) => void
   onAdd: ({ accessGroup, users }: { accessGroup?: string; users: string[] }) => void
   onRemove?: (users?: string[]) => void
@@ -38,7 +35,6 @@ const ProjectUserAccessUserList = ({
   selectedUsers,
   tableList,
   accessGroup,
-  hoveredUser,
   isLoading,
   readOnly,
   header,
@@ -52,7 +48,6 @@ const ProjectUserAccessUserList = ({
   onRemove,
   onContextMenu,
   onSelectUsers,
-  onHoverRow,
 }: Props) => {
 
   //translation
@@ -105,8 +100,6 @@ const ProjectUserAccessUserList = ({
             })
           }
           onContextMenu={!readOnly && onContextMenu}
-          onRowMouseEnter={(e) => onHoverRow(e.data.name)}
-          onRowMouseLeave={() => onHoverRow()}
           onSelectionChange={(selection) => onSelectUsers && onSelectionChange(selection)}
         >
           <Column
@@ -123,9 +116,6 @@ const ProjectUserAccessUserList = ({
                   showAddMoreButton={showAddMoreButton}
                   readOnly={readOnly}
                   onAdd={(user: string) => onAdd({ accessGroup, users: [user] })}
-                  hovering={
-                    hoveredUser?.user == rowData.name && hoveredUser?.accessGroup === accessGroup
-                  }
                   onRemove={() => {
                     onRemove && onRemove([rowData.name])
                   }}
@@ -145,12 +135,8 @@ const ProjectUserAccessUserList = ({
                   <AccessGroupsCell
                     data={data}
                     data-testid={`accessGroupUser-${data.name}`}
-                    showAddButton={showAddButton}
                     readOnly={readOnly}
                     onAdd={(user: string) => onAdd({ accessGroup, users: [user] })}
-                    hovering={
-                      hoveredUser?.user == data.name && hoveredUser?.accessGroup === accessGroup
-                    }
                     addButtonDisabled={selectedProjects.length === 0}
                     selected={selectedUnassignedUserNames.includes(data.name)}
                   />

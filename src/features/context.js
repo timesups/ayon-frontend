@@ -31,7 +31,6 @@ const initialState = {
   uri: null,
   uriChanged: 0,
   uploadProgress: 0, // percentage 0 - 100
-  menuOpen: false,
   activeReactionPopup: null,
   previewFiles: [],
   previewFilesProjectName: '',
@@ -51,7 +50,6 @@ const localStorageKeys = [
   'focused.folders', //
   'focused.products', //
   'focused.versions', //
-  'focused.representations', //
   'focused.tasks', //
   'focused.tasksNames', //
   'focused.workfiles', //
@@ -96,9 +94,6 @@ const reducers = {
     'focused.versions': {
       value: initialState.focused.versions,
     },
-    'focused.representations': {
-      value: initialState.focused.representations,
-    },
     'focused.tasks': {
       value: initialState.focused.tasks,
     },
@@ -138,9 +133,6 @@ const reducers = {
       value: [],
     },
     'focused.versions': {
-      value: [],
-    },
-    'focused.representations': {
       value: [],
     },
     'focused.tasks': {
@@ -199,9 +191,6 @@ const reducers = {
     },
     'focused.subTypes': {
       value: [],
-    },
-    'focused.representations': {
-      payload: true,
     },
   },
   setFocusedVersions: {
@@ -263,9 +252,6 @@ const reducers = {
     'focused.products': {
       payload: 'products',
     },
-    'focused.representations': {
-      value: [],
-    },
   },
   setUri: {
     uri: {
@@ -284,9 +270,6 @@ const reducers = {
     },
     'focused.versions': {
       payload: 'versions',
-    },
-    'focused.representations': {
-      payload: 'representations',
     },
     'focused.workfiles': {
       payload: 'workfiles',
@@ -437,17 +420,6 @@ const contextSlice = createSlice({
     onUploadFinished: (state) => {
       state.uploadProgress = 0
     },
-    setMenuOpen: (state, action) => {
-      state.menuOpen = action.payload
-    },
-    toggleMenuOpen: (state, action) => {
-      // no payload means toggle off
-      if (!action.payload) action.payload = false
-      // if payload is same as current state, toggle off
-      else if (action.payload === state.menuOpen) state.menuOpen = false
-      // else set payload
-      else state.menuOpen = action.payload
-    },
     onCommentImageOpen: (state, action) => {
       // set the preview file
       state.previewFiles = action.payload.files
@@ -496,8 +468,6 @@ export const {
   onFocusChanged,
   onUploadProgress,
   onUploadFinished,
-  setMenuOpen,
-  toggleMenuOpen,
   onUriNavigate,
   updateBrowserFilters,
   onCommentImageOpen,

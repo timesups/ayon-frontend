@@ -5,12 +5,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { $Any } from '@types'
 import { Button, Filter, Toolbar } from '@ynput/ayon-react-components'
 import Shortcuts from '@containers/Shortcuts'
-import { useShortcutsContext } from '@context/shortcutsContext'
-import useCreateContextMenu from '@shared/ContextMenu/useCreateContextMenu'
+import { useShortcutsContext } from '@context/ShortcutsContext'
+import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 import useUserProjectPermissions from '@hooks/useUserProjectPermissions'
 import { useGetAccessGroupsQuery } from '@queries/accessGroups/getAccessGroups'
-import { useGetUsersQuery } from '@queries/user/getUsers'
-import { useListProjectsQuery } from '@queries/project/getProject'
+import { useGetUsersQuery } from '@shared/api'
+import { useListProjectsQuery } from '@shared/api'
 
 import ProjectManagerPageLayout from '../ProjectManagerPageLayout'
 import {
@@ -23,7 +23,7 @@ import {
   getUserAccessGroups,
   mapUsersByAccessGroups,
 } from './mappers'
-import { HoveredUser, SelectedAccessGroupUsers, SelectionStatus } from './types'
+import { SelectedAccessGroupUsers, SelectionStatus } from './types'
 import {
   useUserPreferencesExpandedPanels,
   useProjectAccessGroupData,
@@ -40,7 +40,7 @@ import {
 } from './ProjectUserAccess.styled'
 import SplitterContainerThreePanes from './SplitterThreePanes'
 import SplitterContainerTwoPanes from './SplitterTwoPanes'
-import { ProjectNode, UserNode } from '@api/graphql'
+import { ProjectNode, UserNode } from '@shared/api'
 import LoadingPage from '@pages/LoadingPage'
 import { useQueryParam } from 'use-query-params'
 import { uuid } from 'short-uuid'
@@ -48,7 +48,7 @@ import ProjectUserAccesAccessGroupPanel from './ProjectUserAccessAccessGroupPane
 import {
   EmptyPlaceholderFlex,
   EmptyPlaceholderFlexWrapper,
-} from '@shared/EmptyPlaceholder/EmptyPlaceholderFlex.styled'
+} from '@shared/components/EmptyPlaceholder'
 
 const StyledButton = styled(Button)`
   .shortcut {
@@ -95,7 +95,7 @@ const ProjectUserAccess = () => {
     isError: usersFetchError,
   } = useGetUsersQuery({ selfName })
 
-  const users = userList.filter((user: UserNode) => !user.isAdmin && !user.isManager && user.active)
+  const users = userList.filter((user: UserNode) => !user.isAdmin && !user.isManager && user.active && !user.isService)
   const mappedUsers = mapUsersByAccessGroups(projectUsers)
 
   const [actionedUsers, setActionedUsers] = useState<string[]>([])
@@ -103,7 +103,6 @@ const ProjectUserAccess = () => {
   const [selectedAccessGroupUsers, setSelectedAccessGroupUsers] = useState<
     SelectedAccessGroupUsers | undefined
   >()
-  const [hoveredUser, setHoveredUser] = useState<HoveredUser | undefined>()
 
   const { data: projects, isLoading: isLoadingProjects, isError, error } = useListProjectsQuery({})
   if (isError) {
@@ -280,16 +279,7 @@ const ProjectUserAccess = () => {
     let actionedUsers = selectedAccessGroupUsers?.users || []
     let actionedAccessGroup = selectedAccessGroupUsers?.accessGroup
 
-    if (interactionType == InteractionType.bulkButton) {
-      if (hoveredUser?.user && !actionedUsers.includes(hoveredUser.user)) {
-        actionedUsers = [hoveredUser.user]
-        actionedAccessGroup = hoveredUser.accessGroup
-        setSelectedAccessGroupUsers({
-          accessGroup: hoveredUser.accessGroup,
-          users: [hoveredUser.user],
-        })
-      }
-    } else if (interactionType == InteractionType.button) {
+    if (interactionType == InteractionType.button) {
       if (!actionedUsers.includes(users![0]) || accessGroup !== actionedAccessGroup) {
         actionedUsers = users!
         actionedAccessGroup = accessGroup
@@ -321,9 +311,7 @@ const ProjectUserAccess = () => {
         key: 'a',
         action: () => {
           if (
-            (!selectedAccessGroupUsers?.users || selectedAccessGroupUsers!.users.length == 0) &&
-            !hoveredUser?.user
-          ) {
+            (!selectedAccessGroupUsers?.users || selectedAccessGroupUsers!.users.length == 0)) {
             return
           }
 
@@ -333,7 +321,7 @@ const ProjectUserAccess = () => {
       {
         key: 'r',
         action: () => {
-          if (!selectedAccessGroupUsers?.accessGroup && !hoveredUser?.accessGroup) {
+          if (!selectedAccessGroupUsers?.accessGroup) {
             return
           }
 
@@ -341,7 +329,7 @@ const ProjectUserAccess = () => {
         },
       },
     ],
-    [selectedAccessGroupUsers, hoveredUser],
+    [selectedAccessGroupUsers],
   )
 
   const errorInfo = getErrorInfo(
@@ -377,12 +365,8 @@ const ProjectUserAccess = () => {
           tableList={filteredUsersWithAccessGroups}
           isLoading={isLoadingUsers || isLoadingAccessGroupsData}
           readOnly={!hasEditRightsOnProject}
-          hoveredUser={hoveredUser}
           onContextMenu={(e: $Any) => handleContextMenu()(e)}
           onAdd={handleRowAddButton}
-          onHoverRow={(userName: string) => {
-            userName ? setHoveredUser({ user: userName }) : setHoveredUser({})
-          }}
           onSelectUsers={(selection) => setSelectedAccessGroupUsers({ users: selection })}
           sortable
           showAddButton
@@ -418,7 +402,6 @@ const ProjectUserAccess = () => {
                   selectedUsers={getAccessGroupUsers(selectedAccessGroupUsers!, accessGroup)}
                   readOnly={!hasEditRightsOnProject}
                   showAddMoreButton={filteredAccessGroups.length > 1}
-                  hoveredUser={hoveredUser}
                   accessGroup={accessGroup}
                   emptyMessage={t("No users assigned")}
                   onContextMenu={(e: $Any) => handleContextMenu(accessGroup)(e)}
@@ -426,9 +409,6 @@ const ProjectUserAccess = () => {
                     (user: UserNode) =>
                       mappedUsers[accessGroup] && mappedUsers[accessGroup].includes(user.name),
                   )}
-                  onHoverRow={(userName: string) =>
-                    userName ? setHoveredUser({ accessGroup, user: userName }) : setHoveredUser({})
-                  }
                   onSelectUsers={(selection: string[]) =>
                     updateSelectedAccessGroupUsers(accessGroup, selection)
                   }
@@ -454,7 +434,7 @@ const ProjectUserAccess = () => {
         // @ts-ignore
         shortcuts={shortcuts}
         // @ts-ignore
-        deps={[selectedProjects, selectedAccessGroupUsers, hoveredUser]}
+        deps={[selectedProjects, selectedAccessGroupUsers]}
       />
       <Toolbar style={{ display: 'flex', margin: '0' }}>
         {/* @ts-ignore */}

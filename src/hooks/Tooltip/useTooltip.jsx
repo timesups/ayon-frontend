@@ -12,6 +12,36 @@ const getTooltipId = (tooltip, shortcut, id) => {
 const useTooltip = () => {
   const tooltipRef = useRef(null)
   const [tooltip, setTooltip] = useState(null)
+  const [hasOverflow, setHasOverflow] = useState(false)
+
+  // callback ref to detect overflow when tooltip inner mounts/updates
+  const tooltipInnerRef = useCallback((node) => {
+    if (!node) {
+      setHasOverflow(false)
+      return
+    }
+
+    // check if content overflows
+    const checkOverflow = () => {
+      // check the node itself
+      if (node.scrollWidth > node.clientWidth) {
+        return true
+      }
+
+      // check all children
+      const children = node.querySelectorAll('*')
+      for (const child of children) {
+        if (child.scrollWidth > child.clientWidth) {
+          return true
+        }
+      }
+
+      return false
+    }
+
+    const overflow = checkOverflow()
+    setHasOverflow(overflow)
+  }, [tooltip?.tooltip])
 
   const getTooltipPos = (target, ref) => {
     if (!target || !ref.current) return
@@ -107,6 +137,7 @@ const useTooltip = () => {
       const tooltipData = target?.dataset?.tooltip
       const shortcutData = target?.dataset?.shortcut
       const delayData = target?.dataset?.tooltipDelay
+      const tooltipPosition = target?.dataset?.tooltipPosition
       // what to render as tooltip (pre, div, markdown, etc.)
       const asData = target?.dataset?.tooltipAs
       // check if data-tooltip attribute exists
@@ -123,10 +154,20 @@ const useTooltip = () => {
       // find center top position of target element
       const targetRect = target.getBoundingClientRect()
 
-      // target center will also be tooltip left
-      const targetCenter = targetRect.left + targetRect.width / 2
+      let targetCenter 
       // target top will also be tooltip bottom
-      const targetTop = target.getBoundingClientRect().top
+      let targetTop = targetRect.top
+
+      if (tooltipPosition === 'mouse') {
+        // used in settings editor. Align horizontally with mouse,
+        // because field is wide and centering causes tooltip to be
+        // positioned weirdly
+        targetCenter = e.clientX
+      }
+      else {
+       // target center will also be tooltip left
+       targetCenter = targetRect.left + targetRect.width / 2
+      }
 
       // can the user click the tooltip
       const clickableData = target?.dataset?.tooltipClickable
@@ -183,7 +224,11 @@ const useTooltip = () => {
         }}
         $targetPos={tooltip?.target}
       >
-        <Styled.TooltipInner as={tooltip?.as === 'markdown' ? 'div' : tooltip?.as}>
+        <Styled.TooltipInner
+          ref={tooltipInnerRef}
+          as={tooltip?.as === 'markdown' ? 'div' : tooltip?.as}
+          $hasOverflow={hasOverflow}
+        >
           {tooltip?.as === 'markdown' ? (
             <ReactMarkdown rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}>
               {tooltip?.tooltip}
@@ -196,7 +241,7 @@ const useTooltip = () => {
         </Styled.TooltipInner>
       </Styled.TooltipWidget>
     ),
-    [tooltip, hideTooltip],
+    [tooltip, hideTooltip, hasOverflow, tooltipInnerRef],
   )
 
   return [handleMouse, tooltipComponent]

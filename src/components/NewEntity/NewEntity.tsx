@@ -1,37 +1,49 @@
-import React, { useState, useRef, KeyboardEvent } from 'react'
+import React, { KeyboardEvent, useRef, useState } from 'react'
 import { capitalize, isEmpty } from 'lodash'
 import {
-  InputText,
+  Dialog,
+  Dropdown,
+  DropdownRef,
+  Icon,
+  InputSwitch,
   SaveButton,
   Spacer,
   Toolbar,
-  Dialog,
-  DropdownRef,
-  Dropdown,
-  Icon,
-  InputSwitch,
 } from '@ynput/ayon-react-components'
 import styled from 'styled-components'
 import TypeEditor from './TypeEditor'
-import checkName from '@helpers/checkName'
+import {
+  checkName,
+  checkLabel,
+  parseAndFormatName,
+  getPlatformShortcutKey,
+  KeyMode,
+} from '@shared/util'
 import ShortcutWidget from '@components/ShortcutWidget'
-import { useSelectionContext, useProjectTableContext } from '@shared/ProjectTreeTable'
-import { parseCellId } from '@shared/ProjectTreeTable/utils/cellUtils'
-import { EditorTaskNode, MatchingFolder } from '@shared/ProjectTreeTable'
+import {
+  EditorTaskNode,
+  MatchingFolder,
+  useProjectTableContext,
+  useSelectionCellsContext,
+} from '@shared/containers/ProjectTreeTable'
+import { parseCellId } from '@shared/containers/ProjectTreeTable/utils/cellUtils'
+import { type OperationResponseModel, type ProjectModel } from '@shared/api'
 import FolderSequence from '@components/FolderSequence/FolderSequence'
 import { EntityForm, NewEntityType, useNewEntityContext } from '@context/NewEntityContext'
-import { ProjectModel } from '@api/rest/project'
 import useCreateEntityShortcuts from '@hooks/useCreateEntityShortcuts'
-import { useSlicerContext } from '@context/slicerContext'
+import { useSlicerContext } from '@context/SlicerContext'
+import NewEntityForm, { InputLabel, InputsContainer } from '@components/NewEntity/NewEntityForm.tsx'
+import { toast } from 'react-toastify'
 
-
-import { useTranslation } from 'react-i18next'
-
-
+const StyledDialog = styled(Dialog)`
+  .body {
+    overflow: visible;
+  }
+`
 
 const ContentStyled = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--base-gap-large);
   form {
     input:first-child {
@@ -76,11 +88,12 @@ const StyledCreateItem = styled.span`
   }
 `
 
-interface NewEntityProps {
+export interface NewEntityProps {
   disabled?: boolean
+  onNewEntities?: (ops: OperationResponseModel[], stayOpen: boolean) => void
 }
 
-const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
+const NewEntity: React.FC<NewEntityProps> = ({ disabled, onNewEntities }) => {
   const {
     entityType,
     setEntityType,
@@ -90,14 +103,19 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
     setSequenceForm,
     onCreateNew,
     onOpenNew,
+    config,
   } = useNewEntityContext()
-  const {t} = useTranslation()
+
   const [createMore, setCreateMore] = useState(false)
-  const { selectedCells } = useSelectionContext()
-  const { rowSelection: slicerSelection, sliceType } = useSlicerContext()
+  const { selectedCells } = useSelectionCellsContext()
+  const {
+    rowSelection: slicerSelection,
+    rowSelectionData: slicerSelectionData,
+    sliceType,
+  } = useSlicerContext()
   const { getEntityById, projectInfo } = useProjectTableContext()
 
-  const selectedFolderIds = React.useMemo(() => {
+  const [selectedFolderIds, selectedEntitiesLabels] = React.useMemo(() => {
     const selectedRowIds = Array.from(
       new Set(
         Array.from(selectedCells)
@@ -129,22 +147,45 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
     if (!selectedFolderIds.length && sliceType === 'hierarchy') {
       // add the selected folder ids from the slicer
       const selectedFolderIdsFromSlicer = Object.keys(slicerSelection)
-      return selectedFolderIdsFromSlicer
+      const selectedEntitiesLabels = Object.entries(slicerSelectionData)
+        .filter(([id]) => selectedFolderIdsFromSlicer.includes(id))
+        .map(([, data]) => data.label || data.name)
+        .filter(Boolean)
+      return [selectedFolderIdsFromSlicer, selectedEntitiesLabels]
     } else {
-      return selectedFolderIds
+      const selectedEntitiesLabels = selectedEntities
+        .map((e) => e?.label || e?.name)
+        .filter(Boolean)
+      return [selectedFolderIds, selectedEntitiesLabels]
     }
-  }, [selectedCells, slicerSelection, sliceType, getEntityById])
+  }, [selectedCells, slicerSelection, sliceType, entityType, getEntityById])
+
+  const parentLabel = selectedEntitiesLabels[0] || ''
 
   const isRoot = isEmpty(selectedFolderIds)
 
   const [nameFocused, setNameFocused] = useState<boolean>(false)
+  const [nameManuallyEdited, setNameManuallyEdited] = useState<boolean>(false)
   //   build out form state
-  const initData: EntityForm = { label: '', subType: '' }
+  const initData: EntityForm = { label: '', subType: '', name: '' }
 
   //   format title
-  let title = t("Add New")
-  if (isRoot) title += t("Root")
-  title += t(capitalize(entityType || ''))
+  const getDialogTitle = () => {
+    let title = 'Add New '
+    if (isRoot) title += 'Root '
+    title += capitalize(entityType || '')
+    if (!isRoot) {
+      if (selectedEntitiesLabels.length > 2) {
+        title +=
+          ' - ' +
+          selectedEntitiesLabels.slice(0, 2).join(', ') +
+          ` +${selectedEntitiesLabels.length - 2} more`
+      } else {
+        title += ' - ' + selectedEntitiesLabels.join(', ')
+      }
+    }
+    return title
+  }
 
   //   entityType selector
   const typeOptions =
@@ -163,9 +204,11 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
       const typeOption = typeOptions.find((option) => option.name === value)
 
       if (typeOption) {
+        newState.label = typeOption.name
         // If name field is empty or matches any of the current type options,
         // update it with the new type name
-        const currentNameLower = newState.label.toLowerCase()
+        const copiedName = String(newState.name)
+        const currentNameLower = copiedName.toLowerCase()
         const shouldUpdateName =
           currentNameLower === '' ||
           typeOptions.some(
@@ -173,12 +216,14 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
               currentNameLower.includes(option.name?.toLowerCase()) ||
               (option.shortName && currentNameLower.includes(option.shortName?.toLowerCase())),
           )
-
         if (shouldUpdateName) {
-          // Use the helper function to generate the label
-          newState.label = generateLabel(entityType, value, projectInfo)
+          // Generate name for backend (lowercase and sanitized)
+          newState.name = parseAndFormatName(typeOption.name, config)
         }
       }
+
+      // Reset manual editing flag when type changes - allow auto-generation again
+      setNameManuallyEdited(false)
 
       // Focus the label input after type selection
       setTimeout(() => {
@@ -186,7 +231,15 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
       }, 100)
     } else if (id === 'label') {
       // Update name based on the label (sanitizing it)
-      newState.label = checkName(value)
+      newState.label = value
+      // Only auto-generate name if user hasn't manually edited it
+      if (!nameManuallyEdited) {
+        newState.name = parseAndFormatName(value, config)
+      }
+    } else if (id === 'name') {
+      // User is manually editing the name
+      setNameManuallyEdited(true)
+      newState.name = value
     }
 
     setEntityForm(newState)
@@ -212,6 +265,7 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
     setEntityType(null)
     setEntityForm(initData)
     setSequenceForm((prev) => ({ ...prev, active: false }))
+    setNameManuallyEdited(false)
   }
 
   // open dropdown - delay to wait for dialog opening
@@ -220,18 +274,41 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (stayOpen: boolean) => {
-    setIsSubmitting(true)
-    await onCreateNew(selectedFolderIds)
-    setIsSubmitting(false)
+    // validate the label
+    const labelCheck = checkLabel(entityForm.label)
+    if (!labelCheck.valid) {
+      toast.error(labelCheck.error || 'Invalid label')
+      return
+    }
 
-    if (stayOpen) {
-      // focus and select the label input
-      if (labelRef.current) {
-        labelRef.current.focus()
-        labelRef.current.select()
+    // validate the name
+    const { valid, error } = checkName(entityForm.name)
+    if (!valid) {
+      toast.error(error || 'Invalid name')
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      const resOperations = await onCreateNew(selectedFolderIds)
+
+      console.log(resOperations)
+
+      // callback function
+      onNewEntities?.(resOperations, stayOpen)
+
+      if (stayOpen) {
+        // focus and select the label input
+        if (labelRef.current) {
+          labelRef.current.focus()
+          labelRef.current.select()
+        }
+      } else {
+        handleClose()
       }
-    } else {
-      handleClose()
+    } catch (error) {
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -305,7 +382,7 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
         valueTemplate={() => (
           <>
             <Icon icon="add" />
-            <span>{t("Create")}</span>
+            <span>Create</span>
           </>
         )}
         itemTemplate={(option) => (
@@ -322,18 +399,19 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
         data-tooltip={disabled ? 'Enable hierarchy to create new entity' : 'Create new entity'}
       />
       {entityType && (
-        <Dialog
-          header={title}
+        <StyledDialog
+          header={getDialogTitle()}
           isOpen
           onClose={handleClose}
           onShow={handleShow}
           size={sequenceForm.active ? 'lg' : 'md'}
           style={{ maxWidth: sequenceForm.active ? 'unset' : 430 }}
+          enableBackdropClose={false}
           footer={
             <Toolbar onFocus={() => setNameFocused(false)} style={{ width: '100%' }}>
               {entityType === 'folder' && (
                 <>
-                  <span>{t("Sequence")}</span>
+                  <span>Sequence</span>
                   <InputSwitch
                     checked={sequenceForm.active}
                     onChange={(e) =>
@@ -346,17 +424,17 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
                 </>
               )}
               <Spacer />
-              <span>{t("Create more")}</span>
+              <span>Create more</span>
               <InputSwitch
                 checked={createMore}
                 onChange={(e) => setCreateMore((e.target as HTMLInputElement).checked)}
               />
               <SaveButton
-                label={`${t("Create")} ${t(capitalize(entityType))}`}
+                label={`Create ${capitalize(entityType)}`}
                 onClick={() => handleSubmit(createMore)}
                 active={!addDisabled || isSubmitting}
-                title="Ctrl/Cmd + Enter"
-                data-shortcut="Ctrl/Cmd+Enter"
+                disabled={!entityForm.name || !entityForm.label}
+                data-shortcut={getPlatformShortcutKey('Enter', [KeyMode.Ctrl])}
                 saving={isSubmitting}
               />
             </Toolbar>
@@ -376,6 +454,7 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
               length={sequenceForm.length}
               prefix={sequenceForm.prefix}
               prefixDepth={sequenceForm.prefixDepth}
+              parentLabel={parentLabel}
               entityType="folder"
               nesting={false}
               onChange={handleSeqChange}
@@ -387,30 +466,29 @@ const NewEntity: React.FC<NewEntityProps> = ({ disabled }) => {
             />
           ) : (
             <ContentStyled>
-              <TypeEditor
-                value={[entityForm.subType]}
-                onChange={(v: string) => handleChange(v, 'subType')}
-                options={typeOptions}
-                style={{ width: 160 }}
-                ref={typeSelectRef}
-                onFocus={handleTypeSelectFocus}
-                onClick={() => setNameFocused(false)}
-              />
-              <InputText
-                value={entityForm.label}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleChange(e.target.value, 'label')
-                }
-                ref={labelRef}
-                onFocus={() => setNameFocused(true)}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e as unknown as KeyboardEvent, true)
-                }
-                style={{ flex: 1 }}
+              <InputsContainer>
+                <InputLabel>Type</InputLabel>
+                <TypeEditor
+                  value={[entityForm.subType]}
+                  onChange={(v: string) => handleChange(v, 'subType')}
+                  options={typeOptions}
+                  style={{ width: 160 }}
+                  ref={typeSelectRef}
+                  onFocus={handleTypeSelectFocus}
+                  onClick={() => setNameFocused(false)}
+                />
+              </InputsContainer>
+              <NewEntityForm
+                handleChange={handleChange}
+                entityForm={entityForm}
+                labelRef={labelRef}
+                setNameFocused={setNameFocused}
+                handleKeyDown={handleKeyDown}
+                nameInfo={`Names are auto generated from the label using the Entity Naming setting on the project anatomy. Capitalization: ${config.capitalization}. Separator: "${config.separator}"`}
               />
             </ContentStyled>
           )}
-        </Dialog>
+        </StyledDialog>
       )}
     </>
   )
@@ -432,7 +510,5 @@ export const generateLabel = (
 
   if (!typeOption) return ''
 
-  return type === 'folder'
-    ? typeOption.shortName || typeOption.name.toLowerCase()
-    : typeOption.name.toLowerCase()
+  return type === 'folder' ? typeOption.shortName || typeOption.name : typeOption.name
 }

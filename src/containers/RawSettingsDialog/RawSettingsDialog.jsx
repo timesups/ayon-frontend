@@ -10,8 +10,7 @@ import {
   useSetRawAddonSettingsOverridesMutation,
   useLazyGetRawAddonSettingsOverridesQuery,
 } from '@queries/addonSettings'
-import copyToClipboard from '@helpers/copyToClipboard'
-import { t } from 'i18next'
+import { copyToClipboard } from '@shared/util'
 
 const EditorWrapper = styled.div`
   position: relative;
@@ -148,14 +147,16 @@ const RawSettingsDialog = ({
     >
       {warn && (
         <Warning onClick={() => setWarn(false)}>
-          <h1>{t("Warning")}</h1>
+          <h1>Warning</h1>
           <p>
-            {t("This interface is intended for advanced users only. Incorrect modifications can make the addon completely inoperable.")}
+            This interface is intended for advanced users only. Incorrect modifications can make the
+            addon completely inoperable.
           </p>
           <p>
-            {t("Proceed with extreme caution and ensure you fully understand the implications of any changes made.")}
+            Proceed with extreme caution and ensure you fully understand the implications of any
+            changes made.
           </p>
-          <p>{t("Click here to continue")}</p>
+          <p>Click here to continue</p>
         </Warning>
       )}
       <EditorWrapper>
