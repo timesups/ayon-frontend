@@ -1,0 +1,20 @@
+{
+  "clear": "清除",
+  "unclear": "恢复",
+  "clearN": "清除 {{count}} 条",
+  "unclearN": "恢复 {{count}} 条",
+  "clearSelection": "清除所选",
+  "unclearSelection": "恢复所选",
+  "markAsRead": "标为已读",
+  "markAsUnread": "标为未读",
+  "clearRead": "清除已读",
+  "clearAll": "全部清除",
+  "refresh": "刷新",
+  "loadMore": "加载更多",
+  "loadingMore": "正在加载...",
+  "loading": "加载中...",
+  "allCaughtUp": "全部处理完毕，暂无消息。",
+  "clearReadFilteredTooltip": "仅清除符合筛选条件的已读消息",
+  "clearReadTooltip": "清除已读消息，未读消息保留",
+  "clearFilteredTooltip": "仅清除符合筛选条件的消息"
+}

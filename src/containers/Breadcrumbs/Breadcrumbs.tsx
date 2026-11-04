@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button, InputText } from '@ynput/ayon-react-components'
 import * as Styled from './Breadcrumbs.styled'
 
@@ -8,6 +9,7 @@ import { copyToClipboard, parseUri } from '@shared/util'
 import { URL_PARAM_ID, useURIContext } from '@shared/context'
 import { Module, ModulePath } from '@pages/ProjectManagerPage/mappers'
 import clsx from 'clsx'
+import type { TFunction } from 'i18next'
 
 const parseQueryParams = (query: string): Record<string, string> => {
   if (!query) return {}
@@ -22,8 +24,8 @@ const parseQueryParams = (query: string): Record<string, string> => {
   return params
 }
 
-const getSettingsScopeLabel = (query: string): string => {
-  return query?.includes('project') ? 'Projects Manager' : 'Studio Settings'
+const getSettingsScopeLabel = (query: string, t: TFunction): string => {
+  return query?.includes('project') ? t('projectsManager') : t('studioSettings')
 }
 
 const getSettingsPathname = ({ project, site }: { project?: string; site?: string }): string => {
@@ -62,32 +64,38 @@ const getUriTargetUrl = (uri: string, location: Location): string | null => {
   return `${pathname}?${params}`
 }
 
-const getPathnameLabel = (pathname: string): string => {
+const getPathnameLabel = (pathname: string, t: TFunction): string => {
   const pageTitle = pathname.split('/')[1]
 
-  if (pageTitle?.includes('settings')) return 'Studio Settings'
-  if (pageTitle?.includes('manageProjects')) return 'Projects Manager'
+  if (pageTitle?.includes('settings')) return t('studioSettings')
+  if (pageTitle?.includes('manageProjects')) return t('projectsManager')
 
   return ''
 }
 
 // TODO(YN-0581 / issue #1940): swap project-name crumb to project label (label || name).
-const uri2crumbs = (uri: string = '', pathname: string): string[] => {
+const uri2crumbs = (uri: string = '', pathname: string, t: TFunction): string[] => {
   const [scope, pathAndQuery = ''] = (uri || '').split('://')
   const [path, query] = pathAndQuery.split('?')
   const crumbs: string[] = path.split('/').filter(Boolean)
 
   // Add scope-based label
   if (scope?.includes('ayon+settings')) {
-    crumbs.unshift(getSettingsScopeLabel(query))
+    crumbs.unshift(getSettingsScopeLabel(query, t))
   } else if (scope?.includes('ayon+entity')) {
-    crumbs.unshift('Project')
+    crumbs.unshift(t('breadcrumbProject'))
   } else {
-    const pathnameLabel = getPathnameLabel(pathname)
+    const pathnameLabel = getPathnameLabel(pathname, t)
     if (pathnameLabel) {
       crumbs.unshift(pathnameLabel)
     } else {
-      crumbs.unshift(...pathname.slice(1).split('/').filter(Boolean).map(upperFirst))
+      crumbs.unshift(
+        ...pathname
+          .slice(1)
+          .split('/')
+          .filter(Boolean)
+          .map((segment) => translatePathSegment(segment, t)),
+      )
     }
   }
 
@@ -104,7 +112,35 @@ const uri2crumbs = (uri: string = '', pathname: string): string[] => {
   return crumbs
 }
 
+const translatePathSegment = (segment: string, t: TFunction): string => {
+  const map: Record<string, string> = {
+    dashboard: t('dashboard:breadcrumbDashboard'),
+    tasks: t('nav:dashboard.tasks'),
+    projects: t('nav:dashboard.projects'),
+    planner: t('nav:dashboard.planner'),
+    inbox: t('nav:inboxTitle'),
+    important: t('nav:inbox.important'),
+    other: t('nav:inbox.other'),
+    cleared: t('nav:inbox.cleared'),
+    settings: t('settings:studioSettings'),
+    account: t('nav:account'),
+    profile: t('nav:account'),
+    overview: t('nav:project.overview'),
+    browser: t('nav:project.browser'),
+    products: t('nav:project.products'),
+    lists: t('nav:project.lists'),
+    reviews: t('nav:project.review'),
+    reports: t('nav:project.reports'),
+    workfiles: t('nav:project.workfiles'),
+    market: t('nav:app.market'),
+    events: t('nav:app.eventViewer'),
+    services: t('nav:app.services'),
+  }
+  return map[segment] || upperFirst(segment)
+}
+
 const Breadcrumbs = () => {
+  const { t } = useTranslation(['settings', 'nav', 'dashboard'])
   const location = window.location
 
   const [localUri, setLocalUri] = useState<string>('')
@@ -172,7 +208,7 @@ const Breadcrumbs = () => {
     }
   }
 
-  const uriDisplay = uri2crumbs(uri, location.pathname).join(' / ')
+  const uriDisplay = uri2crumbs(uri, location.pathname, t).join(' / ')
   const inputValue = editMode ? localUri : uriDisplay || 'Go to URI...'
 
   return (

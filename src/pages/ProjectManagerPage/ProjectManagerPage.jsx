@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { StringParam, useQueryParam, withDefault } from 'use-query-params'
@@ -43,6 +44,7 @@ const SiteSettings = ({ projectList, projectManager, projectName }) => {
 }
 
 const ProjectManagerPage = () => {
+  const { t } = useTranslation('nav')
   const isUser = useSelector((state) => state.user.data.isUser)
   const projectName = useSelector((state) => state.project.name)
   const {
@@ -105,7 +107,7 @@ const ProjectManagerPage = () => {
   if (!isUser || (!isLoadingUserPermissions && userPermissions.projectSettingsAreEnabled())) {
     if (userPermissions.canViewAny(UserPermissionsEntity.anatomy) || module === Module.anatomy) {
       links.push({
-        name: 'Anatomy',
+        name: t('projectManager.anatomy'),
         path: ModulePath[Module.anatomy],
         module: Module.anatomy,
         accessLevels: [],
@@ -118,7 +120,7 @@ const ProjectManagerPage = () => {
       module === Module.projectSettings
     ) {
       links.push({
-        name: 'Project settings',
+        name: t('projectManager.projectSettings'),
         path: ModulePath[Module.projectSettings],
         module: Module.projectSettings,
         accessLevels: [],
@@ -127,7 +129,7 @@ const ProjectManagerPage = () => {
     }
 
     links.push({
-      name: 'Project permissions',
+      name: t('projectManager.projectPermissions'),
       path: ModulePath[Module.permissions],
       module: Module.permissions,
       accessLevels: ['manager'],
@@ -138,7 +140,7 @@ const ProjectManagerPage = () => {
       module === Module.projectAccess
     ) {
       links.push({
-        name: 'Project access',
+        name: t('projectManager.projectAccess'),
         path: ModulePath[Module.projectAccess],
         module: Module.projectAccess,
         accessLevels: [],
@@ -148,19 +150,19 @@ const ProjectManagerPage = () => {
 
   links.push(
     {
-      name: 'Site settings',
+      name: t('projectManager.siteSettings'),
       path: ModulePath[Module.siteSettings],
       module: Module.siteSettings,
       accessLevels: [],
     },
     {
-      name: 'Roots',
+      name: t('projectManager.roots'),
       path: ModulePath[Module.roots],
       module: Module.roots,
       accessLevels: [],
     },
     {
-      name: 'Teams',
+      name: t('projectManager.teams'),
       path: ModulePath[Module.teams],
       module: Module.teams,
       accessLevels: ['manager'],

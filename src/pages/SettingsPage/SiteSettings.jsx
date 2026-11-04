@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { Section, Spacer, Panel, Toolbar, ScrollPanel, Button } from '@ynput/ayon-react-components'
 
@@ -47,6 +48,7 @@ const SiteSettingsEditor = ({ addonName, addonVersion, siteId, onChange }) => {
 }
 
 const SiteSettings = () => {
+  const { t } = useTranslation('settings')
   const [selectedAddons, setSelectedAddons] = useState([])
   const [selectedSites, setSelectedSites] = useState([])
   const [newData, setNewData] = useState({})
@@ -119,7 +121,7 @@ const SiteSettings = () => {
       <Section style={{ flexGrow: 1 }}>
         <Toolbar>
           <Spacer />
-          <Button label="Save Changes" icon="check" onClick={() => saveChanges()} />
+          <Button label={t('saveChanges')} icon="check" onClick={() => saveChanges()} />
         </Toolbar>
 
         {(selectedSites.length && (

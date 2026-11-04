@@ -3,15 +3,17 @@ import * as reduxToolkit from '@reduxjs/toolkit'
 import * as reactRedux from 'react-redux'
 import * as reactToastify from 'react-toastify'
 import * as primeConfirmDialog from 'primereact/confirmdialog'
+import * as i18next from 'i18next'
+import * as reactI18next from 'react-i18next'
 import { dependencies } from '../../package.json'
 import { version } from '../../shared/package.json'
 import { routerExports } from './hostRouterExports'
 
 // Addons import @ynput/ayon-frontend-shared, @reduxjs/toolkit, react-redux, react-router,
-// react-toastify and primereact/confirmdialog. Providing the host's own modules under those
-// names makes addons that share them use the host's instances: one RTK Query api and cache, one
-// root reducer, the same React contexts, the host's router, its toast container and its confirm
-// dialog.
+// react-toastify, primereact/confirmdialog, i18next and react-i18next. Providing the host's
+// own modules under those names makes addons that share them use the host's instances: one
+// RTK Query api and cache, one root reducer, the same React contexts, the host's router, its
+// toast container, its confirm dialog and one i18n instance/language.
 // See src/remote/AGENTS.md.
 
 const PACKAGE = '@ynput/ayon-frontend-shared'
@@ -72,6 +74,9 @@ export const shareHostModules = () =>
     'primereact/confirmdialog': share(dependencies['primereact'], async () =>
       asLib(primeConfirmDialog),
     ),
+    // one i18n instance so addons share the host language and resource bundles
+    i18next: share(dependencies['i18next'], async () => asLib(i18next)),
+    'react-i18next': share(dependencies['react-i18next'], async () => asLib(reactI18next)),
     ...Object.fromEntries(
       ENTRY_NAMES.map((entry) => [
         entry === 'index' ? PACKAGE : `${PACKAGE}/${entry}`,

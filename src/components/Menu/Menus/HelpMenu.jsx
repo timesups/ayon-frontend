@@ -1,21 +1,23 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Menu } from '@shared/components'
 import { useFeedback } from '@shared/components'
 
 export const HelpMenu = ({ user, ...props }) => {
+  const { t } = useTranslation('nav')
   const { openSupport, openFeedback, openPortal, loaded } = useFeedback()
 
   const help = [
     {
       id: 'forum',
-      label: 'Community Forum',
+      label: t('help.communityForum'),
       link: 'https://community.ynput.io/',
       icon: 'forum',
       target: '_blank',
     },
     {
       id: 'discord',
-      label: 'Discord Server',
+      label: t('help.discordServer'),
       link: 'https://discord.gg/ynput',
       img: '/Discord-Symbol-White.svg',
       target: '_blank',
@@ -23,21 +25,21 @@ export const HelpMenu = ({ user, ...props }) => {
     { id: 'divider' },
     {
       id: 'documentation',
-      label: 'Dev Portal',
+      label: t('help.devPortal'),
       link: 'https://docs.ayon.dev/',
       icon: 'code',
       target: '_blank',
     },
     {
       id: 'api',
-      label: 'REST API',
+      label: t('help.restApi'),
       link: '/doc/api',
       icon: 'api',
       target: '_blank',
     },
     {
       id: 'graphql',
-      label: 'GraphQL Explorer',
+      label: t('help.graphqlExplorer'),
       link: '/explorer',
       icon: 'hub',
       target: '_blank',
@@ -47,19 +49,19 @@ export const HelpMenu = ({ user, ...props }) => {
   const feedback = [
     {
       id: 'help',
-      label: 'Help center',
+      label: t('help.helpCenter'),
       icon: 'help',
       onClick: () => openPortal('MainView'),
     },
     {
       id: 'changelog',
-      label: 'Latest changes',
+      label: t('help.latestChanges'),
       icon: 'track_changes',
       onClick: () => openSupport('Changelog'),
     },
     {
       id: 'feedback',
-      label: 'Submit Feedback',
+      label: t('help.submitFeedback'),
       icon: 'feedback',
       onClick: () => openFeedback(),
     },

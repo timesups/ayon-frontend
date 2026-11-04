@@ -1,6 +1,7 @@
 import { Dropdown } from '@ynput/ayon-react-components'
 import { useAppSelector } from '@state/store'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useListBundlesQuery } from '@shared/api'
 import styled from 'styled-components'
 import type { BundleModel } from '@shared/api/generated/bundles'
@@ -27,12 +28,12 @@ const BUNDLE_TYPE_ORDER: Record<BundleType, number> = {
   default: 4, // For any other types that might be added in the future
 }
 
-const BUNDLE_BADGES: Record<BundleType, { label?: string; className?: string }> = {
-  production: { label: 'P', className: 'production' },
-  staging: { label: 'S', className: 'staging' },
-  dev: { label: 'Dev' },
-  project: { label: 'Project', className: 'project' },
-  default: {},
+const BUNDLE_BADGE_CLASS: Record<BundleType, string | undefined> = {
+  production: 'production',
+  staging: 'staging',
+  dev: undefined,
+  project: 'project',
+  default: undefined,
 }
 
 // Utility functions
@@ -95,18 +96,28 @@ interface DropdownBundleItemProps {
 }
 
 const DropdownBundleItem = ({ bundle, isSelected }: DropdownBundleItemProps) => {
-  if (!bundle) return <BundleDropdownItemContainer>Select a bundle...</BundleDropdownItemContainer>
+  const { t } = useTranslation('settings')
 
-  const typeBadge = BUNDLE_BADGES[bundle.type]
+  if (!bundle) {
+    return <BundleDropdownItemContainer>{t('selectABundleEllipsis')}</BundleDropdownItemContainer>
+  }
+
+  const badgeLabels: Record<BundleType, string | undefined> = {
+    production: 'P',
+    staging: 'S',
+    dev: t('dev'),
+    project: t('project'),
+    default: undefined,
+  }
 
   return (
     <BundleDropdownItemContainer className={clsx({ selected: isSelected })}>
       <BundleLabel>{bundle.label}</BundleLabel>
       {bundle.type !== 'default' && (
         <BadgeContainer>
-          <DropdownBadge className={typeBadge.className}>
-            {typeBadge.label}
-            {bundle.isDevMine ? ' (me)' : ''}
+          <DropdownBadge className={BUNDLE_BADGE_CLASS[bundle.type]}>
+            {badgeLabels[bundle.type]}
+            {bundle.isDevMine ? ` ${t('me')}` : ''}
           </DropdownBadge>
         </BadgeContainer>
       )}
@@ -127,6 +138,7 @@ interface BundlesSelectorProps {
 }
 
 const BundlesSelector = ({ selected, onChange, disabled }: BundlesSelectorProps) => {
+  const { t } = useTranslation('settings')
   const { data: { bundles = [] } = {} } = useListBundlesQuery({ archived: false })
   const userName = useAppSelector((state) => state.user.name)
   const devMode = useAppSelector((state) => state.user.attrib.developerMode)
@@ -215,7 +227,7 @@ const BundlesSelector = ({ selected, onChange, disabled }: BundlesSelectorProps)
       )}
       searchOnNumber={10}
       disabled={disabled}
-      placeholder="No bundle selected"
+      placeholder={t('noBundleSelected')}
     />
   )
 }

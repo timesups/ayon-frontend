@@ -2,6 +2,7 @@ import { useGetProjectFoldersQuery } from '@shared/api'
 import { getProjectDisplayName } from '@shared/util'
 import { ExpandedState, RowSelectionState } from '@tanstack/react-table'
 import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import buildProjectsTableData, { buildProjectFolderRowId } from './buildProjectsTableData'
 import { MENU_ID } from './ProjectsListTableHeader'
 import useProjectMenuController from './hooks/useProjectMenuController'
@@ -39,6 +40,7 @@ const ProjectsList: FC<ProjectsListProps> = ({
   hidden,
   pt,
 }) => {
+  const { t } = useTranslation('dashboard')
   // GET USER PREFERENCES (moved to hook)
   const { powerLicense } = usePowerpack()
   const {
@@ -228,7 +230,7 @@ const ProjectsList: FC<ProjectsListProps> = ({
         onSelect={onSelect}
         onOpenProject={onOpenProject}
         enableClickToDeselect={allowEmptySelection}
-        title="Projects"
+        title={t('projectsTitle')}
         showAddProject={canCreateProject && !hidden?.['add-project']}
         onNewProject={onNewProject}
         toggleMenu={toggleMenu}

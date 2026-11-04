@@ -1,0 +1,23 @@
+{
+  "production": "Production",
+  "staging": "Staging",
+  "dev": "Dev",
+  "active": "Active",
+  "project": "Project",
+  "me": "(me)",
+  "saveChanges": "Save Changes",
+  "clearChanges": "Clear Changes",
+  "selectABundle": "Select a bundle",
+  "selectABundleEllipsis": "Select a bundle...",
+  "noBundleSelected": "No bundle selected",
+  "setupPipeline": "Setup pipeline",
+  "noDevBundle": "No dev bundle found for your user. Please create one first.",
+  "noEditPermissions": "You don't have edit permissions",
+  "noBundleSetTo": "WARNING: No bundle set to {{variant}}",
+  "noAddonsFound": "No addons found",
+  "addon": "Addon",
+  "version": "Version",
+  "studioSettings": "Studio Settings",
+  "projectsManager": "Projects Manager",
+  "breadcrumbProject": "Project"
+}

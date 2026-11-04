@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import * as Styled from './UserDashboardNoProjects.styled'
 import NoProducts from './NoProducts'
 import { Button } from '@ynput/ayon-react-components'
@@ -8,6 +9,7 @@ import { useSelector } from 'react-redux'
 import { $Any } from '@types'
 
 const UserDashboardNoProjects = () => {
+  const { t } = useTranslation('dashboard')
   const [openNewProject, setOpenNewProject] = useState(false)
   const user = useSelector((state: $Any) => state.user)
   const newProjectButtonVisible = user.data.isAdmin || user.data.isManager
@@ -15,10 +17,10 @@ const UserDashboardNoProjects = () => {
 
   return (
     <Styled.Container>
-      <NoProducts label="No Projects" error={undefined} />
+      <NoProducts label={t('noProjects')} error={undefined} />
       {newProjectButtonVisible && (
         <Button
-          label="Create first project"
+          label={t('createFirstProject')}
           variant="filled"
           icon="create_new_folder"
           onClick={() => setOpenNewProject(true)}

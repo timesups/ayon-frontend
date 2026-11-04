@@ -10,6 +10,7 @@ import {
   MouseEvent,
   KeyboardEvent,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
 import InboxDetailsPanel from '../InboxDetailsPanel'
 import Shortcuts from '@containers/Shortcuts'
@@ -65,7 +66,7 @@ import type { InboxMessage as InboxMessageType } from '@/services/inbox/inboxTra
 
 const placeholderMessages: PlaceholderMessage[] = Array.from({ length: 100 }, (_, i) => ({
   activityId: `placeholder-${i}`,
-  folderName: 'Loading...',
+  folderName: '…',
   thumbnail: { icon: 'folder' },
   read: false,
   isPlaceholder: true,
@@ -95,6 +96,7 @@ interface InboxProps {
 }
 
 const Inbox = ({ filter }: InboxProps) => {
+  const { t } = useTranslation('inbox')
   const dispatch = useAppDispatch()
   const { setHighlightedActivities } = useDetailsPanelContext()
   const {
@@ -509,7 +511,7 @@ const Inbox = ({ filter }: InboxProps) => {
 
   // the inline button on any selected row acts on the whole selection
   const isMultiSelected = selected.length > 1
-  const clearVerb = isActive ? 'Clear' : 'Unclear'
+  const clearVerb = isActive ? t('clear') : t('unclear')
   const hasReadMessages = messages.some((m) => m.read)
 
   const getHoveredMessageId = (e: MouseEvent | KeyboardEvent, closest = ''): string | null => {
@@ -551,14 +553,16 @@ const Inbox = ({ filter }: InboxProps) => {
       return [
         {
           id: 'clear',
-          label: `${isActive ? 'Clear' : 'Unclear'} ${selected.length}`,
+          label: isActive
+            ? t('clearN', { count: selected.length })
+            : t('unclearN', { count: selected.length }),
           icon: isActive ? 'done' : 'replay',
           shortcut: 'c',
           command: clearSelected,
         },
         {
           id: allRead ? 'unread' : 'read',
-          label: allRead ? 'Mark as unread' : 'Mark as read',
+          label: allRead ? t('markAsUnread') : t('markAsRead'),
           icon: allRead ? 'mark_email_unread' : 'drafts',
           disabled: !isActive,
           shortcut: 'x',
@@ -577,14 +581,14 @@ const Inbox = ({ filter }: InboxProps) => {
     return [
       {
         id: 'clear',
-        label: isActive ? 'Clear' : 'Unclear',
+        label: isActive ? t('clear') : t('unclear'),
         icon: isActive ? 'done' : 'replay',
         shortcut: 'c',
         command: () => clearMessages(id, group.messages, group.projectName),
       },
       {
         id: isRead ? 'unread' : 'read',
-        label: isRead ? 'Mark as unread' : 'Mark as read',
+        label: isRead ? t('markAsUnread') : t('markAsRead'),
         icon: isRead ? 'mark_email_unread' : 'drafts',
         disabled: !isActive,
         shortcut: 'x',
@@ -693,28 +697,24 @@ const Inbox = ({ filter }: InboxProps) => {
                       onClick={() => handleClearAll(true)}
                       disabled={!hasReadMessages}
                       data-tooltip={
-                        isChipFiltered
-                          ? 'Clears only the read messages matching the filters'
-                          : 'Clears read messages, unread ones stay'
+                        isChipFiltered ? t('clearReadFilteredTooltip') : t('clearReadTooltip')
                       }
                     >
-                      Clear read
+                      {t('clearRead')}
                     </Button>
                     <Button
                       icon="done_all"
                       onClick={() => handleClearAll()}
                       disabled={!messages.length}
                       shortcut={{ children: getPlatformShortcutKey('c', [KeyMode.Shift]) }}
-                      data-tooltip={
-                        isFiltered ? 'Clears only the messages matching the filters' : undefined
-                      }
+                      data-tooltip={isFiltered ? t('clearFilteredTooltip') : undefined}
                     >
-                      Clear all
+                      {t('clearAll')}
                     </Button>
                   </>
                 )}
                 <Button icon="refresh" onClick={refreshInbox} shortcut={{ children: 'R' }}>
-                  Refresh
+                  {t('refresh')}
                 </Button>
               </Styled.Tools>
               <DetailsPanelSplitter
@@ -759,7 +759,9 @@ const Inbox = ({ filter }: InboxProps) => {
                           }
                           clearLabel={
                             isMultiSelected && selected.includes(group.activityId)
-                              ? `${clearVerb} selection`
+                              ? isActive
+                                ? t('clearSelection')
+                                : t('unclearSelection')
                               : clearVerb
                           }
                           clearIcon={isActive ? 'done' : 'replay'}
@@ -783,7 +785,7 @@ const Inbox = ({ filter }: InboxProps) => {
                         root={listRef.current}
                       >
                         <Styled.LoadMore onClick={handleLoadMore}>
-                          {isFetchingInbox ? 'Loading more...' : 'Load more'}
+                          {isFetchingInbox ? t('loadingMore') : t('loadMore')}
                         </Styled.LoadMore>
                       </InView>
                     )}
@@ -791,7 +793,7 @@ const Inbox = ({ filter }: InboxProps) => {
                   {!isLoadingAny && (errorInbox || !messagesData.length) && (
                     <EmptyPlaceholder
                       icon="done_all"
-                      message="All caught up! No messages to show."
+                      message={t('allCaughtUp')}
                       error={errorInbox || globalError.projects}
                     />
                   )}

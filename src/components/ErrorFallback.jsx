@@ -2,6 +2,7 @@ import { FeedbackProvider, useFeedback } from '@shared/components'
 import { useAppSelector } from '@state/store'
 import { Button, Panel, Section } from '@ynput/ayon-react-components'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
 import { getPlatformShortcutKey, KeyMode } from '@shared/util'
@@ -35,23 +36,30 @@ const StyledPanel = styled(Panel)`
 `
 
 const ErrorFallback = ({ error }) => {
+  const { t } = useTranslation('errors')
+
   if (error?.toString()?.includes('TypeError: Failed to fetch dynamically imported module:')) {
     return (
       <>
-        <DocumentTitle title="Oops • AYON" />
+        <DocumentTitle title={t('oopsTitle')} />
         <StyledPanel>
-        <h1>AYON has been updated. Please reload for changes.</h1>
-        <Button
-          label={'Reload page'}
-          icon="sync"
-          variant="filled"
-          onClick={() => window.location.reload(true)}
-        />
-        <span>1. If that does not work: try {getPlatformShortcutKey('r', [KeyMode.Shift, KeyMode.Ctrl])}</span>
-        <span>
-          2. If reloading does not work: try {getPlatformShortcutKey('Delete', [KeyMode.Shift, KeyMode.Ctrl])}. Then clear Cached images and
-          files.
-        </span>
+          <h1>{t('updatedReload')}</h1>
+          <Button
+            label={t('reloadPage')}
+            icon="sync"
+            variant="filled"
+            onClick={() => window.location.reload(true)}
+          />
+          <span>
+            {t('reloadHint1', {
+              shortcut: getPlatformShortcutKey('r', [KeyMode.Shift, KeyMode.Ctrl]),
+            })}
+          </span>
+          <span>
+            {t('reloadHint2', {
+              shortcut: getPlatformShortcutKey('Delete', [KeyMode.Shift, KeyMode.Ctrl]),
+            })}
+          </span>
         </StyledPanel>
       </>
     )
@@ -59,24 +67,25 @@ const ErrorFallback = ({ error }) => {
 
   return (
     <>
-      <DocumentTitle title="Oops • AYON" />
+      <DocumentTitle title={t('oopsTitle')} />
       <StyledPanel>
-      <h1>Something went wrong, please send a report to Ynput.</h1>
-      <pre>{error?.toString()}</pre>
-      <Section direction="row">
-        <FeedbackProvider>
-          <SupportButton error={error} />
-        </FeedbackProvider>
-        <a href="/">
-          <Button label={'Home'} icon="home" variant="filled" />
-        </a>
-      </Section>
+        <h1>{t('genericError')}</h1>
+        <pre>{error?.toString()}</pre>
+        <Section direction="row">
+          <FeedbackProvider>
+            <SupportButton error={error} />
+          </FeedbackProvider>
+          <a href="/">
+            <Button label={t('home')} icon="home" variant="filled" />
+          </a>
+        </Section>
       </StyledPanel>
     </>
   )
 }
 
 const SupportButton = ({ error }) => {
+  const { t } = useTranslation('errors')
   const { openSupport } = useFeedback()
   const user = useAppSelector((state) => state.user)
   const errorMessage = `I have encountered an error: ${error?.toString()}
@@ -89,7 +98,7 @@ User: ${user?.name || 'Unknown'} - ${
 
   return (
     <Button
-      label={'Send report'}
+      label={t('sendReport')}
       icon="report"
       onClick={() => openSupport('NewMessage', errorMessage)}
     />

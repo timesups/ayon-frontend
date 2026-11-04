@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
 import {
   FormRow,
   Section,
@@ -8,6 +9,7 @@ import {
   SaveButton,
   InputText,
   InputSwitch,
+  Dropdown,
 } from '@ynput/ayon-react-components'
 import { useUpdateUserMutation, useSetFrontendPreferencesMutation } from '@shared/api'
 import Avatar from '@components/Avatar/Avatar'
@@ -22,6 +24,7 @@ import { useDispatch } from 'react-redux'
 import { useNotifications } from '@context'
 import clsx from 'clsx'
 import { AvatarName } from './ProfilePage.styled'
+import i18n, { SUPPORTED_LANGUAGES, setAppLanguage } from '@/i18n'
 
 const FormsStyled = styled.section`
   flex: 1;
@@ -43,6 +46,7 @@ const FormsStyled = styled.section`
 
 const ProfilePage = ({ user = {}, isLoading }) => {
   const dispatch = useDispatch()
+  const { t } = useTranslation('account')
   const attributes = ayonClient.getAttribsByScope('user')
   const [showSetPassword, setShowSetPassword] = useState(false)
 
@@ -124,10 +128,10 @@ const ProfilePage = ({ user = {}, isLoading }) => {
       // reset form
       setInitData(formData)
       setChangesMade(false)
-      toast.success('Profile updated')
+      toast.success(t('profileUpdated'))
     } catch (error) {
       console.log(error)
-      toast.error('Unable to update profile')
+      toast.error(t('unableToUpdateProfile'))
       toast.error(getRequestErrorString(error))
     }
   }
@@ -136,7 +140,11 @@ const ProfilePage = ({ user = {}, isLoading }) => {
   const [updatePreferences, { isLoading: isUpdatingPreferences }] =
     useSetFrontendPreferencesMutation()
 
-  const initPreferences = { notifications: false, notificationSound: false }
+  const initPreferences = {
+    notifications: false,
+    notificationSound: false,
+    language: i18n.language?.startsWith('zh') ? 'zh-Hans' : 'en',
+  }
   const [initPreferencesData, setInitPreferencesData] = useState(initPreferences)
   const [preferencesData, setPreferencesData] = useState(initPreferences)
   const [preferenceChanges, setPreferenceChanges] = useState(false)
@@ -145,10 +153,14 @@ const ProfilePage = ({ user = {}, isLoading }) => {
   useEffect(() => {
     if (user && !isLoading) {
       const { data = {} } = user
+      const language =
+        data.frontendPreferences?.language ||
+        (i18n.language?.startsWith('zh') ? 'zh-Hans' : 'en')
 
       const newPreferencesData = {
         notifications: data.frontendPreferences?.notifications,
         notificationSound: data.frontendPreferences?.notificationSound,
+        language,
       }
 
       setPreferencesData(newPreferencesData)
@@ -204,7 +216,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
         }
       }
     } catch (error) {
-      toast.error('Unable to update preferences')
+      toast.error(t('unableToUpdatePreferences'))
     }
   }
 
@@ -217,6 +229,26 @@ const ProfilePage = ({ user = {}, isLoading }) => {
     })
   }
 
+  const handleLanguageChange = async (values) => {
+    const language = values?.[0]
+    if (!language) return
+
+    setPreferencesData((prev) => ({ ...prev, language }))
+    await setAppLanguage(language)
+
+    try {
+      await updatePreferences({
+        userName: user.name,
+        patchData: { language },
+      }).unwrap()
+      dispatch(updateUserPreferences({ language }))
+      setInitPreferencesData((prev) => ({ ...prev, language }))
+      setPreferenceChanges(false)
+    } catch (error) {
+      toast.error(t('unableToUpdatePreferences'))
+    }
+  }
+
   const handleSaveAll = async () => {
     if (changesMade) await onSave()
     if (preferenceChanges) await onSavePreferences()
@@ -225,8 +257,8 @@ const ProfilePage = ({ user = {}, isLoading }) => {
   const notificationsDisabled =
     window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' // disable if not on HTTPS or localhost
   const notificationsTooltip = notificationsDisabled
-    ? 'Browser notifications only work over HTTPS'
-    : 'Get notifications on your device'
+    ? t('notificationsHttpsOnly')
+    : t('notificationsTooltip')
 
   return (
     <main>
@@ -234,10 +266,12 @@ const ProfilePage = ({ user = {}, isLoading }) => {
         <FormsStyled>
           <Avatar user={user} />
           <AvatarName className={clsx({ loading: !userName || isLoading }, 'shimmer-lightest')}>
-            <span className={Type.headlineMedium}>{userName ? userName : 'User FullName'}</span>
+            <span className={Type.headlineMedium}>
+              {userName ? userName : t('userFullNamePlaceholder')}
+            </span>
           </AvatarName>
           <Panel style={{ background: 'none' }}>
-            <FormRow label="Username" key="Username">
+            <FormRow label={t('username')} key="Username">
               <InputText value={name} disabled />
             </FormRow>
             <UserAttribForm
@@ -248,9 +282,9 @@ const ProfilePage = ({ user = {}, isLoading }) => {
             />
 
             {!user?.data?.disablePasswordLogin && (
-              <FormRow label="Password" key="Password">
+              <FormRow label={t('password')} key="Password">
                 <LockedInput
-                  label="Password"
+                  label={t('password')}
                   value={password}
                   type="password"
                   onEdit={() => setShowSetPassword(true)}
@@ -258,7 +292,17 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               </FormRow>
             )}
 
-            <FormRow label="Desktop Notifications" key="notifications">
+            <FormRow label={t('language')} key="language">
+              <Dropdown
+                value={preferencesData.language ? [preferencesData.language] : ['en']}
+                options={[...SUPPORTED_LANGUAGES]}
+                onChange={handleLanguageChange}
+                disabled={isUpdatingPreferences || isLoading}
+                style={{ flexGrow: 1 }}
+              />
+            </FormRow>
+
+            <FormRow label={t('desktopNotifications')} key="notifications">
               <div data-tooltip={notificationsTooltip} style={{ width: 'fit-content' }}>
                 <InputSwitch
                   checked={preferencesData.notifications}
@@ -269,11 +313,8 @@ const ProfilePage = ({ user = {}, isLoading }) => {
               </div>
             </FormRow>
 
-            <FormRow label="Notification Sound" key="notificationSound">
-              <div
-                data-tooltip="Get a little chime sound on new important notifications"
-                style={{ width: 'fit-content' }}
-              >
+            <FormRow label={t('notificationSound')} key="notificationSound">
+              <div data-tooltip={t('notificationSoundTooltip')} style={{ width: 'fit-content' }}>
                 <InputSwitch
                   checked={preferencesData.notificationSound}
                   id={'notificationSound'}
@@ -285,7 +326,7 @@ const ProfilePage = ({ user = {}, isLoading }) => {
 
             <SaveButton
               onClick={handleSaveAll}
-              label="Save profile"
+              label={t('saveProfile')}
               active={changesMade || preferenceChanges}
               saving={isUpdatingUser || isUpdatingPreferences}
               style={{ padding: '6px 18px', marginLeft: 'auto' }}

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { Dropdown, DropdownProps } from '@ynput/ayon-react-components'
 
 import { useListBundlesQuery } from '@shared/api'
@@ -52,6 +53,7 @@ export const BundleBadges = ({
   endContent,
   previous,
 }: BundleBadgesProps) => {
+  const { t } = useTranslation('settings')
   const userName = useSelector((state: $Any) => state.user.name)
 
   let prodBadge = null
@@ -65,7 +67,7 @@ export const BundleBadges = ({
         style={{ backgroundColor: 'var(--color-hl-production)' }}
       >
         {startContent}
-        Production
+        {t('production')}
         {endContent}
       </DropdownBadge>
     )
@@ -77,7 +79,7 @@ export const BundleBadges = ({
         style={{ backgroundColor: 'var(--color-hl-staging)' }}
       >
         {startContent}
-        Staging
+        {t('staging')}
         {endContent}
       </DropdownBadge>
     )
@@ -90,7 +92,7 @@ export const BundleBadges = ({
         style={{ backgroundColor: 'var(--color-hl-developer)' }}
       >
         {startContent}
-        {bundle.activeUser === userName ? 'Active' : 'Dev'}
+        {bundle.activeUser === userName ? t('active') : t('dev')}
         {endContent}
       </DropdownBadge>
     )
@@ -140,6 +142,7 @@ const BundleDropdown = ({
   devOnly,
   ...props
 }: BundleDropdownProps) => {
+  const { t } = useTranslation('settings')
   const { data: { bundles = [] } = {}, isLoading, isError } = useListBundlesQuery({})
   const devMode = useSelector((state: $Any) => state.user.attrib.developerMode)
 
@@ -183,7 +186,7 @@ const BundleDropdown = ({
       value={bundleName ? [bundleName] : null}
       options={bundleOptions}
       onChange={handleChange}
-      placeholder="Select a bundle"
+      placeholder={t('selectABundle')}
       style={style || { flex: 1 }}
       disabled={disabled}
       valueTemplate={(value, _selected, isOpen) => (

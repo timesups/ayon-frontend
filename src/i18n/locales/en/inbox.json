@@ -1,0 +1,20 @@
+{
+  "clear": "Clear",
+  "unclear": "Unclear",
+  "clearN": "Clear {{count}}",
+  "unclearN": "Unclear {{count}}",
+  "clearSelection": "Clear selection",
+  "unclearSelection": "Unclear selection",
+  "markAsRead": "Mark as read",
+  "markAsUnread": "Mark as unread",
+  "clearRead": "Clear read",
+  "clearAll": "Clear all",
+  "refresh": "Refresh",
+  "loadMore": "Load more",
+  "loadingMore": "Loading more...",
+  "loading": "Loading...",
+  "allCaughtUp": "All caught up! No messages to show.",
+  "clearReadFilteredTooltip": "Clears only the read messages matching the filters",
+  "clearReadTooltip": "Clears read messages, unread ones stay",
+  "clearFilteredTooltip": "Clears only the messages matching the filters"
+}

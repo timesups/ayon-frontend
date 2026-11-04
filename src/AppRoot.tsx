@@ -3,6 +3,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { ToastContainer, Flip } from 'react-toastify'
 import store, { useAppDispatch, useAppSelector } from '@state/store'
 import { SocketProvider } from '@shared/context'
+import I18nProvider from './i18n/I18nProvider'
 import App from './app'
 
 // Kept out of index.tsx so the entry module defines no components: an entry that React Refresh
@@ -28,21 +29,23 @@ const SocketProviderWrapper = (props: { children: React.ReactNode }) => {
 const AppRoot = () => (
   <React.StrictMode>
     <ReduxProvider store={store}>
-      <SocketProviderWrapper>
-        <div id="root-header" className={import.meta.env.DEV ? 'DEV' : ''} />
-        <App />
-        <ToastContainer
-          position="bottom-right"
-          transition={Flip}
-          theme="dark"
-          pauseOnFocusLoss={false}
-          newestOnTop={false}
-          draggable={false}
-          closeOnClick={true}
-          autoClose={5000}
-          limit={5}
-        />
-      </SocketProviderWrapper>
+      <I18nProvider>
+        <SocketProviderWrapper>
+          <div id="root-header" className={import.meta.env.DEV ? 'DEV' : ''} />
+          <App />
+          <ToastContainer
+            position="bottom-right"
+            transition={Flip}
+            theme="dark"
+            pauseOnFocusLoss={false}
+            newestOnTop={false}
+            draggable={false}
+            closeOnClick={true}
+            autoClose={5000}
+            limit={5}
+          />
+        </SocketProviderWrapper>
+      </I18nProvider>
     </ReduxProvider>
   </React.StrictMode>
 )

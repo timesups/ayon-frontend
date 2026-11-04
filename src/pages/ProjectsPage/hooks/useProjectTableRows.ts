@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import i18n from 'i18next'
 import type { Project, ProjectFolderModel } from '@shared/api'
 import {
   buildGroupedData,
@@ -44,8 +45,6 @@ export type ProjectGroupRow = ProjectTableRow & ListTableGroupRow<ProjectTableRo
 
 type ProjectRowEntry = ProjectTableRow | ProjectGroupRow
 
-const EMPTY_FOLDER_PLACEHOLDER_LABEL = 'No projects in this folder'
-
 export const isProjectGroupRow = (row: ProjectTableRow): row is ProjectGroupRow =>
   isListTableGroupRow(row)
 
@@ -56,7 +55,7 @@ export const isEmptyFolderPlaceholderRow = (
 const createEmptyFolderPlaceholderRow = (groupKey: string): ProjectTableRow => ({
   id: `${groupKey}|__empty-folder-placeholder`,
   name: '',
-  label: EMPTY_FOLDER_PLACEHOLDER_LABEL,
+  label: i18n.t('dashboard:noProjectsInFolder'),
   code: null,
   active: null,
   library: null,

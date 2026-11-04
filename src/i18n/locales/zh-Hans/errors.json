@@ -1,0 +1,16 @@
+{
+  "codeFallback": "错误",
+  "pageNotFound": "页面未找到",
+  "somethingWentWrong": "出错了。",
+  "pageNotFoundDescription": "找不到你要访问的页面。",
+  "returnToDashboard": "返回仪表盘",
+  "oopsTitle": "出错了 • AYON",
+  "updatedReload": "AYON 已更新，请刷新页面以获取最新内容。",
+  "reloadPage": "刷新页面",
+  "reloadHint1": "1. 若无效：请尝试 {{shortcut}}",
+  "reloadHint2": "2. 若仍无效：请尝试 {{shortcut}}，然后清除缓存的图片和文件。",
+  "genericError": "出错了，请向 Ynput 发送报告。",
+  "sendReport": "发送报告",
+  "home": "首页",
+  "failedBootstrap": "无法启动引导设置"
+}

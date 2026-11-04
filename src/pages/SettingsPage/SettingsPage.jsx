@@ -1,4 +1,5 @@
 import { useMemo, useEffect, lazy } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Navigate, useParams } from 'react-router-dom'
 import { useGetSettingsAddonsQuery } from '@shared/api'
 
@@ -22,6 +23,7 @@ const AddonsManager = lazy(() => import('./AddonsManager'))
 const ServerConfig = lazy(() => import('./ServerConfig/ServerConfig'))
 
 const SettingsPage = () => {
+  const { t } = useTranslation('nav')
   const { module, addonName } = useParams()
   const { user } = useGlobalContext()
   const { uiExposureLevel: level = 0 } = user || {}
@@ -87,19 +89,19 @@ const SettingsPage = () => {
   const links = useMemo(() => {
     const adminExtras = [
       {
-        name: 'Global',
+        name: t('settings.global'),
         path: '/settings/server',
         module: 'server',
         accessLevels: ['admin'],
       },
       {
-        name: 'Addons',
+        name: t('settings.addons'),
         path: '/settings/addons',
         module: 'addons',
         accessLevels: ['manager'],
       },
       {
-        name: 'Bundles',
+        name: t('settings.bundles'),
         path: '/settings/bundles',
         module: 'bundles',
         accessLevels: ['manager'],
@@ -109,45 +111,45 @@ const SettingsPage = () => {
 
     let result = [
       {
-        name: 'Studio settings',
+        name: t('settings.studioSettings'),
         path: '/settings/studio',
         module: 'studio',
         accessLevels: ['manager'],
         shortcut: 'S+S',
       },
       {
-        name: 'Site settings',
+        name: t('settings.siteSettings'),
         path: '/settings/site',
         module: 'site',
         accessLevels: [],
       },
       {
-        name: 'Anatomy presets',
+        name: t('settings.anatomyPresets'),
         path: '/settings/anatomyPresets',
         module: 'anatomyPresets',
         accessLevels: ['manager'],
       },
       {
-        name: 'Attributes',
+        name: t('settings.attributes'),
         path: '/settings/attributes',
         module: 'attributes',
         accessLevels: ['manager'],
       },
       {
-        name: 'Users',
+        name: t('settings.users'),
         path: '/settings/users',
         module: 'users',
         accessLevels: ['manager'],
         shortcut: 'U+U',
       },
       {
-        name: 'Permissions',
+        name: t('settings.permissions'),
         path: '/settings/accessGroups',
         module: 'accessGroups',
         accessLevels: ['manager'],
       },
       {
-        name: 'Secrets',
+        name: t('settings.secrets'),
         path: '/settings/secrets',
         module: 'secrets',
         accessLevels: ['manager'],
@@ -178,10 +180,12 @@ const SettingsPage = () => {
       node: <HelpButton module={addonName || module} pageName={addonTitle} />,
     })
     return result
-  }, [addonsData, isManager])
+  }, [addonsData, isManager, t, addonName, module])
 
   const title = useTitle(addonName || module, links, '', '')
-  const revertedTitle = title === 'Studio settings' ? title : title + ' • Studio settings'
+  const studioSettingsLabel = t('settings.studioSettings')
+  const revertedTitle =
+    title === studioSettingsLabel ? title : title + ' • ' + studioSettingsLabel
   return (
     <>
       <DocumentTitle title={revertedTitle} />

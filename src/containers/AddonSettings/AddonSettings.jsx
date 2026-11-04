@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 
 import { useCreateContextMenu } from '@shared/containers/ContextMenu'
@@ -103,6 +104,7 @@ const isChildPath = (childPath, parentPath) => {
 }
 
 const AddonSettings = ({ projectName, showSites = false, bypassPermissions = false }) => {
+  const { t } = useTranslation('settings')
   const isUser = useSelector((state) => state.user.data.isUser)
   //const navigate = useNavigate()
   const user = useSelector((state) => state.user)
@@ -693,19 +695,19 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
       <>
         <Spacer />
         <Button
-          label="Clear Changes"
+          label={t('clearChanges')}
           icon="clear"
           onClick={onRevertAllChanges}
           disabled={!canCommit}
         />
         <SaveButton
-          label="Save Changes"
+          label={t('saveChanges')}
           disabled={
             (!bypassPermissions && !userPermissions.canEditSettings(projectName)) || !canCommit
           }
           data-tooltip={
             !bypassPermissions && !userPermissions.canEditSettings(projectName)
-              ? "You don't have edit permissions"
+              ? t('noEditPermissions')
               : undefined
           }
           onClick={onSave}
@@ -714,7 +716,7 @@ const AddonSettings = ({ projectName, showSites = false, bypassPermissions = fal
         />
       </>
     ),
-    [onRevertAllChanges, onSave, canCommit],
+    [onRevertAllChanges, onSave, canCommit, t, bypassPermissions, userPermissions, projectName],
   )
 
   const onSelectAddon = (newSelection) => {

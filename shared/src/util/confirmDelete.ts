@@ -1,4 +1,5 @@
 import { upperFirst } from 'lodash'
+import i18n from 'i18next'
 import { confirmDialog, ConfirmDialog, ConfirmDialogOptions } from 'primereact/confirmdialog'
 import { toast } from 'react-toastify'
 
@@ -18,7 +19,7 @@ export const confirmDeleteDialog = confirmDialog
 
 export const confirmDelete = ({
   label = '',
-  message = 'Are you sure? This cannot be undone',
+  message,
   deleteLabel,
   accept = async () => {},
   showToasts = true,
@@ -28,18 +29,29 @@ export const confirmDelete = ({
   onFinish,
   ...props
 }: ConfirmDeleteOptions): ReturnType<typeof confirmDialog> => {
-  deleteLabel = deleteLabel || (isArchive ? 'Archive' : 'Delete')
-  const deleteLabelPresent = isArchive ? 'archiving' : 'deleting'
-  const deleteLabelPast = isArchive ? 'archived' : 'deleted'
+  const t = i18n.getFixedT(null, 'shared')
+  const resolvedMessage = message ?? t('confirmDelete.defaultMessage')
+  deleteLabel =
+    deleteLabel || (isArchive ? t('confirmDelete.archive') : t('confirmDelete.delete'))
+  const deleteLabelPresent = isArchive
+    ? t('confirmDelete.archiving')
+    : t('confirmDelete.deleting')
+  const deleteLabelPast = isArchive ? t('confirmDelete.archived') : t('confirmDelete.deleted')
 
   return confirmDialog({
-    header: props.header || `${deleteLabel} ${label}`,
-    message,
+    header: props.header || t('confirmDelete.header', { action: deleteLabel, label }),
+    message: resolvedMessage,
     accept: async () => {
       const toastId = showToasts
-        ? toast.loading(`${upperFirst(deleteLabelPresent)} ${label.toLowerCase()}...`, {
-            autoClose: false,
-          })
+        ? toast.loading(
+            t('confirmDelete.loading', {
+              action: upperFirst(deleteLabelPresent),
+              label: label.toLowerCase(),
+            }),
+            {
+              autoClose: false,
+            },
+          )
         : null
       try {
         await accept()
@@ -47,7 +59,7 @@ export const confirmDelete = ({
         showToasts &&
           toastId &&
           toast.update(toastId, {
-            render: `${label} ${deleteLabelPast}`,
+            render: t('confirmDelete.success', { label, result: deleteLabelPast }),
             type: 'success',
             autoClose: 5000,
             isLoading: false,
@@ -58,7 +70,8 @@ export const confirmDelete = ({
         const errorMessage =
           typeof error === 'string'
             ? error
-            : error.message || `Error ${deleteLabelPresent} ${label}`
+            : error.message ||
+              t('confirmDelete.error', { action: deleteLabelPresent, label })
 
         showToasts &&
           toastId &&
@@ -76,7 +89,7 @@ export const confirmDelete = ({
     },
     reject: () => {},
     acceptLabel: upperFirst(deleteLabel),
-    rejectLabel: 'Cancel',
+    rejectLabel: t('confirmDelete.cancel'),
     acceptClassName: 'button-danger',
     style: { minWidth: 400, maxWidth: 600 },
     ...props,

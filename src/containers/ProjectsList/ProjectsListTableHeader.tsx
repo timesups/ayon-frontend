@@ -3,6 +3,7 @@ import { Header, HeaderButton } from '@shared/containers/SimpleTable'
 import { theme } from '@ynput/ayon-react-components'
 import clsx from 'clsx'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useMenuContext } from '@shared/context'
 import styled from 'styled-components'
 
@@ -101,18 +102,19 @@ const ProjectsListTableHeader: FC<ProjectsListTableHeaderProps> = ({
   menuItems = [],
   toggleMenu,
 }) => {
+  const { t } = useTranslation('dashboard')
   const { menuOpen } = useMenuContext()
   const isOpen = menuOpen === MENU_ID
 
   const addButton = {
     icon: 'add',
-    tooltip: 'Add new project',
+    tooltip: t('addNewProject'),
     ...buttonLabels.add,
   }
 
   const searchButton = {
     icon: 'search',
-    tooltip: 'Search projects',
+    tooltip: t('searchProjects'),
     ...buttonLabels.search,
   }
   return (
@@ -146,7 +148,7 @@ const ProjectsListTableHeader: FC<ProjectsListTableHeaderProps> = ({
           {!hiddenButtons.includes('select-all') && onSelectAll && (
             <HeaderButton
               icon="checklist"
-              data-tooltip="Select all"
+              data-tooltip={t('selectAll')}
               onClick={onSelectAll}
               className="select-all"
             />

@@ -1,0 +1,16 @@
+{
+  "codeFallback": "ERROR",
+  "pageNotFound": "Page not found",
+  "somethingWentWrong": "Something went wrong.",
+  "pageNotFoundDescription": "We couldn't find the page you were looking for.",
+  "returnToDashboard": "Return to dashboard",
+  "oopsTitle": "Oops • AYON",
+  "updatedReload": "AYON has been updated. Please reload for changes.",
+  "reloadPage": "Reload page",
+  "reloadHint1": "1. If that does not work: try {{shortcut}}",
+  "reloadHint2": "2. If reloading does not work: try {{shortcut}}. Then clear Cached images and files.",
+  "genericError": "Something went wrong, please send a report to Ynput.",
+  "sendReport": "Send report",
+  "home": "Home",
+  "failedBootstrap": "Failed to launch bootstrap setup"
+}

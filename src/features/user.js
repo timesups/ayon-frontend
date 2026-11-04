@@ -12,6 +12,7 @@ const userSlice = createSlice({
       frontendPreferences: {
         notifications: false,
         notificationSound: false,
+        language: undefined,
         pinnedProjects: [],
         expandedAccessGroups: {},
         filters: {},

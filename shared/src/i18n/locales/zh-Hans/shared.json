@@ -1,0 +1,16 @@
+{
+  "confirmDelete": {
+    "defaultMessage": "确定要继续吗？此操作无法撤销",
+    "delete": "删除",
+    "archive": "归档",
+    "cancel": "取消",
+    "deleting": "正在删除",
+    "archiving": "正在归档",
+    "deleted": "已删除",
+    "archived": "已归档",
+    "header": "{{action}} {{label}}",
+    "loading": "{{action}} {{label}}...",
+    "success": "{{label}} {{result}}",
+    "error": "{{action}} {{label}} 时出错"
+  }
+}

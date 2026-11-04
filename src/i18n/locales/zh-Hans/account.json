@@ -1,0 +1,15 @@
+{
+  "username": "用户名",
+  "password": "密码",
+  "desktopNotifications": "桌面通知",
+  "notificationSound": "通知提示音",
+  "saveProfile": "保存资料",
+  "profileUpdated": "资料已更新",
+  "unableToUpdateProfile": "无法更新资料",
+  "unableToUpdatePreferences": "无法更新偏好设置",
+  "language": "语言",
+  "notificationsHttpsOnly": "浏览器通知仅在 HTTPS 下可用",
+  "notificationsTooltip": "在设备上接收通知",
+  "notificationSoundTooltip": "收到重要通知时播放提示音",
+  "userFullNamePlaceholder": "用户全名"
+}

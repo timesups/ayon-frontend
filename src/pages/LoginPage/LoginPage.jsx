@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { InputText, InputPassword, Button, Panel } from '@ynput/ayon-react-components'
 import { login } from '@state/user'
@@ -16,6 +17,7 @@ import LoginTerms from './LoginTerms'
 
 const LoginPage = ({ isFirstTime = false }) => {
   const dispatch = useDispatch()
+  const { t } = useTranslation('auth')
 
   // get query params from url
   const search = new URLSearchParams(window.location.search)
@@ -48,7 +50,7 @@ const LoginPage = ({ isFirstTime = false }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!(name && password)) {
-      toast.error('Please enter username and password to login')
+      toast.error(t('enterCredentials'))
       return
     }
 
@@ -64,7 +66,7 @@ const LoginPage = ({ isFirstTime = false }) => {
 
     if (!response || !response.data) {
       console.error('Login error', response)
-      toast.error('Unable to login, check the console for details')
+      toast.error(t('unableToLoginCheckConsole'))
       return
     }
 
@@ -132,7 +134,7 @@ const LoginPage = ({ isFirstTime = false }) => {
       console.error('SSO Callback error', err.response.data)
       toast.error(
         <>
-          <p>Unable to login using {providerConfig.name}:</p>
+          <p>{t('unableToLoginWithProvider', { provider: providerConfig.name })}</p>
           <p>{err.response?.data?.detail || `Error ${err.response.status}`}</p>
         </>,
       )
@@ -146,7 +148,7 @@ const LoginPage = ({ isFirstTime = false }) => {
     if (success && response?.data?.user) {
       console.debug('SSO Callback response', response.data)
       const data = response.data
-      toast.info(data.detail || `Logged in as ${data.user.name}`)
+      toast.info(data.detail || t('loggedInAs', { name: data.user.name }))
 
       user = data.user
       accessToken = data.token
@@ -157,7 +159,7 @@ const LoginPage = ({ isFirstTime = false }) => {
     } else if (success) {
       // successful request, without user data.
       // This should not happen, but we handle it gracefully
-      toast.error('Unable to login using SSO')
+      toast.error(t('unableToLoginSSO'))
       success = false
     }
 
@@ -253,7 +255,7 @@ const LoginPage = ({ isFirstTime = false }) => {
 
   return (
     <>
-      <DocumentTitle title="Login • AYON" />
+      <DocumentTitle title={t('title')} />
       <main className="center">
         {loginPageBackground && <Styled.BG src={loginPageBackground} />}
         <Styled.LoginForm>
@@ -271,25 +273,25 @@ const LoginPage = ({ isFirstTime = false }) => {
             <Styled.Methods>
               {showPasswordLogin ? (
                 <form onSubmit={handleSubmit}>
-                  <label id="username">Username</label>
+                  <label id="username">{t('username')}</label>
                   <InputText
                     autoFocus
-                    placeholder="Enter your username"
+                    placeholder={t('usernamePlaceholder')}
                     name="username"
-                    aria-label="Username"
+                    aria-label={t('username')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
-                  <label id="password">Password</label>
+                  <label id="password">{t('password')}</label>
                   <InputPassword
-                    placeholder="Enter password"
+                    placeholder={t('passwordPlaceholder')}
                     name="password"
-                    aria-label="Password"
+                    aria-label={t('password')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <Button type="submit">
-                    <span className="label">Login with password</span>
+                    <span className="label">{t('loginWithPassword')}</span>
                   </Button>
                 </form>
               ) : (
@@ -303,7 +305,7 @@ const LoginPage = ({ isFirstTime = false }) => {
             </Styled.Methods>
             {info?.passwordRecoveryAvailable && showPasswordLogin && (
               <a href="/passwordReset" style={{ margin: '8px 0' }}>
-                Reset password
+                {t('resetPassword')}
               </a>
             )}
             {showAllButton && (
@@ -312,7 +314,7 @@ const LoginPage = ({ isFirstTime = false }) => {
                 variant="text"
                 onClick={() => setShowAllProviders(true)}
               >
-                Show all login options
+                {t('showAllLoginOptions')}
               </Button>
             )}
             <LoginTerms />

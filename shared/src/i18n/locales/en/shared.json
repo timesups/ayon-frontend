@@ -1,0 +1,16 @@
+{
+  "confirmDelete": {
+    "defaultMessage": "Are you sure? This cannot be undone",
+    "delete": "Delete",
+    "archive": "Archive",
+    "cancel": "Cancel",
+    "deleting": "deleting",
+    "archiving": "archiving",
+    "deleted": "deleted",
+    "archived": "archived",
+    "header": "{{action}} {{label}}",
+    "loading": "{{action}} {{label}}...",
+    "success": "{{label}} {{result}}",
+    "error": "Error {{action}} {{label}}"
+  }
+}

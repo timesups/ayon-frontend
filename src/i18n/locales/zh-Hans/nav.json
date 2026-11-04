@@ -1,0 +1,74 @@
+{
+  "home": "首页",
+  "userMenu": "用户菜单",
+  "account": "账户",
+  "downloadLauncher": "下载启动器",
+  "signOut": "退出登录",
+  "inboxTitle": "收件箱",
+  "app": {
+    "projectsSettings": "项目设置",
+    "siteSettings": "站点设置",
+    "studioSettings": "工作室设置",
+    "eventViewer": "事件查看器",
+    "services": "服务",
+    "market": "市场",
+    "updatePipeline": "更新流水线",
+    "restartRequired": "需要重启",
+    "restartServer": "重启服务器",
+    "launchBootstrap": "启动引导设置"
+  },
+  "help": {
+    "communityForum": "社区论坛",
+    "discordServer": "Discord 服务器",
+    "devPortal": "开发者门户",
+    "restApi": "REST API",
+    "graphqlExplorer": "GraphQL 浏览器",
+    "helpCenter": "帮助中心",
+    "latestChanges": "最新变更",
+    "submitFeedback": "提交反馈"
+  },
+  "inbox": {
+    "important": "重要",
+    "other": "其他",
+    "cleared": "已清除",
+    "importantTooltip": "直接提及你的活动",
+    "otherTooltip": "分配给你或由你创建的任务变更"
+  },
+  "dashboard": {
+    "tasks": "任务",
+    "projects": "项目",
+    "planner": "计划"
+  },
+  "project": {
+    "overview": "总览",
+    "taskProgress": "任务进度",
+    "browser": "浏览器",
+    "products": "产品",
+    "lists": "列表",
+    "review": "审片",
+    "schedule": "排期",
+    "reports": "报表",
+    "workfiles": "工作文件"
+  },
+  "settings": {
+    "global": "全局",
+    "addons": "插件",
+    "bundles": "包",
+    "studioSettings": "工作室设置",
+    "siteSettings": "站点设置",
+    "anatomyPresets": "结构预设",
+    "attributes": "属性",
+    "users": "用户",
+    "permissions": "权限",
+    "secrets": "密钥"
+  },
+  "projectManager": {
+    "anatomy": "结构",
+    "projectSettings": "项目设置",
+    "projectPermissions": "项目权限",
+    "projectAccess": "项目访问",
+    "siteSettings": "站点设置",
+    "roots": "根路径",
+    "teams": "团队"
+  }
+}

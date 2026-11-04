@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@state/store'
 import { openViewer } from '@state/viewer'
@@ -72,7 +73,6 @@ const BUILT_IN_MODULES = [
 // Addon modules that are always shown in the nav.
 // When the addon remote page is available it is used; otherwise the Splash is shown.
 interface AddonPageConfig {
-  name: string
   module: string
   viewType?: string
   Splash: React.ComponentType
@@ -80,7 +80,6 @@ interface AddonPageConfig {
 
 const ADDON_PAGES: AddonPageConfig[] = [
   {
-    name: 'Schedule',
     module: 'scheduler',
     viewType: 'scheduler',
     Splash: SchedulerSplashscreen,
@@ -190,6 +189,7 @@ const ProjectPageInner = () => {
    * It parses the url, loads the project data, dispatches the
    * project data to the store, and renders the requested page.
    */
+  const { t } = useTranslation('nav')
   const { siteInfo } = useGlobalContext()
   const { uiExposureLevel = 0, frontendFlags = [] } = siteInfo || {}
   const {
@@ -257,21 +257,21 @@ const ProjectPageInner = () => {
   const links: NavLinkItem[] = useMemo(
     () => [
       {
-        name: 'Overview',
+        name: t('project.overview'),
         path: `/projects/${projectName}/overview`,
         module: 'overview',
         viewType: 'overview',
         uriSync: true,
       },
       {
-        name: 'Task progress',
+        name: t('project.taskProgress'),
         path: `/projects/${projectName}/tasks`,
         module: 'tasks',
         viewType: 'taskProgress',
         uriSync: true,
       },
       {
-        name: 'Browser',
+        name: t('project.browser'),
         path: `/projects/${projectName}/browser`,
         module: 'browser',
         uriSync: true,
@@ -279,38 +279,38 @@ const ProjectPageInner = () => {
         enabled: frontendFlags.includes(BROWSER_FLAG),
       },
       {
-        name: 'Products',
+        name: t('project.products'),
         path: `/projects/${projectName}/products`,
         module: 'products',
         viewType: 'versions',
         uriSync: true,
       },
       {
-        name: 'Lists',
+        name: t('project.lists'),
         path: `/projects/${projectName}/lists`,
         module: 'lists',
         viewType: 'lists',
       },
       {
-        name: 'Review',
+        name: t('project.review'),
         path: `/projects/${projectName}/reviews`,
         module: 'reviews',
         viewType: 'reviews',
       },
-      ...ADDON_PAGES.map(({ name, module: addonModule, viewType }) => ({
-        name,
+      ...ADDON_PAGES.map(({ module: addonModule, viewType }) => ({
+        name: addonModule === 'scheduler' ? t('project.schedule') : addonModule,
         path: `/projects/${projectName}/${addonModule}`,
         module: addonModule,
         viewType,
       })),
       {
-        name: 'Reports',
+        name: t('project.reports'),
         path: `/projects/${projectName}/reports`,
         module: 'reports',
         viewType: 'reports',
       },
       {
-        name: 'Workfiles',
+        name: t('project.workfiles'),
         path: `/projects/${projectName}/workfiles`,
         module: 'workfiles',
         uriSync: true,
@@ -350,7 +350,7 @@ const ProjectPageInner = () => {
         ),
       },
     ],
-    [addonsData, projectName, remotePages, module],
+    [addonsData, projectName, remotePages, module, addonName, frontendFlags, isAdmin, isManager, t],
   )
 
   const activeLink = useMemo(() => {

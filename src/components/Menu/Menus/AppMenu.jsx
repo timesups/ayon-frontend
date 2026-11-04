@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Menu } from '@shared/components'
 import YnputConnector from '@components/YnputCloud/YnputConnector'
 import { useRestartOnBoardingMutation } from '@queries/onBoarding/onBoarding'
@@ -8,6 +9,7 @@ import { useAppDispatch } from '@state/store'
 import { toggleReleaseInstaller } from '@state/releaseInstaller'
 
 export const AppMenu = ({ user, ...props }) => {
+  const { t } = useTranslation(['nav', 'errors'])
   const dispatch = useAppDispatch()
   // check if user is logged in and is manager or admin
   const isUser = user?.data?.isUser
@@ -26,7 +28,7 @@ export const AppMenu = ({ user, ...props }) => {
       await restartOnBoarding().unwrap()
       window.location.reload()
     } catch (error) {
-      toast.error('Failed to launch bootstrap setup')
+      toast.error(t('errors:failedBootstrap'))
     }
   }
 
@@ -39,7 +41,7 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'projectsManager',
       link: '/manageProjects/projectSettings',
-      label: 'Projects Settings',
+      label: t('app.projectsSettings'),
       icon: 'settings_applications',
       shortcut: 'P+P',
     },
@@ -49,7 +51,7 @@ export const AppMenu = ({ user, ...props }) => {
     items.unshift({
       id: 'siteSettings',
       link: '/settings/site',
-      label: 'Site Settings',
+      label: t('app.siteSettings'),
       icon: 'computer',
       shortcut: 'S+S',
     })
@@ -58,7 +60,7 @@ export const AppMenu = ({ user, ...props }) => {
     items.unshift({
       id: 'settings',
       link: '/settings/studio',
-      label: 'Studio Settings',
+      label: t('app.studioSettings'),
       icon: 'settings',
       shortcut: 'S+S',
     })
@@ -67,14 +69,14 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'events',
       link: '/events',
-      label: 'Event Viewer',
+      label: t('app.eventViewer'),
       icon: 'history',
       shortcut: 'E+E',
     },
     {
       id: 'services',
       link: '/services',
-      label: 'Services',
+      label: t('app.services'),
       icon: 'home_repair_service',
       shortcut: 'V+V',
     },
@@ -90,19 +92,19 @@ export const AppMenu = ({ user, ...props }) => {
     {
       id: 'market',
       link: '/market',
-      label: 'Market',
+      label: t('app.market'),
       icon: 'store',
       shortcut: 'M+M',
     },
     {
       id: 'releases',
-      label: 'Update Pipeline',
+      label: t('app.updatePipeline'),
       onClick: handleReleaseInstaller,
       icon: 'valve',
     },
     {
       id: 'restart',
-      label: isRestartRequired ? 'Restart Required' : 'Restart Server',
+      label: isRestartRequired ? t('app.restartRequired') : t('app.restartServer'),
       icon: 'restart_alt',
       onClick: confirmRestart,
       highlighted: isRestartRequired,
@@ -119,7 +121,7 @@ export const AppMenu = ({ user, ...props }) => {
     },
     {
       id: 'onboarding',
-      label: 'Launch Bootstrap Setup',
+      label: t('app.launchBootstrap'),
       onClick: handleBootstrapLaunch,
       icon: 'verified_user',
       isDev: true,

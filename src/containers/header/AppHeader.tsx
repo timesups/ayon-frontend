@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { UserImage } from '@shared/components'
 
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs'
@@ -43,6 +44,7 @@ const UserButton = styled(HeaderButton)`
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation('nav')
   const { menuOpen, toggleMenuOpen, setMenuOpen } = useMenuContext()
   const handleToggleMenu = (menu: string | false) => toggleMenuOpen(menu)
   const handleSetMenu = (menu: string | false) => setMenuOpen(menu)
@@ -104,7 +106,7 @@ const Header: React.FC = () => {
         <Link to={'/dashboard/tasks'}>
           <HeaderButton
             icon="home"
-            label="Home"
+            label={t('home')}
             variant="nav"
             className={clsx({ selected: location.pathname.startsWith('/dashboard') })}
             id="home-button"
@@ -161,7 +163,7 @@ const Header: React.FC = () => {
         <UserButton
           className={clsx({ active: menuOpen === 'user' })}
           onClick={() => handleToggleMenu('user')}
-          aria-label="User menu"
+          aria-label={t('userMenu')}
           ref={userButtonRef}
           variant="nav"
         >

@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppNavLinks from '@containers/header/AppNavLinks'
 import { useNavigate, useParams } from 'react-router-dom'
 import UserTasksContainer from './UserDashboardTasks/UserTasksContainer'
@@ -75,6 +76,7 @@ const StyledSplitter = styled(Splitter)`
 `
 
 const UserDashboardPage: React.FC = () => {
+  const { t } = useTranslation('nav')
   const { module, addonName } = useParams<{ module?: string; addonName?: string }>()
   const user = useAppSelector((state: any) => state.user)
   const isAdmin = user?.data?.isAdmin
@@ -137,7 +139,7 @@ const UserDashboardPage: React.FC = () => {
   const pages: PageLink[] = useMemo(
     () => [
       {
-        name: 'Tasks',
+        name: t('dashboard.tasks'),
         path: '/dashboard/tasks',
         module: 'tasks',
         accessLevels: [],
@@ -154,7 +156,7 @@ const UserDashboardPage: React.FC = () => {
         requiresProjects: true,
       },
       {
-        name: 'Projects',
+        name: t('dashboard.projects'),
         path: '/dashboard/projects',
         module: 'projects',
         viewType: 'projects-overview',
@@ -167,7 +169,7 @@ const UserDashboardPage: React.FC = () => {
       ...(!hasPlanner
         ? [
             {
-              name: 'Planner',
+              name: t('dashboard.planner'),
               path: '/dashboard/planner',
               module: 'planner',
               accessLevels: [],
@@ -233,6 +235,7 @@ const UserDashboardPage: React.FC = () => {
       addonName,
       module,
       hasPlanner,
+      t,
     ],
   )
 

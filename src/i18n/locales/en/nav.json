@@ -1,0 +1,74 @@
+{
+  "home": "Home",
+  "userMenu": "User menu",
+  "account": "Account",
+  "downloadLauncher": "Download Launcher",
+  "signOut": "Sign out",
+  "inboxTitle": "Inbox",
+  "app": {
+    "projectsSettings": "Projects Settings",
+    "siteSettings": "Site Settings",
+    "studioSettings": "Studio Settings",
+    "eventViewer": "Event Viewer",
+    "services": "Services",
+    "market": "Market",
+    "updatePipeline": "Update Pipeline",
+    "restartRequired": "Restart Required",
+    "restartServer": "Restart Server",
+    "launchBootstrap": "Launch Bootstrap Setup"
+  },
+  "help": {
+    "communityForum": "Community Forum",
+    "discordServer": "Discord Server",
+    "devPortal": "Dev Portal",
+    "restApi": "REST API",
+    "graphqlExplorer": "GraphQL Explorer",
+    "helpCenter": "Help center",
+    "latestChanges": "Latest changes",
+    "submitFeedback": "Submit Feedback"
+  },
+  "inbox": {
+    "important": "Important",
+    "other": "Other",
+    "cleared": "Cleared",
+    "importantTooltip": "Activities where you are directly mentioned",
+    "otherTooltip": "Changes to tasks assigned to you or authored by you"
+  },
+  "dashboard": {
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "planner": "Planner"
+  },
+  "project": {
+    "overview": "Overview",
+    "taskProgress": "Task progress",
+    "browser": "Browser",
+    "products": "Products",
+    "lists": "Lists",
+    "review": "Review",
+    "schedule": "Schedule",
+    "reports": "Reports",
+    "workfiles": "Workfiles"
+  },
+  "settings": {
+    "global": "Global",
+    "addons": "Addons",
+    "bundles": "Bundles",
+    "studioSettings": "Studio settings",
+    "siteSettings": "Site settings",
+    "anatomyPresets": "Anatomy presets",
+    "attributes": "Attributes",
+    "users": "Users",
+    "permissions": "Permissions",
+    "secrets": "Secrets"
+  },
+  "projectManager": {
+    "anatomy": "Anatomy",
+    "projectSettings": "Project settings",
+    "projectPermissions": "Project permissions",
+    "projectAccess": "Project access",
+    "siteSettings": "Site settings",
+    "roots": "Roots",
+    "teams": "Teams"
+  }
+}

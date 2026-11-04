@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Button } from '@ynput/ayon-react-components'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import * as Styled from './ErrorPage.styled'
@@ -11,24 +11,21 @@ type ErrorPageProps = {
 }
 
 const ErrorPage: FC<ErrorPageProps> = ({ code, message, links }) => {
+  const { t } = useTranslation('errors')
   const isNotFound = code === '404'
   const navigate = useNavigate()
 
   return (
     <Styled.Page className="center">
       <Styled.Logo src="/AYON.svg" alt="AYON" />
-      <Styled.Code>{code || 'ERROR'}</Styled.Code>
+      <Styled.Code>{code || t('codeFallback')}</Styled.Code>
       <Styled.Title>
-        {message || (isNotFound ? 'Page not found' : 'Something went wrong.')}
+        {message || (isNotFound ? t('pageNotFound') : t('somethingWentWrong'))}
       </Styled.Title>
-      {isNotFound && (
-        <Styled.Description>
-          We couldn&apos;t find the page you were looking for.
-        </Styled.Description>
-      )}
+      {isNotFound && <Styled.Description>{t('pageNotFoundDescription')}</Styled.Description>}
       {isNotFound && (
         <Styled.DashboardButton variant="filled" onClick={() => navigate('/dashboard/tasks')}>
-          Return to dashboard
+          {t('returnToDashboard')}
         </Styled.DashboardButton>
       )}
       {links && links.length > 0 && (

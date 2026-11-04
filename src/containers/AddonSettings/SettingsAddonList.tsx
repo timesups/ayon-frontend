@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useState, FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Section, TablePanel } from '@ynput/ayon-react-components'
 
 import { DataTable } from 'primereact/datatable'
@@ -51,6 +52,7 @@ const SettingsAddonList: FC<SettingsAddonListProps> = ({
   projectName,
   siteId,
 }) => {
+  const { t } = useTranslation('settings')
   const { data, isLoading, isError } = useGetAddonSettingsListQuery({
     projectName,
     siteId,
@@ -186,10 +188,26 @@ const SettingsAddonList: FC<SettingsAddonListProps> = ({
           onContextMenu={onContextMenu}
           className={clsx('addon-list-table', { loading: isLoading })}
           rowClassName={rowDataClassNameFormatter}
-          emptyMessage={isError ? `WARNING: No bundle set to ${variant}` : 'No addons found'}
+          emptyMessage={
+            isError
+              ? t('noBundleSetTo', {
+                  variant:
+                    variant === 'production'
+                      ? t('production')
+                      : variant === 'staging'
+                        ? t('staging')
+                        : variant,
+                })
+              : t('noAddonsFound')
+          }
         >
-          <Column field="title" header="Addon" />
-          <Column field="version" header="Version" style={{ maxWidth: 110 }} body={formatVersion} />
+          <Column field="title" header={t('addon')} />
+          <Column
+            field="version"
+            header={t('version')}
+            style={{ maxWidth: 110 }}
+            body={formatVersion}
+          />
         </DataTable>
       </TablePanel>
     </Section>

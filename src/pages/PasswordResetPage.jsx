@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { login } from '@state/user'
 import api from '@shared/api'
 import { toast } from 'react-toastify'
@@ -9,6 +10,7 @@ import { InputText, InputPassword, Button, Panel } from '@ynput/ayon-react-compo
 import DocumentTitle from '@components/DocumentTitle/DocumentTitle'
 
 const RequestPage = () => {
+  const { t } = useTranslation('auth')
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
 
@@ -23,46 +25,44 @@ const RequestPage = () => {
       .post('/api/users/passwordResetRequest', payload)
       .then(() => {
         setSent(true)
-        toast.info('Password reset link sent')
+        toast.info(t('resetLinkSentToast'))
       })
       .catch((err) => {
         console.error(err)
-        toast.error('Unable to send reset link')
+        toast.error(t('unableToSendResetLink'))
       })
   }
 
   if (sent) {
     return (
       <>
-        <h1>Reset Link Sent</h1>
-        <p>
-          If your email address is registered with us, you will receive a password reset link
-          shortly.
-        </p>
+        <h1>{t('resetLinkSentHeading')}</h1>
+        <p>{t('resetLinkSentBody')}</p>
       </>
     )
   }
 
   return (
     <>
-      <h1>Reset Password</h1>
-      <p>Enter your email address and we will send you a link to reset your password.</p>
+      <h1>{t('resetPasswordHeading')}</h1>
+      <p>{t('resetPasswordHint')}</p>
       <form onSubmit={handleSubmit}>
         <InputText
           autoFocus
-          placeholder="Enter your email address"
+          placeholder={t('emailPlaceholder')}
           name="email"
-          aria-label="Email address"
+          aria-label={t('emailAria')}
           value={email}
           onChange={(e) => setEmail(e.target.value.replace(/\s/g, ''))}
         />
-        <Button label={<strong>Send Reset Link</strong>} type="submit" />
+        <Button label={<strong>{t('sendResetLink')}</strong>} type="submit" />
       </form>
     </>
   )
 }
 
 const ResetPage = ({ token }) => {
+  const { t } = useTranslation('auth')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(true)
@@ -81,11 +81,11 @@ const ResetPage = ({ token }) => {
   }, [token])
 
   if (loading) {
-    return <p>Loading...</p>
+    return <p>{t('loading')}</p>
   }
 
   if (!tokenOk) {
-    return <p>Invalid password reset token</p>
+    return <p>{t('invalidResetToken')}</p>
   }
 
   const handleSubmit = (e) => {
@@ -96,38 +96,38 @@ const ResetPage = ({ token }) => {
         const data = response.data
         dispatch(login({ user: data.user, accessToken: data.token }))
         dispatch(api.util.resetApiState())
-        toast.success('Password reset successfully')
+        toast.success(t('passwordResetSuccess'))
         window.history.replaceState({}, '', '/')
       })
       .catch((err) => {
         console.error(err)
-        toast.error(err.response?.data?.detail || 'Unable to reset password')
+        toast.error(err.response?.data?.detail || t('unableToResetPassword'))
       })
   }
 
   return (
     <>
-      <h1>Create a new password</h1>
-      <p>Enter a new password for your account.</p>
+      <h1>{t('createNewPassword')}</h1>
+      <p>{t('createNewPasswordHint')}</p>
       <form onSubmit={handleSubmit}>
         <InputPassword
           autoFocus
-          placeholder="Enter your new password"
+          placeholder={t('newPasswordPlaceholder')}
           name="password"
-          aria-label="Password"
+          aria-label={t('password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <InputPassword
-          placeholder="Confirm your new password"
+          placeholder={t('confirmPasswordPlaceholder')}
           name="confirmPassword"
-          aria-label="Confirm Password"
+          aria-label={t('confirmPasswordAria')}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
         <Button
-          label={<strong>Reset Password</strong>}
+          label={<strong>{t('resetPasswordSubmit')}</strong>}
           type="submit"
           disabled={!password || password !== confirmPassword}
         />
@@ -137,6 +137,7 @@ const ResetPage = ({ token }) => {
 }
 
 const PasswordResetPage = () => {
+  const { t } = useTranslation('auth')
   //get token from query string
   const urlParams = new URLSearchParams(window.location.search)
   const token = urlParams.get('token')
@@ -151,15 +152,15 @@ const PasswordResetPage = () => {
 
   return (
     <>
-      <DocumentTitle title="Password reset • AYON" />
+      <DocumentTitle title={t('passwordResetTitle')} />
       <main className="center">
-      <Styled.LoginForm>
-        <Panel>
-          {mainComponent}
-          <a href="/login">Back to login page</a>
-        </Panel>
-      </Styled.LoginForm>
-    </main>
+        <Styled.LoginForm>
+          <Panel>
+            {mainComponent}
+            <a href="/login">{t('backToLogin')}</a>
+          </Panel>
+        </Styled.LoginForm>
+      </main>
     </>
   )
 }

@@ -1,0 +1,15 @@
+{
+  "username": "Username",
+  "password": "Password",
+  "desktopNotifications": "Desktop Notifications",
+  "notificationSound": "Notification Sound",
+  "saveProfile": "Save profile",
+  "profileUpdated": "Profile updated",
+  "unableToUpdateProfile": "Unable to update profile",
+  "unableToUpdatePreferences": "Unable to update preferences",
+  "language": "Language",
+  "notificationsHttpsOnly": "Browser notifications only work over HTTPS",
+  "notificationsTooltip": "Get notifications on your device",
+  "notificationSoundTooltip": "Get a little chime sound on new important notifications",
+  "userFullNamePlaceholder": "User FullName"
+}

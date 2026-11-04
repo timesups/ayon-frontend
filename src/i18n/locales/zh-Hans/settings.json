@@ -1,0 +1,23 @@
+{
+  "production": "生产",
+  "staging": "预发布",
+  "dev": "开发",
+  "active": "使用中",
+  "project": "项目",
+  "me": "(我)",
+  "saveChanges": "保存更改",
+  "clearChanges": "清除更改",
+  "selectABundle": "选择包",
+  "selectABundleEllipsis": "选择包...",
+  "noBundleSelected": "未选择包",
+  "setupPipeline": "配置流水线",
+  "noDevBundle": "未找到属于你的开发包，请先创建一个。",
+  "noEditPermissions": "你没有编辑权限",
+  "noBundleSetTo": "警告：未设置 {{variant}} 包",
+  "noAddonsFound": "未找到插件",
+  "addon": "插件",
+  "version": "版本",
+  "studioSettings": "工作室设置",
+  "projectsManager": "项目管理",
+  "breadcrumbProject": "项目"
+}

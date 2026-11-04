@@ -1,6 +1,7 @@
 import { useAfterStartup, useSessionStorage } from '@shared/hooks'
 import * as Styled from './ReleaseInstallerPrompt.styled'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAppDispatch } from '@state/store'
 import { toggleReleaseInstaller } from '@state/releaseInstaller'
 import { useListInstallersQuery } from '@queries/installers/getInstallers'
@@ -11,6 +12,7 @@ type Props = {
 }
 
 const ReleaseInstallerPrompt = ({ isAdmin }: Props) => {
+  const { t } = useTranslation('settings')
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
@@ -53,7 +55,7 @@ const ReleaseInstallerPrompt = ({ isAdmin }: Props) => {
   return (
     <Styled.Container>
       <Styled.DownloadButton icon={'valve'} onClick={handleOpen}>
-        Setup pipeline
+        {t('setupPipeline')}
       </Styled.DownloadButton>
 
       <Styled.CloseButton icon="close" onClick={() => setShowPrompt(false)} />
