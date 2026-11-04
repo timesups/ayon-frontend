@@ -17,6 +17,7 @@ import emoji from 'remark-emoji'
 import SubChip from '@components/SubChip/SubChip'
 import { FreeTrialLink } from '@shared/components/Powerpack'
 import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
 
 type ExtendedAddonDetail = AddonDetail & {
   downloadedVersions: Record<string, string>
@@ -42,6 +43,7 @@ type AddonDetailsProps = {
 }
 
 const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDetailsProps) => {
+  const { t } = useTranslation('market')
   // latestVersion: is the latest version of the addon
   // versions: is an array of all versions DOWNLOADED of the addon
   const {
@@ -92,9 +94,16 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
     : []
   const nOfMoreVersions = versionKeysSorted.length - versionsToShow.length
 
-  let verifiedString = 'Unverified'
-  if (isVerified && !isOfficial) verifiedString = 'Verified'
-  if (isOfficial) verifiedString = 'Official'
+  let verifiedString = t('unverified')
+  let verifiedClass = 'unverified'
+  if (isVerified && !isOfficial) {
+    verifiedString = t('verified')
+    verifiedClass = 'verified'
+  }
+  if (isOfficial) {
+    verifiedString = t('official')
+    verifiedClass = 'official'
+  }
 
   let verifiedIcon = <Icon icon="public" />
   if (isVerified && !isOfficial) verifiedIcon = <Icon icon="new_releases" />
@@ -120,7 +129,7 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
     if (selectedVersion?.isCompatible !== false) {
       handleDownload(versionNumber)
     } else {
-      toast.error('Addon incompatible with your server version')
+      toast.error(t('incompatibleWithServer'))
     }
   }
 
@@ -152,36 +161,36 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
   if (isLatestIncompatible) {
     actionButton = (
       <Button variant="filled" disabled icon={'block'} style={{ fontSize: '12px' }}>
-        {`v${displayVersion} (server update required)`}
+        {t('serverUpdateRequired', { version: displayVersion })}
       </Button>
     )
   } else if (isDownloading) {
     actionButton = (
       <SaveButton active saving disabled>
-        Downloading...
+        {t('downloadingEllipsis')}
       </SaveButton>
     )
   } else if (isFinished) {
     actionButton = (
       <Button disabled icon={'check_circle'}>
-        Downloaded !
+        {t('downloadedExclaim')}
       </Button>
     )
   } else if (isUpdatingAll) {
-    actionButton = <Button disabled>Pending...</Button>
+    actionButton = <Button disabled>{t('pendingEllipsis')}</Button>
   } else if (isDownloaded && !isOutdated) {
-    actionButton = <Button onClick={onUninstall}>Uninstall</Button>
+    actionButton = <Button onClick={onUninstall}>{t('uninstall')}</Button>
   } else if ((isDownloaded && isOutdated && latestVersion) || latestVersion) {
     actionButton = (
       <Button variant="filled" icon={'download'} onClick={() => handleDownload(latestVersion)}>
-        {`Download v${displayVersion}`}
+        {t('downloadVersion', { version: displayVersion })}
       </Button>
     )
   } else if (subRequired) {
     actionButton = (
       <FreeTrialLink style={{ width: '100%' }} addon={name}>
         <Button variant="tertiary" style={{ width: '100%' }}>
-          Subscribe
+          {t('subscribe')}
         </Button>
       </FreeTrialLink>
     )
@@ -191,11 +200,13 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
     () =>
       versions.map((v) => ({
         value: v.version,
-        label: v.isCompatible ? `v${v.version}` : `v${v.version} (server update required)`,
+        label: v.isCompatible
+          ? `v${v.version}`
+          : t('versionServerUpdateRequired', { version: v.version }),
         isDownloaded: downloaded.includes(v.version),
         disabled: v.isCompatible === false,
       })),
-    [versions, downloaded],
+    [versions, downloaded, t],
   )
 
   // query string used for duplicating bundles with new version
@@ -211,7 +222,7 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
               <AddonIcon size={64} src={icon} alt={name + ' icon'} isPlaceholder={isLoading} />
               <div className="titles">
                 <h2 className={Type.headlineSmall}>{title} </h2>
-                <span className={clsx(verifiedString.toLowerCase(), 'verification')}>
+                <span className={clsx(verifiedClass, 'verification')}>
                   {verifiedIcon}
                   {verifiedString}
                 </span>
@@ -226,8 +237,8 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
                   />
                 )}
                 {flags?.includes('beta') && (
-                  <Styled.BetaTag data-tooltip="This addon is in beta and may have bugs or incomplete features.">
-                    Early preview
+                  <Styled.BetaTag data-tooltip={t('earlyPreviewTooltip')}>
+                    {t('earlyPreview')}
                   </Styled.BetaTag>
                 )}
               </Styled.Tags>
@@ -235,13 +246,13 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
             {isFailed && (
               <Styled.ErrorCard direction="row">
                 <Icon icon="error_outline" />
-                <span>{error || 'Download failed: check the events viewer or try again.'}</span>
+                <span>{error || t('downloadFailed')}</span>
                 <a
                   href="https://github.com/ynput/ayon-frontend/issues/new?labels=bug&template=bug_report.md&title=Addon+failed+to+download"
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <Button variant="danger">Report</Button>
+                  <Button variant="danger">{t('report')}</Button>
                 </a>
               </Styled.ErrorCard>
             )}
@@ -276,21 +287,21 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
               )}
             </Styled.Download>
             <Styled.MetaPanel className={clsx({ loading: isLoading })}>
-              <MetaPanelRow label="Downloaded Versions">
+              <MetaPanelRow label={t('downloadedVersions')}>
                 {versionsToShow.length
                   ? versionsToShow.map((version) => <span key={version}>{version}</span>)
-                  : 'Not downloaded'}
+                  : t('notDownloaded')}
                 {!!nOfMoreVersions && (
                   <span className="more" onClick={() => setShowAllVersions(true)}>
-                    +{nOfMoreVersions} more
+                    {t('moreVersions', { count: nOfMoreVersions })}
                   </span>
                 )}
               </MetaPanelRow>
             </Styled.MetaPanel>
             <Styled.MetaPanel className={clsx({ loading: isLoading })}>
-              <MetaPanelRow label="Production Usage" valueDirection="row">
+              <MetaPanelRow label={t('productionUsage')} valueDirection="row">
                 <span>
-                  {currentProductionVersion ? currentProductionVersion : 'Not used in Production'}
+                  {currentProductionVersion ? currentProductionVersion : t('notUsedInProduction')}
                 </span>
                 {currentProductionVersion &&
                   (isProductionOutdated ? (
@@ -298,14 +309,14 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
                       to={`/settings/bundles?duplicate=prod&addon=${name}&versions=${duplicateQueryString}`}
                     >
                       <Styled.UseButton variant="tonal">
-                        Use {currentLatestVersion}
+                        {t('useVersion', { version: currentLatestVersion })}
                         <Icon icon="arrow_forward" />
                       </Styled.UseButton>
                     </Link>
                   ) : (
                     <Link to={`/settings/bundles?bundle=prod&addon=${name}`}>
                       <Styled.UseButton variant="tonal">
-                        Bundle
+                        {t('bundle')}
                         <Icon icon="arrow_forward" />
                       </Styled.UseButton>
                     </Link>
@@ -314,8 +325,8 @@ const AddonDetails = ({ addon, isLoading, onDownload, isUpdatingAll }: AddonDeta
             </Styled.MetaPanel>
 
             <Styled.MetaPanel className={clsx({ loading: isLoading })}>
-              <MetaPanelRow label="Author">{orgTitle}</MetaPanelRow>
-              <MetaPanelRow label="Latest Version">
+              <MetaPanelRow label={t('author')}>{orgTitle}</MetaPanelRow>
+              <MetaPanelRow label={t('latestVersion')}>
                 {latestVersion && <span>{latestVersion}</span>}
                 {warning && <span>{warning}</span>}
               </MetaPanelRow>

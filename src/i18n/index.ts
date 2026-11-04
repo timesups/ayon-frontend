@@ -10,6 +10,7 @@ import enErrors from './locales/en/errors.json'
 import enSettings from './locales/en/settings.json'
 import enDashboard from './locales/en/dashboard.json'
 import enInbox from './locales/en/inbox.json'
+import enMarket from './locales/en/market.json'
 import enShared from '../../shared/src/i18n/locales/en/shared.json'
 
 import zhCommon from './locales/zh-Hans/common.json'
@@ -20,6 +21,7 @@ import zhErrors from './locales/zh-Hans/errors.json'
 import zhSettings from './locales/zh-Hans/settings.json'
 import zhDashboard from './locales/zh-Hans/dashboard.json'
 import zhInbox from './locales/zh-Hans/inbox.json'
+import zhMarket from './locales/zh-Hans/market.json'
 import zhShared from '../../shared/src/i18n/locales/zh-Hans/shared.json'
 
 export const LANGUAGE_STORAGE_KEY = 'ayon-language'
@@ -41,6 +43,7 @@ const resources = {
     settings: enSettings,
     dashboard: enDashboard,
     inbox: enInbox,
+    market: enMarket,
     shared: enShared,
   },
   'zh-Hans': {
@@ -52,6 +55,7 @@ const resources = {
     settings: zhSettings,
     dashboard: zhDashboard,
     inbox: zhInbox,
+    market: zhMarket,
     shared: zhShared,
   },
 }
@@ -69,7 +73,18 @@ if (!i18n.isInitialized) {
       nonExplicitSupportedLngs: false,
       load: 'currentOnly',
       defaultNS: 'common',
-      ns: ['common', 'auth', 'nav', 'account', 'errors', 'settings', 'dashboard', 'inbox', 'shared'],
+      ns: [
+        'common',
+        'auth',
+        'nav',
+        'account',
+        'errors',
+        'settings',
+        'dashboard',
+        'inbox',
+        'market',
+        'shared',
+      ],
       interpolation: { escapeValue: false },
       detection: {
         order: ['localStorage', 'navigator'],

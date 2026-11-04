@@ -8,6 +8,7 @@ import { ReleaseListItemModel } from '@shared/api'
 import { format } from 'date-fns'
 import AddonIcon from '@components/AddonIcon/AddonIcon'
 import { PowerpackButton } from '@shared/components/Powerpack'
+import { useTranslation } from 'react-i18next'
 
 type ExtendedReleaseDetail = ReleaseListItemModel & {
   isActive: boolean // can the the release be installed
@@ -22,13 +23,14 @@ type ReleaseDetailsProps = {
 const ReleaseDetails = ({ release, isLoading, onDownload }: ReleaseDetailsProps) => {
   // latestVersion: is the latest version of the addon
   // versions: is an array of all versions DOWNLOADED of the addon
+  const { t } = useTranslation('market')
   const { name, label, createdAt, icon, description, isActive, addons } = release || {}
 
-  const verifiedString = 'Official'
+  const verifiedString = t('official')
   const verifiedIcon = <img src="/favicon-32x32.png" width={15} height={15} />
 
   const isFailed = false
-  const error = 'Download failed: check the events viewer or try again.'
+  const error = t('downloadFailed')
 
   return (
     <Styled.PanelContainer direction="row" className={clsx({ noData: !name })}>
@@ -39,7 +41,7 @@ const ReleaseDetails = ({ release, isLoading, onDownload }: ReleaseDetailsProps)
               <AddonIcon size={64} icon={icon} alt={name + ' icon'} isPlaceholder={isLoading} />
               <div className="titles">
                 <h2 className={Type.headlineSmall}>{label}</h2>
-                <span className={clsx(verifiedString.toLowerCase(), 'verification')}>
+                <span className={clsx('official', 'verification')}>
                   {verifiedIcon}
                   {verifiedString}
                 </span>
@@ -48,13 +50,13 @@ const ReleaseDetails = ({ release, isLoading, onDownload }: ReleaseDetailsProps)
             {isFailed && (
               <Styled.ErrorCard direction="row">
                 <Icon icon="error_outline" />
-                <span>{error || 'Download failed: check the events viewer or try again.'}</span>
+                <span>{error || t('downloadFailed')}</span>
                 <a
                   href="https://github.com/ynput/ayon-frontend/issues/new?labels=bug&template=bug_report.md&title=Addon+failed+to+download"
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <Button variant="danger">Report</Button>
+                  <Button variant="danger">{t('report')}</Button>
                 </a>
               </Styled.ErrorCard>
             )}
@@ -78,18 +80,20 @@ const ReleaseDetails = ({ release, isLoading, onDownload }: ReleaseDetailsProps)
             <Styled.Download className={clsx({ loading: isLoading })}>
               {isActive ? (
                 <SaveButton active icon="download" onClick={() => onDownload(name)}>
-                  Install release bundle
+                  {t('installReleaseBundle')}
                 </SaveButton>
               ) : (
-                <PowerpackButton feature="releases">Install release bundle</PowerpackButton>
+                <PowerpackButton feature="releases">{t('installReleaseBundle')}</PowerpackButton>
               )}
             </Styled.Download>
             <Styled.MetaPanel className={clsx({ loading: isLoading })}>
-              <MetaPanelRow label="Author" valueDirection="row">
+              <MetaPanelRow label={t('author')} valueDirection="row">
                 <span>Ynput</span>
               </MetaPanelRow>
-              <MetaPanelRow label="Released" valueDirection="row">
-                <span>{createdAt ? format(new Date(createdAt), 'd / MM / y') : 'Unknown'}</span>
+              <MetaPanelRow label={t('released')} valueDirection="row">
+                <span>
+                  {createdAt ? format(new Date(createdAt), 'd / MM / y') : t('unknown')}
+                </span>
               </MetaPanelRow>
             </Styled.MetaPanel>
           </Styled.Right>

@@ -4,6 +4,7 @@ import { Icon, Spacer } from '@ynput/ayon-react-components'
 import Type from '@/theme/typography.module.css'
 import CloudLogo from '@/svg/CloudLogo'
 import clsx from 'clsx'
+import { useTranslation } from 'react-i18next'
 
 const YnputCloudButton = React.forwardRef(
   (
@@ -20,6 +21,8 @@ const YnputCloudButton = React.forwardRef(
     },
     ref,
   ) => {
+    const { t } = useTranslation('market')
+
     return (
       <Styled.HeaderButton
         {...props}
@@ -39,7 +42,7 @@ const YnputCloudButton = React.forwardRef(
               <>
                 <Icon icon={isConnected ? 'check_circle' : isLoading ? 'sync' : 'add'} />
                 <span className={Type.labelLarge}>
-                  {isConnected ? 'connected' : 'link an account'}
+                  {isConnected ? t('connected') : t('linkAccount')}
                 </span>
               </>
             )}

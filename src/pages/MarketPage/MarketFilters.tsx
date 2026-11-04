@@ -1,10 +1,11 @@
 import { Panel, Section } from '@ynput/ayon-react-components'
-import { Fragment, MouseEvent } from 'react'
+import { Fragment, MouseEvent, useMemo } from 'react'
 import styled from 'styled-components'
 import Type from '@/theme/typography.module.css'
 import clsx from 'clsx'
 import YnputConnector from '@components/YnputCloud/YnputConnector'
-import { marketFilters } from './MarketFiltersHelpers'
+import { getMarketFilters } from './MarketFiltersHelpers'
+import { useTranslation } from 'react-i18next'
 
 const StyledSection = styled(Section)`
   height: 100%;
@@ -55,6 +56,9 @@ type MarketFiltersProps = {
 }
 
 const MarketFilters = ({ onSelect, selected, onConnection, filterType }: MarketFiltersProps) => {
+  const { t } = useTranslation('market')
+  const marketFilters = useMemo(() => getMarketFilters(t), [t])
+
   const handleSelect = (e: MouseEvent<HTMLDivElement>, type: FilterType) => {
     const target = e.target as HTMLDivElement
     onSelect(type, target.id)

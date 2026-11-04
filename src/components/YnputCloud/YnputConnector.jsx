@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux'
 import clsx from 'clsx'
 import { isBefore } from 'date-fns'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const YnputConnector = ({
   onConnection,
@@ -35,6 +36,7 @@ const YnputConnector = ({
   skip,
   ...props
 }) => {
+  const { t } = useTranslation('market')
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(initIsOpen)
   const currentUser = useSelector((state) => state.user)
@@ -145,8 +147,8 @@ const YnputConnector = ({
       <Styled.DropdownContainer $isOpen={isOpen}>
         <Styled.Dropdown className="dropdown">
           {productName && <span>{productName}</span>}
-          <span>Instance: {connectData?.instanceName || '???'}</span>
-          <span>Organization: {connectData?.orgName || '???'}</span>
+          <span>{t('instance', { name: connectData?.instanceName || '???' })}</span>
+          <span>{t('organization', { name: connectData?.orgName || '???' })}</span>
           {showDisconnect && (
             <Styled.Footer>
               <Styled.Button
@@ -154,7 +156,7 @@ const YnputConnector = ({
                 className="disconnect"
                 variant={darkMode ? 'surface' : 'tertiary'}
               >
-                Disconnect
+                {t('disconnect')}
               </Styled.Button>
             </Styled.Footer>
           )}
@@ -164,7 +166,7 @@ const YnputConnector = ({
         <Styled.Links>
           <Link to={`https://ynput.cloud/orgs/${connectData.orgId}`} target="_blank">
             <Button variant="tertiary">
-              Ynput Cloud Account
+              {t('ynputCloudAccount')}
               <Icon icon="arrow_right_alt" />
             </Button>
           </Link>

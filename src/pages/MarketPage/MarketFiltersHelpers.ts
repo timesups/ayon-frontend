@@ -1,43 +1,49 @@
 import { $Any } from '@types'
+import type { TFunction } from 'i18next'
 import type { FilterType, MarketFilter, MarketFilterFilterAction } from './MarketFilters'
 
-export const addonFilters: MarketFilter[] = [
+type MarketFilterBase = Omit<MarketFilter, 'name' | 'tooltip'> & {
+  nameKey: string
+  tooltipKey: string
+}
+
+export const addonFiltersBase: MarketFilterBase[] = [
   {
     id: 'all',
     type: 'addons',
-    name: 'All',
+    nameKey: 'filterAll',
     filter: [],
-    tooltip: 'All addons, downloaded or not',
+    tooltipKey: 'filterAllTooltip',
   },
   {
     id: 'free',
     type: 'addons',
-    name: 'Free',
+    nameKey: 'filterFree',
     filter: [
       {
         flags: (v?: string[]) => !v?.includes('licensed'),
       },
     ],
-    tooltip: 'Addons free to download.',
+    tooltipKey: 'filterFreeTooltip',
   },
   {
     id: 'updates',
     type: 'addons',
-    name: 'Updates Available',
+    nameKey: 'filterUpdates',
     filter: [{ isOutdated: true }, { isDownloaded: true }],
-    tooltip: 'Addons with updates available',
+    tooltipKey: 'filterUpdatesTooltip',
   },
   {
     id: 'production',
     type: 'addons',
-    name: 'In Production',
+    nameKey: 'filterProduction',
     filter: [{ currentProductionVersion: (v: $Any) => v }, { isDownloaded: true }],
-    tooltip: 'Addons used in the production bundle',
+    tooltipKey: 'filterProductionTooltip',
   },
   {
     id: 'production-outdated',
     type: 'addons',
-    name: 'Production Outdated',
+    nameKey: 'filterProductionOutdated',
     filter: [
       {
         isProductionOutdated: true,
@@ -45,54 +51,71 @@ export const addonFilters: MarketFilter[] = [
         currentProductionVersion: (v: $Any) => v,
       },
     ],
-    tooltip: 'Addons using an outdated version in the production bundle',
+    tooltipKey: 'filterProductionOutdatedTooltip',
   },
-
   {
     id: 'uninstalled',
     type: 'addons',
-    name: 'Downloads Available',
+    nameKey: 'filterDownloadsAvailable',
     filter: [{ isDownloaded: false }],
-    tooltip: 'Addons available to download',
+    tooltipKey: 'filterDownloadsAvailableTooltip',
   },
 ]
 
-export const releaseFilters: MarketFilter[] = [
+export const releaseFiltersBase: MarketFilterBase[] = [
   {
     id: 'latest',
     type: 'releases',
-    name: 'Latest',
+    nameKey: 'filterLatest',
     filter: [{ isLatest: true }],
-    tooltip: 'Latest bundle releases',
+    tooltipKey: 'filterLatestTooltip',
   },
   {
     id: 'all',
     type: 'releases',
-    name: 'All',
+    nameKey: 'filterAllReleases',
     filter: [],
-    tooltip: 'All bundle releases',
+    tooltipKey: 'filterAllReleasesTooltip',
   },
 ]
 
-export const marketFilters: {
+const localizeFilters = (filters: MarketFilterBase[], t: TFunction): MarketFilter[] =>
+  filters.map(({ nameKey, tooltipKey, ...rest }) => ({
+    ...rest,
+    name: t(nameKey),
+    tooltip: t(tooltipKey),
+  }))
+
+export const getMarketFilters = (
+  t: TFunction,
+): {
   type: FilterType
   name: string
   filters: MarketFilter[]
-}[] = [
+}[] => [
   {
     type: 'addons',
-    name: 'Addons',
-    filters: addonFilters,
+    name: t('addons'),
+    filters: localizeFilters(addonFiltersBase, t),
   },
   {
     type: 'releases',
-    name: 'Release Bundles',
-    filters: releaseFilters,
+    name: t('releaseBundles'),
+    filters: localizeFilters(releaseFiltersBase, t),
   },
 ]
 
 // returns the filters for the selected type and filter
 export const getMarketFilter = (type: string, filter: string): MarketFilterFilterAction[] => {
-  const selectedFilters = marketFilters.find((f) => f.type === type)?.filters
+  const selectedFilters =
+    type === 'releases' ? releaseFiltersBase : type === 'addons' ? addonFiltersBase : undefined
   return selectedFilters?.find((f) => f.id === filter)?.filter || []
 }
+
+// Backwards-compatible aliases used by any leftover imports
+export const addonFilters = addonFiltersBase as unknown as MarketFilter[]
+export const releaseFilters = releaseFiltersBase as unknown as MarketFilter[]
+export const marketFilters = [
+  { type: 'addons' as FilterType, name: 'Addons', filters: addonFilters },
+  { type: 'releases' as FilterType, name: 'Release Bundles', filters: releaseFilters },
+]

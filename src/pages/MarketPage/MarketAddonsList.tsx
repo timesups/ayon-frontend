@@ -10,6 +10,7 @@ import EmptyPlaceholder from '@shared/components/EmptyPlaceholder'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { useExpandedGroups } from './hooks'
 import { getRequestErrorString } from '@shared/util'
+import { useTranslation } from 'react-i18next'
 
 const StyledAddonList = styled.div`
   display: flex;
@@ -112,6 +113,7 @@ const MarketAddonsList = ({
   isUpdatingAll,
   isUpdatingAllFinished,
 }: MarketAddonListProps) => {
+  const { t } = useTranslation('market')
   const { expandedGroups, setExpandedGroups } = useExpandedGroups({
     items,
     selected,
@@ -172,7 +174,7 @@ const MarketAddonsList = ({
     <StyledAddonList ref={listRef}>
       <div className="search">
         <StyledInput
-          placeholder="Search"
+          placeholder={t('search')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -183,7 +185,11 @@ const MarketAddonsList = ({
             className={isUpdatingAll ? 'downloading' : ''}
             disabled={isUpdatingAll || isUpdatingAllFinished}
           >
-            {isUpdatingAll ? 'Updating...' : isUpdatingAllFinished ? 'All Updated' : 'Update All'}
+            {isUpdatingAll
+              ? t('updating')
+              : isUpdatingAllFinished
+                ? t('allUpdated')
+                : t('updateAll')}
           </Tag>
         )}
       </div>

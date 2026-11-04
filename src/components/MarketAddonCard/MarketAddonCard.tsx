@@ -6,6 +6,7 @@ import { Button, ButtonProps, Icon } from '@ynput/ayon-react-components'
 import { upperFirst } from 'lodash'
 import { HTMLAttributes } from 'react'
 import { PowerpackButton, FreeTrialLink } from '@shared/components/Powerpack'
+import { useTranslation } from 'react-i18next'
 
 export type ListItemType = 'addon' | 'release' | 'placeholder'
 
@@ -55,6 +56,7 @@ export const MarketAddonCard = ({
   onDownload,
   ...props
 }: MarketAddonCardProps) => {
+  const { t } = useTranslation('market')
   let state = 'install'
   if (isDownloaded && !isOutdated) state = 'downloaded'
   if (isDownloaded && isOutdated) state = 'update'
@@ -62,6 +64,17 @@ export const MarketAddonCard = ({
   if (isDownloading) state = isDownloaded && isOutdated ? 'updating' : 'downloading'
   if (isFailed) state = 'failed'
   if (isFinished) state = 'finished'
+
+  const stateLabels: Record<string, string> = {
+    install: t('install'),
+    downloaded: t('downloaded'),
+    update: t('update'),
+    pending: t('pending'),
+    updating: t('updatingState'),
+    downloading: t('downloading'),
+    failed: t('failed'),
+    finished: t('finished'),
+  }
 
   let stateIcon = null
   if (isDownloading) stateIcon = 'sync'
@@ -117,7 +130,7 @@ export const MarketAddonCard = ({
               disabled={isWaiting}
             >
               {stateIcon && <Icon icon={stateIcon} />}
-              {upperFirst(state)}
+              {stateLabels[state] || upperFirst(state)}
             </Styled.Tag>
           ) : (
             <PowerpackButton feature="annotations" />
@@ -126,7 +139,7 @@ export const MarketAddonCard = ({
       )}
       {flags?.includes('licensed') && !available && !isPlaceholder && (
         <FreeTrialLink>
-          <Button variant="tertiary">Subscribe</Button>
+          <Button variant="tertiary">{t('subscribe')}</Button>
         </FreeTrialLink>
       )}
     </Styled.Container>

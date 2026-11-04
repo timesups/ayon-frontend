@@ -27,21 +27,26 @@ import { useAppDispatch } from '@state/store'
 import { toggleReleaseInstaller } from '@state/releaseInstaller'
 import { useGetYnputConnectionsQuery } from '@queries/ynputConnect'
 import { usePowerpack } from '@shared/context'
-
-const placeholders = [...Array(20)].map((_, i) => ({
-  type: 'placeholder',
-  group: undefined,
-  items: [
-    {
-      name: `Addon ${i}`,
-      isPlaceholder: true,
-      subTitle: 'Loading...',
-    },
-  ],
-}))
+import { useTranslation } from 'react-i18next'
 
 const MarketPage = () => {
+  const { t } = useTranslation('market')
   const dispatch = useAppDispatch()
+  const placeholders = useMemo(
+    () =>
+      [...Array(20)].map((_, i) => ({
+        type: 'placeholder',
+        group: undefined,
+        items: [
+          {
+            name: `Addon ${i}`,
+            isPlaceholder: true,
+            subTitle: t('loading'),
+          },
+        ],
+      })),
+    [t],
+  )
   // GET ALL ADDONS IN MARKET
   const {
     data: marketAddonsData = [],
@@ -321,7 +326,7 @@ const MarketPage = () => {
   // DOWNLOAD/UPDATE ADDON/RELEASE
   const handleAddonDownload = (name, version) => {
     if (isCloudConnected) {
-      if (!version) return toast.error('No version found')
+      if (!version) return toast.error(t('noVersionFound'))
       return downloadAddon(name, version)
     } else {
       return setShowConnectDialog(true)
@@ -371,7 +376,7 @@ const MarketPage = () => {
     const success = responses.filter((r) => r.data)
     if (errors.length) {
       console.error(errors)
-      toast.error('Error updating addons')
+      toast.error(t('errorUpdatingAddons'))
     }
 
     if (!success.length) {
@@ -394,7 +399,7 @@ const MarketPage = () => {
 
   return (
     <>
-      <DocumentTitle title="Market • AYON" />
+      <DocumentTitle title={t('title')} />
       <ConnectDialog
         visible={showConnectDialog}
         onHide={() => setShowConnectDialog(false)}
