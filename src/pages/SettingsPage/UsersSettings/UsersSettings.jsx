@@ -28,6 +28,7 @@ import DeleteUserDialog from './DeleteUserDialog'
 import InviteUserDialog from './InviteUserDialog'
 import LicensesDialog from '@components/LicensesDialog/LicensesDialog'
 import { useQueryParam } from 'use-query-params'
+import { useTranslation } from 'react-i18next'
 import ImportDialogButton from '@containers/ImportDialog/ImportDialogButton'
 
 // what to show in the access column
@@ -58,6 +59,7 @@ const formatAccessGroups = (rowData) => {
 }
 
 const UsersSettings = () => {
+  const { t } = useTranslation('settings')
   // QUERY PARAMS STATE
   const [searchParams] = useSearchParams()
   const queryNames = searchParams.getAll('name')
@@ -95,7 +97,7 @@ const UsersSettings = () => {
   let { data: userList = [], isLoading, isError, isFetching } = useGetUsersQuery({ selfName })
   if (isError || !Array.isArray(userList)) {
     userList = []
-    toast.error('Unable to load users')
+    toast.error(t('unableLoadUsers'))
   }
 
   // GET ACCESS GROUPS QUERY
@@ -230,16 +232,16 @@ const UsersSettings = () => {
           <Toolbar>
             <Button
               onClick={openNewUser}
-              label="Add New User"
+              label={t('addNewUser')}
               icon="person_add"
               variant="filled"
               data-shortcut="n"
             />
-            <Button onClick={openNewServiceUser} label="Add Service User" icon="person_add" />
+            <Button onClick={openNewServiceUser} label={t('addServiceUser')} icon="person_add" />
             <form style={{ flex: 1 }} autoComplete="off" onSubmit={(e) => e.preventDefault()}>
               <InputText
                 style={{ width: '100%', minWidth: 150 }}
-                placeholder="Filter users..."
+                placeholder={t('filterUsers')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 autoComplete="search-users"
@@ -248,12 +250,12 @@ const UsersSettings = () => {
             <UsersOverview users={userList} />
             <Button
               onClick={() => setShowInviteUser(true)}
-              label="Send Invite"
+              label={t('sendInvite')}
               icon="mail"
               disabled={!selectedUsers.length}
             />
             <ImportDialogButton importContext="user" />
-            <Button label="Licenses" icon="groups" onClick={() => setShowLicenses(true)} />
+            <Button label={t('licenses')} icon="groups" onClick={() => setShowLicenses(true)} />
           </Toolbar>
           <Splitter
             style={{ width: '100%', height: '100%' }}

@@ -12,6 +12,7 @@ import {
 import { toast } from 'react-toastify'
 import { confirmDelete, getRequestErrorString } from '@shared/util'
 import { copyToClipboard } from '@shared/util'
+import { useTranslation } from 'react-i18next'
 
 const SecretList = styled.div`
   display: flex;
@@ -36,6 +37,7 @@ const StyledSecretItem = styled.div`
 `
 
 const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
+  const { t } = useTranslation('settings')
   const [name, setName] = useState(initialName)
   const [value, setValue] = useState(initialValue)
   const [setSecret] = useSetSecretMutation()
@@ -68,7 +70,7 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
 
   const handleDelete = async () => {
     confirmDelete({
-      label: 'Secret',
+      label: t('secret'),
       accept: async () => await deleteSecret({ name }).unwrap(),
     })
   }
@@ -79,14 +81,14 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         readOnly={stored}
-        placeholder="Secret name"
+        placeholder={t('secretName')}
         pattern="^\S+$"
       />
 
       <InputPassword
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Secret value"
+        placeholder={t('secretValue')}
       />
 
       {stored && <Button icon="content_copy" onClick={() => copyToClipboard(value)} />}
@@ -96,7 +98,7 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
         icon={stored ? 'check' : 'add'}
         onClick={handleSave}
         variant={stored ? 'surface' : 'filled'}
-        label={stored ? '' : 'Add'}
+        label={stored ? '' : t('add')}
       />
       {stored && <Button icon="delete" onClick={handleDelete} />}
     </StyledSecretItem>
@@ -104,6 +106,7 @@ const SecretItem = ({ name: initialName, value: initialValue, stored }) => {
 }
 
 const Secrets = () => {
+  const { t } = useTranslation('settings')
   const { data } = useGetSecretsQuery()
 
   return (
@@ -115,9 +118,9 @@ const Secrets = () => {
         }}
       >
         <SecretList>
-          <h2>New secret</h2>
+          <h2>{t('newSecret')}</h2>
           <SecretItem name="" value="" stored={false} />
-          <h2>Stored secrets</h2>
+          <h2>{t('storedSecrets')}</h2>
           {data
             ?.filter((secret) => secret.name !== 'ynput_cloud_key')
             .map((secret) => (

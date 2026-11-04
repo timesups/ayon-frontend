@@ -2,8 +2,10 @@ import { FormLayout, FormRow, InputText, SaveButton, Dialog } from '@ynput/ayon-
 import { useMemo, useState } from 'react'
 import { useSaveAccessGroupMutation } from '@shared/api'
 import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
 
 const NewAccessGroup = ({ onClose, accessGroupList }) => {
+  const { t } = useTranslation('settings')
   const [accessGroupName, setAccessGroupName] = useState('')
   const [createAccessGroup] = useSaveAccessGroupMutation()
 
@@ -18,15 +20,15 @@ const NewAccessGroup = ({ onClose, accessGroupList }) => {
 
       close && onClose(accessGroupName)
     } catch (error) {
-      toast.error('Unable to create access group')
+      toast.error(t('unableCreateAccessGroup'))
     }
   }
 
   let error = null
   if (accessGroupNames.includes(accessGroupName.toLowerCase()))
-    error = 'This access group already exists'
+    error = t('accessGroupExists')
   else if (!accessGroupName.match('^[a-zA-Z0-9_]([a-zA-Z0-9_.\\-]*[a-zA-Z0-9_])?$'))
-    error = 'Invalid access group name'
+    error = t('invalidAccessGroupName')
   const handleKeyDown = (e) => {
     e?.stopPropagation()
     const isEnter = e.key === 'Enter'
@@ -42,19 +44,19 @@ const NewAccessGroup = ({ onClose, accessGroupList }) => {
     () => (
       <div>
         <SaveButton
-          label="Create access group"
+          label={t('createAccessGroup')}
           icon="group_add"
           active={!error && accessGroupName}
           onClick={() => onSubmit(true)}
         />
       </div>
     ),
-    [error, accessGroupName, onSubmit],
+    [error, accessGroupName, onSubmit, t],
   )
 
   return (
     <Dialog
-      header="New access group"
+      header={t('newAccessGroup')}
       footer={footer}
       onClose={() => onClose()}
       isOpen
@@ -63,7 +65,7 @@ const NewAccessGroup = ({ onClose, accessGroupList }) => {
       style={{ width: 400 }}
     >
       <FormLayout>
-        <FormRow label="Access group name">
+        <FormRow label={t('accessGroupName')}>
           <InputText
             value={accessGroupName}
             onChange={(e) => setAccessGroupName(e.target.value)}

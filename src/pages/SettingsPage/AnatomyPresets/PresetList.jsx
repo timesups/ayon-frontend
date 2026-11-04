@@ -8,6 +8,7 @@ import { useCreateContextMenu } from '@shared/containers/ContextMenu'
 import styled from 'styled-components'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
+import { useTranslation } from 'react-i18next'
 
 const StyledContainer = styled.div`
   display: flex;
@@ -32,6 +33,7 @@ const PresetList = ({
   presetList,
   isLoading,
 }) => {
+  const { t } = useTranslation('settings')
   const getCtxMenuItems = useCallback(
     (data = {}) => {
       // empty string is default preset
@@ -40,19 +42,19 @@ const PresetList = ({
 
       const items = [
         {
-          label: 'Set as primary',
+          label: t('setAsPrimary'),
           icon: 'flag',
           command: () => onSetPrimary(isDefault ? '_' : data.name),
           disabled: data.primary || isDefault || isBuiltIn,
         },
         {
-          label: 'Rename',
+          label: t('rename'),
           icon: 'edit',
           disabled: isDefault || isBuiltIn,
           command: () => onRename(data.name),
         },
         {
-          label: 'Delete',
+          label: t('delete'),
           icon: 'delete',
           disabled: isDefault || isBuiltIn,
           command: () => onDelete(data.name, data.primary),
@@ -62,10 +64,10 @@ const PresetList = ({
 
       return items
     },
-    [selectedPreset, presetList, onDelete, onSetPrimary],
+    [selectedPreset, presetList, onDelete, onSetPrimary, onRename, t],
   )
 
-  const ctxMenuItems = useMemo(() => getCtxMenuItems(), [])
+  const ctxMenuItems = useMemo(() => getCtxMenuItems(), [getCtxMenuItems])
 
   const [ctxMenuShow] = useCreateContextMenu(ctxMenuItems)
   // add built-in presets to the start of the list
@@ -74,7 +76,7 @@ const PresetList = ({
     return [
       {
         name: '_',
-        label: 'AYON default (read only)',
+        label: t('ayonDefaultReadonly'),
         primary: noPrimary,
       },
       ...presetList.map((preset) => ({
@@ -82,7 +84,7 @@ const PresetList = ({
         label: preset.name,
       })),
     ]
-  }, [presetList])
+  }, [presetList, t])
 
   const tableData = useTableLoadingData(presetListWithBuiltIn, isLoading, 6, 'name')
 
@@ -103,10 +105,10 @@ const PresetList = ({
           className={clsx({ loading: isLoading })}
           rowClassName={(data) => clsx({ default: data.primary, loading: isLoading })}
         >
-          <Column field="label" header="Name" />
+          <Column field="label" header={t('name')} />
           <Column
             field="primary"
-            header="Primary"
+            header={t('primary')}
             style={{ maxWidth: 50 }}
             body={(data) => (data?.primary ? <Icon icon={'check'} /> : '')}
           />

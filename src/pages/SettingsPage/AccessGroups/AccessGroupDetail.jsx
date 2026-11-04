@@ -19,10 +19,10 @@ import {
   useGetAccessGroupSchemaQuery,
 } from '@shared/api'
 import { confirmDelete } from '@shared/util'
-
-const PROJECT_GROUP_MSG = 'Clear project overrides'
+import { useTranslation } from 'react-i18next'
 
 const AccessGroupDetail = ({ projectName, accessGroupName }) => {
+  const { t } = useTranslation('settings')
   const [originalData, setOriginalData] = useState(null)
   const [formData, setFormData] = useState(null)
 
@@ -67,20 +67,19 @@ const AccessGroupDetail = ({ projectName, accessGroupName }) => {
         projectName: projectName || '_',
         permissions: formData,
       }).unwrap()
-      toast.success('Project access group settings saved')
+      toast.success(t('projectAccessGroupSaved'))
     } catch (err) {
-      toast.error('Unable to save access group')
+      toast.error(t('unableSaveAccessGroup'))
     }
   }
 
   const onDeleteLocalGroupSettings = async () =>
     confirmDelete({
-      header: 'Clear project overrides',
-      deleteLabel: 'Clear',
-      label: 'Project overrides',
+      header: t('clearProjectOverrides'),
+      deleteLabel: t('clear'),
+      label: t('projectOverrides'),
       accept: async () => await deleteAccessGroup({ accessGroupName, projectName }).unwrap(),
-      message:
-        'Are you sure you want to delete all project override settings for this access group?',
+      message: t('confirmClearAccessGroupOverrides'),
     })
 
   const isLocalProject = !!projectName
@@ -113,12 +112,12 @@ const AccessGroupDetail = ({ projectName, accessGroupName }) => {
         {isLocalProject && (
           <Button
             onClick={onDeleteLocalGroupSettings}
-            label={PROJECT_GROUP_MSG}
+            label={t('clearProjectOverrides')}
             disabled={noLocalSettings}
             icon="delete"
           />
         )}
-        <SaveButton onClick={onSave} label="Save Changes" active={isChanged} saving={saving} />
+        <SaveButton onClick={onSave} label={t('saveChanges')} active={isChanged} saving={saving} />
       </Toolbar>
       <ScrollPanel
         className="nopad transparent"

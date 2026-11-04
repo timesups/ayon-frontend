@@ -8,6 +8,7 @@ import NewAccessGroup from './NewAccessGroup'
 import { confirmDelete } from '@shared/util'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
+import { useTranslation } from 'react-i18next'
 
 const AccessGroupList = ({
   projectName,
@@ -15,6 +16,7 @@ const AccessGroupList = ({
   onSelectAccessGroup,
   canCreateOrDelete,
 }) => {
+  const { t } = useTranslation('settings')
   const [showNewAccessGroup, setShowNewAccessGroup] = useState(false)
 
   // Load user list
@@ -53,10 +55,10 @@ const AccessGroupList = ({
   // Render
 
   const globalGroupPayload = {
-    label: 'Access group',
+    label: t('accessGroup'),
     accept: async () =>
       await deleteAccessGroup({ accessGroupName: selection.name, projectName: '_' }).unwrap(),
-    message: 'Are you sure you want to delete this access group ?',
+    message: t('confirmDeleteAccessGroup'),
   }
 
   const onDeleteGlobal = async () => confirmDelete(globalGroupPayload)
@@ -69,32 +71,31 @@ const AccessGroupList = ({
   const ctxMenuItems = (eventData) => {
     const menuItems = [
       {
-        label: 'Clear Overrides',
+        label: t('clearOverrides'),
         icon: 'clear',
         disabled: !eventData.isProjectLevel,
         command: async () =>
           confirmDelete({
-            header: 'Clear project overrides',
-            deleteLabel: 'Clear',
-            label: 'Project overrides',
+            header: t('clearProjectOverrides'),
+            deleteLabel: t('clear'),
+            label: t('projectOverrides'),
             accept: async () =>
               await deleteAccessGroup({ accessGroupName: eventData.name, projectName }).unwrap(),
-            message:
-              'Are you sure you want to delete all project override settings for this access group?',
+            message: t('confirmClearAccessGroupOverrides'),
           }),
       },
       {
-        label: 'Delete',
+        label: t('delete'),
         icon: 'delete',
         command: async () =>
           confirmDelete({
-            label: 'Access group',
+            label: t('accessGroup'),
             accept: async () =>
               await deleteAccessGroup({
                 accessGroupName: eventData.name,
                 projectName: '_',
               }).unwrap(),
-            message: 'Are you sure you want to delete this access group ?',
+            message: t('confirmDeleteAccessGroup'),
           }),
         danger: true,
       },
@@ -115,12 +116,12 @@ const AccessGroupList = ({
       {canCreateOrDelete && (
         <Toolbar>
           <Button
-            label="New access group"
+            label={t('newAccessGroup')}
             onClick={() => setShowNewAccessGroup(true)}
             icon="group_add"
           />
           <Spacer />
-          <Button label="Delete access group" onClick={onDeleteGlobal} icon="delete" />
+          <Button label={t('deleteAccessGroup')} onClick={onDeleteGlobal} icon="delete" />
         </Toolbar>
       )}
 
@@ -137,7 +138,7 @@ const AccessGroupList = ({
           className={clsx({ loading: isLoading })}
           onContextMenu={(e) => onContextMenu(e)}
         >
-          <Column field="name" header="Access group" />
+          <Column field="name" header={t('accessGroup')} />
         </DataTable>
       </TablePanel>
     </Section>

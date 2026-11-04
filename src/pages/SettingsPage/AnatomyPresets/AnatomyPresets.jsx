@@ -29,8 +29,10 @@ import {
   useSetPrimaryPresetMutation,
 } from '@queries/anatomy/updateAnatomy'
 import { confirmDelete } from '@shared/util'
+import { useTranslation } from 'react-i18next'
 
 const AnatomyPresets = () => {
+  const { t } = useTranslation('settings')
   const [formData, setFormData] = useState(null)
   const [selectedPreset, setSelectedPreset] = useState('_')
   const [breadcrumbs, setBreadcrumbs] = useState([])
@@ -89,7 +91,7 @@ const AnatomyPresets = () => {
       .unwrap()
       .then(() => {
         setSelectedPreset(presetName)
-        toast.info(`Preset ${presetName} saved`)
+        toast.info(t('presetSaved', { name: presetName }))
       })
       .catch((err) => {
         toast.error(err.message)
@@ -99,7 +101,7 @@ const AnatomyPresets = () => {
   // DELETE PRESET
   const handleDeletePreset = (presetName, isPrimary) => {
     confirmDelete({
-      label: `Preset: ${presetName}`,
+      label: t('presetLabel', { name: presetName }),
       accept: async () => {
         await deletePreset({ presetName }).unwrap()
         if (isPrimary) {
@@ -117,9 +119,9 @@ const AnatomyPresets = () => {
       .unwrap()
       .then(() => {
         if (presetName !== '_') {
-          toast.info(`Preset ${presetName} set as primary`)
+          toast.info(t('presetSetPrimary', { name: presetName }))
         } else {
-          toast.info(`Preset set to built in default`)
+          toast.info(t('presetSetBuiltin'))
         }
       })
       .catch((err) => {
@@ -130,14 +132,14 @@ const AnatomyPresets = () => {
   const onPasteAnatomy = async () => {
     const pastedContent = await requestPaste()
     if (!pastedContent) {
-      toast.error('No content to paste')
+      toast.error(t('noContentToPaste'))
       return
     }
     let value
     try {
       value = JSON.parse(pastedContent)
     } catch (e) {
-      toast.error('Invalid JSON')
+      toast.error(t('invalidJson'))
       return
     }
     setFormData(value)
@@ -151,8 +153,8 @@ const AnatomyPresets = () => {
   const openCreatePresetDialog = () => {
     setDialogConfig({
       isOpen: true,
-      title: 'Create New Preset',
-      placeholder: 'Preset name',
+      title: t('createNewPreset'),
+      placeholder: t('presetName'),
       initialValue: '',
       onSubmit: (name) => {
         savePreset(name)
@@ -163,18 +165,18 @@ const AnatomyPresets = () => {
   const openRenamePresetDialog = (currentName) => {
     setDialogConfig({
       isOpen: true,
-      title: 'Rename Preset',
-      placeholder: 'New preset name',
+      title: t('renamePreset'),
+      placeholder: t('newPresetName'),
       initialValue: currentName,
       onSubmit: (newName) => {
         renamePreset({ presetName: currentName, renamePresetModel: { name: newName } })
           .unwrap()
           .then(() => {
             setSelectedPreset(newName)
-            toast.info(`Preset renamed to ${newName}`)
+            toast.info(t('presetRenamed', { name: newName }))
           })
           .catch(() => {
-            toast.error('Unable to rename preset')
+            toast.error(t('unableRenamePreset'))
           })
       },
     })
@@ -217,36 +219,36 @@ const AnatomyPresets = () => {
       <Section>
         <Toolbar>
           <Button
-            label="Copy anatomy"
+            label={t('copyAnatomy')}
             icon="content_copy"
             onClick={() => {
               copyToClipboard(JSON.stringify(formData, null, 2))
             }}
           />
-          <Button label="Paste anatomy" icon="content_paste" onClick={onPasteAnatomy} />
+          <Button label={t('pasteAnatomy')} icon="content_paste" onClick={onPasteAnatomy} />
 
           <Spacer />
           <Button
-            label="Set as primary"
+            label={t('setAsPrimary')}
             icon="flag"
             disabled={isSelectedPrimary}
             onClick={() => setPrimaryPreset(selectedPreset)}
           />
           <Button
-            label="Delete preset"
+            label={t('deletePreset')}
             icon="delete"
             disabled={selectedPreset === '_'}
             onClick={() => handleDeletePreset(selectedPreset, isSelectedPrimary)}
           />
           <Button
-            label="Save as a new preset"
+            label={t('saveAsNewPreset')}
             icon="add"
             onClick={openCreatePresetDialog}
             variant={selectedPreset === '_' ? 'filled' : 'surface'}
           />
 
           <SaveButton
-            label="Save Current Preset"
+            label={t('saveCurrentPreset')}
             saving={isUpdating}
             active={isChanged && selectedPreset !== '_'}
             onClick={() => savePreset(selectedPreset)}

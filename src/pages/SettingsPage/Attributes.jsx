@@ -18,6 +18,7 @@ import useSearchFilter from '@hooks/useSearchFilter'
 import { isEqual } from 'lodash'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
+import { useTranslation } from 'react-i18next'
 
 // Validation errors point at an index (loc: ['body', 'attributes', 44, 'name']), not a name
 const getSaveErrorReason = (err, attributes) => {
@@ -28,6 +29,7 @@ const getSaveErrorReason = (err, attributes) => {
 }
 
 const Attributes = () => {
+  const { t } = useTranslation('settings')
   const [attributes, setAttributes] = useState([])
   const [selectedAttribute, setSelectedAttribute] = useState(null)
   const [showEditor, setShowEditor] = useState(false)
@@ -49,7 +51,7 @@ const Attributes = () => {
   }, [data, attributes])
 
   if (isError) {
-    toast.error('Unable to load attribute list')
+    toast.error(t('unableLoadAttributes'))
   }
 
   // used to disallow adding a new attribute with existing name
@@ -64,11 +66,15 @@ const Attributes = () => {
     await updateAttributes({ setAttributeListModel: { attributes, deleteMissing: true } })
       .unwrap()
       .then(() => {
-        toast.success('Attribute set saved')
+        toast.success(t('attributeSetSaved'))
       })
       .catch((err) => {
         const reason = getSaveErrorReason(err, attributes)
-        toast.error(reason ? `Unable to set attributes: ${reason}` : 'Unable to set attributes')
+        toast.error(
+          reason
+            ? t('unableSetAttributesReason', { reason })
+            : t('unableSetAttributes'),
+        )
       })
   }
 
@@ -124,7 +130,7 @@ const Attributes = () => {
 
   const getContextMenu = (selected) => [
     {
-      label: 'Edit',
+      label: t('edit'),
       icon: 'edit',
       // the editor opens the selected attribute
       command: () => {
@@ -133,7 +139,7 @@ const Attributes = () => {
       },
     },
     {
-      label: 'Delete',
+      label: t('delete'),
       icon: 'delete',
       command: () => onDelete(selected),
       danger: true,
@@ -162,29 +168,29 @@ const Attributes = () => {
         )}
         <Section>
           <Toolbar>
-            <Button label="Add Attribute" icon="add" onClick={onNewAttribute} />
+            <Button label={t('addAttribute')} icon="add" onClick={onNewAttribute} />
             <Button
-              label="Delete attribute"
+              label={t('deleteAttribute')}
               icon="delete"
               disabled={selectedAttribute?.builtin}
               onClick={() => onDelete(selectedAttribute)}
             />
             <InputText
               style={{ width: '200px' }}
-              placeholder="Filter attributes..."
+              placeholder={t('filterAttributes')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <Spacer />
-            {isChanges && 'Unsaved Changes'}
+            {isChanges && t('unsavedChanges')}
             <Button
-              label="Clear changes"
+              label={t('clearChanges')}
               icon="clear"
               disabled={!isChanges}
               onClick={() => setAttributes(data)}
             />
             <SaveButton
-              label="Save attributes changes"
+              label={t('saveAttributesChanges')}
               onClick={onSave}
               active={isChanges}
               saving={updateLoading}
@@ -208,24 +214,24 @@ const Attributes = () => {
               rowClassName={() => ({ loading: isLoading })}
             >
               <Column rowReorder style={{ maxWidth: 30 }} />
-              <Column field="name" header="Name" style={{ maxWidth: 130 }} sortable />
-              <Column field="data.title" header="Title" style={{ maxWidth: 130 }} sortable />
+              <Column field="name" header={t('name')} style={{ maxWidth: 130 }} sortable />
+              <Column field="data.title" header={t('titleCol')} style={{ maxWidth: 130 }} sortable />
               <Column
                 field="builtin"
                 header=""
                 style={{ maxWidth: 60 }}
-                body={(rowData) => (rowData?.builtin ? 'built-in' : '')}
+                body={(rowData) => (rowData?.builtin ? t('builtin') : '')}
                 sortable
               />
               <Column
-                header="Scopes"
+                header={t('scopes')}
                 field="scopeLength"
                 body={(rowData) => rowData?.scope?.join(', ')}
                 style={{ maxWidth: 330 }}
                 sortable
               />
               <Column
-                header="Type"
+                header={t('type')}
                 style={{ maxWidth: 150 }}
                 sortable
                 sortField="data.type"
@@ -241,9 +247,9 @@ const Attributes = () => {
                   })
                 }}
               />
-              <Column field="data.example" header="Example" style={{ maxWidth: 200 }} sortable />
-              <Column field="data.description" header="Description" sortable />
-              <Column field="data.inherit" header="Inherit" sortable style={{ maxWidth: 80 }} />
+              <Column field="data.example" header={t('example')} style={{ maxWidth: 200 }} sortable />
+              <Column field="data.description" header={t('description')} sortable />
+              <Column field="data.inherit" header={t('inherit')} sortable style={{ maxWidth: 80 }} />
             </DataTable>
           </TablePanel>
         </Section>

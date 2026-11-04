@@ -14,6 +14,7 @@ import { useGetUserPoolsQuery } from '@shared/api'
 import { accessGroupsSortFunction, userPoolSortFunction } from './tableSorting'
 import InvitationStatus from './InvitationStatus'
 import { getInvitationState } from './InvitationStatusHelpers'
+import { useTranslation } from 'react-i18next'
 
 const INVITE_SORT_RANK = { none: 0, expired: 1, pending: 2, accepted: 3 }
 
@@ -64,13 +65,6 @@ export const ProfileRow = ({ rowData }) => {
   )
 }
 
-const getUserRole = (user) => {
-  if (user.isAdmin) return 'Admin'
-  if (user.isService) return 'Service'
-  if (user.isManager) return 'Manager'
-  return 'User'
-}
-
 const UserList = ({
   selectedProjects,
   selectedUsers,
@@ -85,6 +79,13 @@ const UserList = ({
   selfName,
   managerDisabled,
 }) => {
+  const { t } = useTranslation('settings')
+  const getUserRole = (user) => {
+    if (user.isAdmin) return t('roleAdmin')
+    if (user.isService) return t('roleService')
+    if (user.isManager) return t('roleManager')
+    return t('roleUser')
+  }
   // GET LICENSE USER POOLS
   const { data: userPools = [] } = useGetUserPoolsQuery()
 
@@ -118,18 +119,18 @@ const UserList = ({
     const ctxHasInvitable = ctxSelection.some((u) => !!u.attrib?.email)
     const inviteLabel =
       ctxSelection.length === 1 && getInvitationState(ctxSelection[0]) === 'pending'
-        ? 'Resend'
-        : 'Invite'
+        ? t('resend')
+        : t('invite')
 
     return [
       {
-        label: 'Set username',
+        label: t('setUsername'),
         disabled: ctxSelection.length !== 1,
         command: withSelection(() => setShowRenameUser(true)),
         icon: 'edit',
       },
       {
-        label: 'Set password',
+        label: t('setPassword'),
         disabled: ctxSelection.length !== 1,
         command: withSelection(() => setShowSetPassword(true)),
         icon: 'key',
@@ -141,7 +142,7 @@ const UserList = ({
         icon: 'mail',
       },
       {
-        label: 'Delete selected',
+        label: t('deleteSelected'),
         disabled: !ctxSelection.length || ctxSelfSelected,
         command: withSelection(() => setShowDeleteUser(newSelectedUsers)),
         icon: 'delete',
@@ -180,22 +181,22 @@ const UserList = ({
         >
           <Column
             field="name"
-            header="Username"
+            header={t('username')}
             sortable
             body={(rowData) => !isLoading && <ProfileRow rowData={rowData} />}
             resizeable
           />
-          <Column field="attrib.fullName" header="Full name" sortable resizeable />
-          <Column field="attrib.email" header="Email" sortable />
+          <Column field="attrib.fullName" header={t('fullName')} sortable resizeable />
+          <Column field="attrib.email" header={t('email')} sortable />
           {!!userPools.length && (
             <Column
               field="userPool"
-              header="License"
+              header={t('license')}
               body={(rowData) => {
                 const pool = findUserPool(rowData.userPool)
                 return (
                   <StyledLicenseRow className={clsx({ invalid: rowData.userPool && !pool })}>
-                    {rowData.userPool ? pool?.label || 'Invalid' : ''}
+                    {rowData.userPool ? pool?.label || t('invalid') : ''}
                   </StyledLicenseRow>
                 )
               }}
@@ -206,7 +207,7 @@ const UserList = ({
           )}
           <Column
             field={'accessLevel'}
-            header="Access level"
+            header={t('accessLevel')}
             body={(rowData) => getUserRole(rowData)}
             sortFunction={accessGroupsSortFunction}
             sortable
@@ -214,27 +215,27 @@ const UserList = ({
           />
           <Column
             field="defaultAccessGroups"
-            header="Default projects access"
+            header={t('defaultProjectsAccess')}
             sortable
             resizeable
             body={(rowData) => rowData.defaultAccessGroups?.join(', ')}
           />
           <Column
-            header="Has password"
-            body={(rowData) => (rowData.hasPassword ? 'yes' : 'no')}
+            header={t('hasPassword')}
+            body={(rowData) => (rowData.hasPassword ? t('yes') : t('no'))}
             field="hasPassword"
             sortable
             resizeable
           />
           <Column
-            header="Active"
-            body={(rowData) => (rowData.active ? 'yes' : '')}
+            header={t('active')}
+            body={(rowData) => (rowData.active ? t('yes') : '')}
             field="active"
             sortable
             resizeable
           />
           <Column
-            header="Invitation"
+            header={t('invitation')}
             field="inviteSentAt"
             body={(rowData) => <InvitationStatus user={rowData} plain />}
             sortable
