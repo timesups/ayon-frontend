@@ -11,6 +11,7 @@ import { toast } from 'react-toastify'
 import clsx from 'clsx'
 import useTableLoadingData from '@hooks/useTableLoadingData'
 import { getPlatformShortcutKey, KeyMode } from '@shared/util/platform'
+import { useTranslation } from 'react-i18next'
 
 const BundleList = ({
   selectedBundles = [],
@@ -23,12 +24,22 @@ const BundleList = ({
   errorMessage,
   developerMode,
 }) => {
+  const { t } = useTranslation('settings')
   const prodBundleName = useMemo(() => bundleList.find((b) => b.isProduction)?.name, [bundleList])
   const stagingBundleName = useMemo(() => bundleList.find((b) => b.isStaging)?.name, [bundleList])
   const hasDevBundles = useMemo(() => bundleList.some((b) => b.isDev), [bundleList])
 
   const [updateBundle] = useUpdateBundleMutation()
   const [deleteBundle] = useDeleteBundleMutation()
+
+  const variantLabel = (status) => {
+    const labels = {
+      production: t('production'),
+      staging: t('staging'),
+      dev: t('dev'),
+    }
+    return labels[status] || status
+  }
 
   // sort bundleList so that isArchived is at the bottom
   const sortedBundleList = useMemo(() => {
@@ -50,15 +61,15 @@ const BundleList = ({
         }),
       )
 
-      toast.success(`Bundles ${isArchived ? 'archived' : 'un-archived'}`)
+      toast.success(isArchived ? t('bundlesArchived') : t('bundlesUnarchived'))
     } catch (error) {
-      toast.error('Error archiving bundles')
+      toast.error(t('errorArchivingBundles'))
     }
   }
 
   const onDelete = async (selected = []) =>
     confirmDelete({
-      label: `${selected.length} bundles`,
+      label: t('deleteBundlesLabel', { count: selected.length }),
       accept: async () => {
         try {
           // delete all selected bundles
@@ -67,18 +78,17 @@ const BundleList = ({
           // drop the deleted bundles from the selection
           onBundleSelect(selectedBundles.filter((name) => !selected.includes(name)))
         } catch (error) {
-          toast.error('Error deleting bundles')
+          toast.error(t('errorDeletingBundles'))
         }
       },
     })
 
   const getBundleStatusItem = (status, bundle, disabledExtra, multipleSelected) => {
     const key = 'is' + status.charAt(0).toUpperCase() + status.slice(1)
-    const setLabel = 'Set ' + status
-    const unsetLabel = 'Unset ' + status
-    const isStatus = bundle[key]
-    const label = isStatus ? unsetLabel : setLabel
-    const icon = isStatus ? 'remove' : 'add'
+    const label = bundle[key]
+      ? t('unsetVariant', { variant: variantLabel(status) })
+      : t('setVariant', { variant: variantLabel(status) })
+    const icon = bundle[key] ? 'remove' : 'add'
     const command = () => toggleBundleStatus(status, bundle.name)
     const disabled = multipleSelected || disabledExtra
     return { label, icon, command, disabled }
@@ -122,7 +132,7 @@ const BundleList = ({
 
     // duplicate and edit
     ctxMenuItems.push({
-      label: 'Duplicate and Edit',
+      label: t('duplicateAndEdit'),
       icon: 'edit_document',
       shortcut: getPlatformShortcutKey('D', [KeyMode.Shift]),
       command: () => onDuplicate(activeBundleName),
@@ -147,7 +157,7 @@ const BundleList = ({
     }
 
     ctxMenuItems.push({
-      label: 'Copy settings from...',
+      label: t('copySettingsFrom'),
       icon: 'system_update_alt',
       command: () => onCopySettings(activeBundle),
       disabled: resolveCanCopySettings(),
@@ -162,7 +172,7 @@ const BundleList = ({
 
     // duplicate and edit
     ctxMenuItems.push({
-      label: isArchiving ? 'Archive' : 'Unarchive',
+      label: isArchiving ? t('archive') : t('unarchive'),
       icon: isArchiving ? 'archive' : 'unarchive',
       command: () => onArchive(newSelectedBundles, isArchiving),
       disabled: isStaging || isProduction,
@@ -176,7 +186,7 @@ const BundleList = ({
     if (metaKey || isArchived) {
       // secret delete bundle
       ctxMenuItems.push({
-        label: 'Delete',
+        label: t('delete'),
         icon: 'delete',
         command: () => onDelete(newSelection),
         disabled: isStaging || isProduction || (!allArchived && !metaKey),
@@ -198,17 +208,21 @@ const BundleList = ({
         }}
       >
         {rowData.isProduction && (
-          <Badge data-testid={`${rowData.name}-production`} label="Production" />
+          <Badge data-testid={`${rowData.name}-production`} label={t('production')} />
         )}
-        {rowData.isStaging && <Badge data-testid={`${rowData.name}-staging`} label="Staging" />}
+        {rowData.isStaging && <Badge data-testid={`${rowData.name}-staging`} label={t('staging')} />}
         {rowData.isDev && (
           <Badge
             color="developer"
             data-testid={`${rowData.name}-dev`}
-            label={`Dev${rowData.activeUser ? ` (${rowData.activeUser})` : ''}`}
+            label={
+              rowData.activeUser
+                ? t('devWithUser', { user: rowData.activeUser })
+                : t('dev')
+            }
           />
         )}
-        {rowData.isProject && <Badge data-testid={`${rowData.name}-prj`} label="Project" />}
+        {rowData.isProject && <Badge data-testid={`${rowData.name}-prj`} label={t('project')} />}
       </BadgeWrapper>
     )
   }
@@ -235,14 +249,16 @@ const BundleList = ({
         className={clsx('bundles-table', { loading: isLoading })}
         rowClassName={(rowData) => ({ archived: rowData?.isArchived, loading: isLoading })}
         resizableColumns
-        emptyMessage={errorMessage ? 'Error: ' + errorMessage : 'No bundles found'}
+        emptyMessage={
+          errorMessage ? t('errorPrefix', { message: errorMessage }) : t('noBundlesFound')
+        }
       >
         <Column
           field="name"
-          header="Name"
-          body={(b) => `${b.name} ${b?.isArchived ? '(archived)' : ''}`}
+          header={t('name')}
+          body={(b) => `${b.name} ${b?.isArchived ? t('archivedSuffix') : ''}`}
         />
-        <Column header="Status" body={formatStatus} style={{ maxWidth: 130 }} />
+        <Column header={t('status')} body={formatStatus} style={{ maxWidth: 130 }} />
       </DataTable>
     </TablePanel>
   )

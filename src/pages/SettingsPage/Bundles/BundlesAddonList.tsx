@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import type { Addon as SharedAddon } from './types'
 import * as Styled from '@pages/SettingsPage/Bundles/BundleForm.styled.ts'
 import { useAddonSearchContext } from '@pages/SettingsPage/Bundles/context/addon-search'
+import { useTranslation } from 'react-i18next'
 
 type VersionsMap = Record<string, { projectCanOverrideAddonVersion?: boolean }>
 
@@ -87,6 +88,7 @@ const AddonListItem: React.FC<{
   addonName: string
   latestVersion?: string
 }> = ({ version, setVersion, selection, addons = [], versions, addonName, latestVersion }) => {
+  const { t } = useTranslation('settings')
   const options = useMemo(() => {
     // Normalize selection to always be an array
     const selectionArray = Array.isArray(selection) ? selection : [selection]
@@ -112,13 +114,17 @@ const AddonListItem: React.FC<{
         buttonStyle={{ zIndex: 0 }}
         versions={options}
         value={version ? [version] : []}
-        placeholder="NONE"
+        placeholder={t('none')}
         onChange={(e: string[]) => setVersion(e[0] || null)}
       />
       <LatestIcon
         data-tooltip-delay={0}
         style={{ marginLeft: 3, visibility: showLatestIcon ? 'visible' : 'hidden' }}
-        data-tooltip={showLatestIcon ? 'Latest installed version: ' + latestVersion : undefined}
+        data-tooltip={
+          showLatestIcon
+            ? t('latestInstalledVersion', { version: latestVersion })
+            : undefined
+        }
         icon="info"
       />
     </>
@@ -129,6 +135,7 @@ const AddonItem: React.FC<{ currentVersion?: string | null; latestVersion?: stri
   currentVersion,
   latestVersion,
 }) => {
+  const { t } = useTranslation('settings')
   const isCurrentLatest = currentVersion === latestVersion
   return (
     <>
@@ -136,7 +143,7 @@ const AddonItem: React.FC<{ currentVersion?: string | null; latestVersion?: stri
       {!isCurrentLatest && (
         <LatestIcon
           data-tooltip-delay={0}
-          data-tooltip={'Latest installed version: ' + latestVersion}
+          data-tooltip={t('latestInstalledVersion', { version: latestVersion })}
           icon="info"
         />
       )}
@@ -163,6 +170,7 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
     },
     ref,
   ) => {
+    const { t } = useTranslation('settings')
     const navigate = useNavigate()
     const { filteredAddons: addons, addons: allAddons, resetSearch } = useAddonSearchContext()
 
@@ -230,7 +238,7 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
     const createContextItems = (selected: any) => {
       let items = [
         {
-          label: 'View in Market',
+          label: t('viewInMarket'),
           icon: 'store',
           command: () => navigate(`/market/?selected=${selected.name}`),
         },
@@ -282,7 +290,7 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
           })}
         >
           <Column
-            header="Title"
+            header={t('title')}
             field="title"
             pt={{
               root: {
@@ -297,7 +305,7 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
           <Column
             sortable
             field="version"
-            header="Version"
+            header={t('version')}
             className="version-column"
             body={(addon: any) => {
               const isPipeline = addon.addonType === 'pipeline'
@@ -323,14 +331,14 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
                   return (
                     <span style={{ color: '#666' }}>
                       <Icon icon="lock" />
-                      {productionVersion || 'NONE'}
-                      {!addon.projectCanOverrideAddonVersion && ' (cannot override)'}
+                      {productionVersion || t('none')}
+                      {!addon.projectCanOverrideAddonVersion && ` ${t('cannotOverride')}`}
                     </span>
                   )
                 }
 
                 // when currentVersion is set, show it in orange to indicate project override
-                return <span style={{ color: 'orange' }}>{currentVersion || 'NONE'}</span>
+                return <span style={{ color: 'orange' }}>{currentVersion || t('none')}</span>
               }
 
               // Display logic for normal bundles
@@ -367,7 +375,7 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
           {isDev && (
             <Column
               field="path"
-              header="Addon directory"
+              header={t('addonDirectory')}
               className="path-column"
               body={(addon) => {
                 if (addon.isFooter) return null
@@ -388,8 +396,8 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
                     <InputText
                       value={addon.dev?.path || ''}
                       style={{ width: '100%' }}
-                      placeholder="/path/to/dev/addon/client"
-                      data-tooltip="Path to the client folder of the addon to run client side code live from source."
+                      placeholder={t('addonPathPlaceholder')}
+                      data-tooltip={t('addonPathTooltip')}
                       onChange={(e) =>
                         onDevChange &&
                         onDevChange([addon.name], { value: e.target.value, key: 'path' })
@@ -405,11 +413,10 @@ const BundlesAddonList = React.forwardRef<any, BundlesAddonListProps>(
         {filteredCount > 0 && (
           <Styled.SearchHintText>
             <span>
-              <strong>{filteredCount}</strong> addon
-              {filteredCount !== 1 ? 's' : ''} filtered out,
+              {t('addonsFilteredOut', { count: filteredCount })}
             </span>
             <Styled.SearchHintLink onClick={resetSearch}>
-              remove search filter
+              {t('removeSearchFilter')}
             </Styled.SearchHintLink>
           </Styled.SearchHintText>
         )}

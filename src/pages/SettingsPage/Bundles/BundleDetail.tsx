@@ -6,13 +6,14 @@ import BundleForm from './BundleForm'
 import BundleDeps from './BundleDeps'
 import { DescriptionSection } from '@shared/components/DetailsPanelDetails'
 import { getRequestErrorString } from '@shared/util'
-import { cloneDeep, upperFirst } from 'lodash'
+import { cloneDeep } from 'lodash'
 import BundleCompare from './BundleCompare'
 import useAddonSelection from './useAddonSelection'
 import { useUpdateBundleMutation, useListBundlesQuery } from '@shared/api'
 import { getPlatformShortcutKey, KeyMode } from '@shared/util/platform'
 import type { Addon } from './types'
 import { useAddonSearchContext } from '@pages/SettingsPage/Bundles/context/addon-search'
+import { useTranslation } from 'react-i18next'
 
 type Installer = { version: string; platforms?: string[] }
 type Bundle = {
@@ -45,6 +46,7 @@ const BundleDetail: React.FC<BundleDetailProps> = ({
   installers,
   toggleBundleStatus,
 }) => {
+  const { t } = useTranslation('settings')
   const [selectedBundle, setSelectedBundle] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<Bundle | any>({} as Bundle)
@@ -124,9 +126,9 @@ const BundleDetail: React.FC<BundleDetailProps> = ({
     }
     try {
       await updateBundle(args).unwrap()
-      toast.success('Bundle description saved')
+      toast.success(t('bundleDescriptionSaved'))
     } catch (error) {
-      toast.error(getRequestErrorString(error) || 'Failed to save bundle description')
+      toast.error(getRequestErrorString(error) || t('failedSaveBundleDescription'))
     }
   }
 
@@ -138,9 +140,12 @@ const BundleDetail: React.FC<BundleDetailProps> = ({
       }).unwrap()
       toast.success(`Bundle addon updated ${addon}: ${version}`)
     } catch (error) {
-      toast.error((error as any)?.data?.detail || 'Failed to update bundle addon')
+      toast.error((error as any)?.data?.detail || t('failedUpdateBundleAddon'))
     }
   }
+
+  const variantLabel = (name: string) =>
+    name === 'production' ? t('production') : name === 'staging' ? t('staging') : name
 
   return (
     <>
@@ -151,6 +156,7 @@ const BundleDetail: React.FC<BundleDetailProps> = ({
         <>
           {bundleStates.map(({ name, active }) => {
             const BadgeButton: any = Styled.BadgeButton
+            const label = variantLabel(name)
             return (
               <BadgeButton
                 key={name}
@@ -158,19 +164,23 @@ const BundleDetail: React.FC<BundleDetailProps> = ({
                 icon={active ? 'check' : undefined}
                 onClick={() => toggleBundleStatus(name as 'staging' | 'production', bundle.name)}
                 disabled={selectedBundles.length > 1}
-                data-tooltip={`${!active ? 'Set' : 'Unset'} bundle to ${name}`}
+                data-tooltip={
+                  active
+                    ? t('unsetBundleTo', { variant: label })
+                    : t('setBundleTo', { variant: label })
+                }
               >
-                {!active ? 'Set' : ''} {upperFirst(name)}
+                {active ? label : `${t('set')} ${label}`}
               </BadgeButton>
             )
           })}
         </>
         <Button
-          label="Duplicate and edit"
+          label={t('duplicateAndEdit')}
           icon="edit_document"
           onClick={() => onDuplicate(bundle.name)}
           disabled={selectedBundles.length > 1}
-          data-tooltip="Creates new duplicated bundle"
+          data-tooltip={t('duplicateAndEditTooltip')}
           data-shortcut={getPlatformShortcutKey('D', [KeyMode.Shift])}
         />
       </Toolbar>

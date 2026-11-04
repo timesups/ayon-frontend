@@ -2,8 +2,10 @@ import { Icon } from '@ynput/ayon-react-components'
 import * as Styled from './BundleChecks.styled'
 import clsx from 'clsx'
 import Typography from '@/theme/typography.module.css'
+import { useTranslation } from 'react-i18next'
 
 const BundleChecks = ({ check = {}, isLoading = true, isCheckError = false, onIssueClick }) => {
+  const { t } = useTranslation('settings')
   const { issues = [], success = false } = check
   const isError = issues.some((issue) => issue.severity === 'error')
   const isWarning = issues.some((issue) => issue.severity === 'warning')
@@ -18,23 +20,23 @@ const BundleChecks = ({ check = {}, isLoading = true, isCheckError = false, onIs
 
   //   default is isLoading state
   let icon = 'sync',
-    message = 'Checking bundle compatibility...'
+    message = t('compatibilityChecking')
   switch (state) {
     case 'isError':
       icon = 'error'
-      message = 'Bundle has unresolved compatibility errors'
+      message = t('compatibilityErrors')
       break
     case 'isWarning':
       icon = 'warning'
-      message = 'Bundle has compatibility warnings'
+      message = t('compatibilityWarnings')
       break
     case 'isSuccess':
       icon = 'verified'
-      message = 'Checks complete: Bundle is compatible'
+      message = t('compatibilitySuccess')
       break
     case 'isCheckError':
       icon = 'sync_problem'
-      message = 'Error checking bundle compatibility'
+      message = t('compatibilityCheckError')
       break
   }
 

@@ -5,8 +5,10 @@ import { useUpdateBundleMutation } from '@shared/api'
 import { toast } from 'react-toastify'
 import { useListDependencyPackagesQuery } from '@queries/dependencyPackages/getDependencyPackages'
 import BundleDepsPicker from './BundleDepsPicker'
+import { useTranslation } from 'react-i18next'
 
 const BundleDeps = ({ bundle, onChange }) => {
+  const { t } = useTranslation('settings')
   const initPackageForm = {
     platform: null,
     file: null,
@@ -44,31 +46,31 @@ const BundleDeps = ({ bundle, onChange }) => {
     try {
       await updateBundle({ bundleName: bundle.name, bundlePatchModel: patch, patch })
       handleCloseForm()
-      toast.success('Bundle Dependency Package updated')
+      toast.success(t('bundleDepsUpdated'))
     } catch (error) {
-      toast.error('ERROR: Bundle Dependency Package not updated')
+      toast.error(t('failedUpdateBundleDeps'))
     }
   }
 
   const platforms = [
     {
       id: 'windows',
-      label: 'Windows',
+      label: t('windows'),
     },
     {
       id: 'linux',
-      label: 'Linux',
+      label: t('linux'),
     },
     {
       id: 'darwin',
-      label: 'MacOS',
+      label: t('macos'),
     },
   ]
 
   return (
     <>
       <Dialog
-        header={'Update Dependency Package'}
+        header={t('updateDependencyPackage')}
         isOpen={!!updatePackageForm.platform}
         onClose={handleCloseForm}
         size="sm"
@@ -84,7 +86,7 @@ const BundleDeps = ({ bundle, onChange }) => {
           onCancel={handleCloseForm}
         />
       </Dialog>
-      <BorderedSection title="Dependency Packages" autoHeight showHeader withPadding>
+      <BorderedSection title={t('dependencyPackages')} autoHeight showHeader withPadding>
         {bundle && (
           <FormLayout>
             {platforms.map((platform) => (

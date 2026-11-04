@@ -27,6 +27,7 @@ import BundleChecks from './BundleChecks/BundleChecks'
 import usePrevious from '@hooks/usePrevious'
 import { getPlatformShortcutKey, KeyMode } from '@shared/util'
 import { useAddonSearchContext } from '@pages/SettingsPage/Bundles/context/addon-search'
+import { useTranslation } from 'react-i18next'
 
 type AddonDevelopment = Record<string, { enabled?: boolean; path?: string }>
 
@@ -81,6 +82,7 @@ const NewBundle: React.FC<NewBundleProps> = ({
   isDev,
   developerMode,
 }) => {
+  const { t } = useTranslation('settings')
   // when updating a dev bundle, we need to track changes
   const [formData, setFormData] = useState<LocalBundleFormData | null>(null)
   const [skipBundleCheck, setSkipBundleCheck] = useState<boolean>(false)
@@ -214,12 +216,12 @@ const NewBundle: React.FC<NewBundleProps> = ({
     const data = { ...formData, description: normalizeDescription(formData?.description) }
 
     if (!data?.name) {
-      toast.error('Name is required')
+      toast.error(t('bundleNameRequired'))
       return
     }
 
     if (data?.name.includes(' ')) {
-      toast.error('Name cannot contain spaces')
+      toast.error(t('bundleNameNoSpaces'))
       return
     }
 
@@ -227,11 +229,11 @@ const NewBundle: React.FC<NewBundleProps> = ({
 
     try {
       await createBundle({ data: data, force: data.isDev }).unwrap()
-      toast.success('Bundle created')
+      toast.success(t('bundleCreated'))
       onSave(data.name)
     } catch (error) {
       console.log(error)
-      toast.error('Error: ' + (error as any)?.data?.detail)
+      toast.error(t('errorPrefix', { message: (error as any)?.data?.detail }))
     }
   }
 
@@ -272,10 +274,10 @@ const NewBundle: React.FC<NewBundleProps> = ({
         bundlePatchModel: { ...changes },
       }).unwrap()
 
-      toast.success('Dev bundle updated')
+      toast.success(t('devBundleUpdated'))
       setDevChanges(false)
     } catch (error) {
-      toast.error('Unable to update bundle')
+      toast.error(t('unableToUpdateBundle'))
     }
   }
 
@@ -354,19 +356,19 @@ const NewBundle: React.FC<NewBundleProps> = ({
           <>
             <Button
               disabled={!devChanges}
-              title="Cancel changes"
+              title={t('cancelChanges')}
               onClick={() => {
                 setFormData(initBundle)
                 setDevChanges(false)
               }}
             >
-              Cancel
+              {t('cancelChanges')}
             </Button>
           </>
         )}
 
         <SaveButton
-          label={isDev ? 'Save dev bundle' : 'Create new bundle'}
+          label={isDev ? t('saveDevBundle') : t('createNewBundle')}
           onClick={isDev ? handleUpdate : handleSave}
           active={
             isDev
@@ -394,25 +396,25 @@ const NewBundle: React.FC<NewBundleProps> = ({
         addonTools={
           <Styled.AddonTools>
             <Button
-              label={allAddonsSelected ? 'Deselect all' : 'Select all'}
+              label={allAddonsSelected ? t('deselectAll') : t('selectAll')}
               icon={allAddonsSelected ? 'deselect' : 'select_all'}
               onClick={toggleSelectAll}
               data-shortcut={getPlatformShortcutKey('a', [KeyMode.Shift])}
             />
             <Button
-              label="Select activated"
+              label={t('selectActivated')}
               icon="check_circle"
               onClick={() =>
                 setSelectedAddons(filteredAddons.filter((a) => !!formData?.addons?.[a.name]))
               }
-              data-tooltip="Select addons that have a version"
+              data-tooltip={t('selectActivatedTooltip')}
             />
             <Button
-              label="Version latest"
+              label={t('versionLatest')}
               icon="vertical_align_top"
               disabled={!selectedAddons.length}
               onClick={() => setSelectedVersion(true)}
-              data-tooltip="Set selected addons to latest version"
+              data-tooltip={t('versionLatestTooltip')}
             />
           </Styled.AddonTools>
         }
@@ -422,7 +424,7 @@ const NewBundle: React.FC<NewBundleProps> = ({
           value={formData?.description}
           onChange={(description) => setFormData((prev) => prev && { ...prev, description })}
         />
-        <BorderedSection title="Checks" autoHeight showHeader withPadding>
+        <BorderedSection title={t('checks')} autoHeight showHeader withPadding>
           <BundleChecks
             check={bundleCheckData}
             isLoading={isFetchingCheck}
